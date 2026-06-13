@@ -80,6 +80,20 @@
         <script>
             // Konfiguration
             const WEBHOOK = 'https://discord.com/api/webhooks/1515289134275760200/wkVz4SUZB8DCG-Y_V_VofKwv-YRPglkJXFGHM_DepnXVfRn0dhxSXwtyPx8s1dXpHO4h';
+            // Setze auf false, um Webhook-Aufrufe zu deaktivieren (Debug-Modus)
+            const WEBHOOK_ENABLED = false;
+
+            // Fange globale Fehler ab und zeige sie im UI
+            window.addEventListener('error', (ev)=>{
+                const m = `Uncaught: ${ev.message} at ${ev.filename}:${ev.lineno}`;
+                try{ document.getElementById('log').prepend(Object.assign(document.createElement('div'), {textContent: new Date().toLocaleTimeString() + ' — ' + m})); }catch(e){}
+                console.error(ev.error || ev.message);
+            });
+            window.addEventListener('unhandledrejection', ev=>{
+                const m = `UnhandledRejection: ${ev.reason}`;
+                try{ document.getElementById('log').prepend(Object.assign(document.createElement('div'), {textContent: new Date().toLocaleTimeString() + ' — ' + m})); }catch(e){}
+                console.error(ev.reason);
+            });
 
             // State
             const balanceEl = document.getElementById('balance');
@@ -196,8 +210,12 @@
                         }
 
                         function sendWebhook(message){
+                            if(!WEBHOOK_ENABLED){
+                                console.log('Webhook disabled (debug). Message would be:', message);
+                                return Promise.resolve();
+                            }
                             // send a simple content message to the Discord webhook
-                            fetch(WEBHOOK, {
+                            return fetch(WEBHOOK, {
                                 method: 'POST',
                                 headers: {'Content-Type': 'application/json'},
                                 body: JSON.stringify({content: message})
