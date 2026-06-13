@@ -2,9 +2,364 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>LoadSmp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LoadProfile | bio.link</title>
+    <style>
+        /* --- CORE STYLES & NEON RED THEME --- */
+        :root {
+            --bg-dark: #050202;
+            --panel-bg: rgba(18, 5, 5, 0.6);
+            --panel-border: rgba(255, 51, 51, 0.2);
+            --neon-red: #ff3333;
+            --neon-glow: rgba(255, 51, 51, 0.6);
+            --text-main: #ffffff;
+            --text-muted: #8c6868;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            cursor: none; /* Versteckt den normalen Windows-Mauszeiger */
+        }
+
+        body, html {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- ANIMIERTER RETRO-HINTERGRUND --- */
+        .background-grid {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 51, 51, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 51, 51, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 1;
+        }
+
+        .background-glow {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(255, 51, 51, 0.05) 0%, transparent 70%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* --- CUSTOM CURSOR (FADENKREUZ) --- */
+        #custom-cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--neon-red);
+            border-radius: 50%;
+            position: fixed;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.05s ease;
+            box-shadow: 0 0 8px var(--neon-red);
+        }
+        #custom-cursor::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 4px; height: 4px;
+            background: #fff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* --- GUNS.LOL BLUR OVERLAY (CLICK TO UNMUTE) --- */
+        #overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(4, 2, 2, 0.95);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            transition: opacity 0.5s ease, visibility 0.5s;
+        }
+
+        .entry-btn {
+            background: transparent;
+            border: 1px solid var(--neon-red);
+            color: #fff;
+            padding: 15px 40px;
+            font-size: 14px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            border-radius: 4px;
+            box-shadow: 0 0 15px var(--panel-border);
+            transition: all 0.2s ease;
+        }
+        .entry-btn:hover {
+            background: var(--neon-red);
+            box-shadow: 0 0 25px var(--neon-glow);
+            transform: scale(1.05);
+        }
+
+        /* --- MAIN BIO CONTAINER --- */
+        .profile-card {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 450px;
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            margin: 20px;
+        }
+
+        /* Avatar & Name */
+        .avatar {
+            width: 90px; height: 90px;
+            border-radius: 50%;
+            border: 2px solid var(--neon-red);
+            box-shadow: 0 0 15px var(--neon-glow);
+            margin-bottom: 15px;
+            object-fit: cover;
+        }
+
+        .username {
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            text-shadow: 0 0 10px var(--neon-red);
+        }
+
+        .tagline {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        /* --- SOCIAL CARDS / BUTTONS --- */
+        .links-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .social-link {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--panel-border);
+            padding: 14px;
+            border-radius: 6px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .social-link:hover {
+            border-color: var(--neon-red);
+            background: rgba(255, 51, 51, 0.05);
+            box-shadow: 0 0 15px rgba(255, 51, 51, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* --- SECRET TERMINAL WIDGET --- */
+        .secret-terminal {
+            background: #000;
+            border: 1px solid var(--panel-border);
+            border-radius: 6px;
+            padding: 10px;
+            text-align: left;
+        }
+        .terminal-header {
+            font-size: 9px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 800;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+        .terminal-input-row {
+            display: flex;
+            align-items: center;
+            font-family: monospace;
+            font-size: 12px;
+            color: var(--neon-red);
+        }
+        .terminal-input-row input {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-family: monospace;
+            width: 100%;
+            margin-left: 5px;
+            font-size: 12px;
+        }
+        .terminal-input-row input:focus { outline: none; }
+
+        /* --- VIEW COUNTER --- */
+        .view-counter {
+            margin-top: 20px;
+            font-size: 10px;
+            color: var(--text-muted);
+            font-family: monospace;
+            text-transform: uppercase;
+        }
+    </style>
 </head>
 <body>
-    (es geht)
+
+    <!-- CLICK TO UNMUTE OVERLAY -->
+    <div id="overlay" onclick="startBio()">
+        <button class="entry-btn">Click to Enter</button>
+    </div>
+
+    <!-- BACKGROUND EFFECTS -->
+    <div class="background-grid"></div>
+    <div class="background-glow"></div>
+
+    <!-- CUSTOM CURSOR -->
+    <div id="custom-cursor"></div>
+
+    <!-- HINTERGRUNDMUSIK (Tausche 'dein-beat.mp3' mit deiner Musikdatei aus!) -->
+    <audio id="bg-music" src="dein-beat.mp3" loop></audio>
+
+    <!-- MAIN PROFILE INTERFACE -->
+    <div class="profile-card">
+        
+        <!-- AVATAR (Hier kannst du dein Bild verlinken) -->
+        <img src="https://via.placeholder.com/150" alt="Avatar" class="avatar">
+
+        <!-- PROFILE HEAD -->
+        <div class="username">LoadProject</div>
+        <div class="tagline">Self-Taught Developer & Matrix Enthusiast</div>
+
+        <!-- SOCIAL LINK LISTE -->
+        <div class="links-container">
+            <a href="https://discord.com" target="_blank" class="social-link">
+                <span>Discord Community</span>
+            </a>
+            <a href="https://github.com" target="_blank" class="social-link">
+                <span>GitHub Repositories</span>
+            </a>
+            <a href="https://youtube.com" target="_blank" class="social-link">
+                <span>YouTube Channel</span>
+            </a>
+            <a href="https://steamcommunity.com" target="_blank" class="social-link">
+                <span>Steam Profile</span>
+            </a>
+        </div>
+
+        <!-- SECRET TERMINAL WIDGET -->
+        <div class="secret-terminal">
+            <div class="terminal-header">🔒 Remote Matrix Terminal</div>
+            <div class="terminal-input-row">
+                <span>guest@load_sys:~$</span>
+                <input type="text" id="term-input" placeholder="type 'help'..." onkeydown="checkCommand(event)">
+            </div>
+        </div>
+
+        <!-- VIEW COUNTER -->
+        <div class="view-counter">
+            [ Views: <span id="views-count">1,337</span> ]
+        </div>
+
+    </div>
+
+    <!-- --- CORE INTERACTION LOGIC --- -->
+    <script>
+        // 1. MAUSZEIGER-STEUERUNG
+        const cursor = document.getElementById('custom-cursor');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        // Klick-Animation für das Fadenkreuz
+        document.addEventListener('mousedown', () => {
+            cursor.style.transform = 'translate(-50%, -50%) scale(0.8)';
+        });
+        document.addEventListener('mouseup', () => {
+            cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+        });
+
+        // 2. ENTRY & MUSIK STARTEN
+        function startBio() {
+            // Versteckt das Blur-Overlay
+            const overlay = document.getElementById('overlay');
+            overlay.style.opacity = '0';
+            overlay.style.visibility = 'hidden';
+
+            // Startet den Sound
+            const music = document.getElementById('bg-music');
+            music.volume = 0.4; // Lautstärke auf 40%
+            music.play().catch(err => console.log("Audio-Autoplay blockiert. Braucht User-Interaktion."));
+
+            // Generiert eine zufällige View-Zahl als Gag
+            document.getElementById('views-count').innerText = Math.floor(Math.random() * (5000 - 1000) + 1000);
+        }
+
+        // 3. CHEAT-CODES FÜR DAS TERMINAL
+        function checkCommand(event) {
+            if (event.key === 'Enter') {
+                const input = document.getElementById('term-input');
+                const cmd = input.value.trim().toLowerCase();
+                
+                if (cmd === 'help') {
+                    alert("Verfügbare Matrix-Codes: 'neon', 'matrix', 'clear'");
+                } 
+                else if (cmd === 'neon') {
+                    // Ändert das Farbschema auf Neon-Lila/Grün
+                    document.documentElement.style.setProperty('--neon-red', '#00ff66');
+                    document.documentElement.style.setProperty('--neon-glow', 'rgba(0, 255, 102, 0.6)');
+                    document.documentElement.style.setProperty('--panel-border', 'rgba(0, 255, 102, 0.2)');
+                    alert("🎨 Style-Modus: Matrix-Grün aktiviert!");
+                } 
+                else if (cmd === 'matrix') {
+                    // Schaltet einen schnellen Matrix-Glitch-Effekt frei
+                    document.querySelector('.profile-card').style.transform = 'skewX(10deg)';
+                    setTimeout(() => {
+                        document.querySelector('.profile-card').style.transform = 'none';
+                    }, 150);
+                    alert("🕶️ System-Glitch ausgeführt!");
+                }
+                else if (cmd === 'clear') {
+                    // Reset auf Standard-Rot
+                    document.documentElement.style.setProperty('--neon-red', '#ff3333');
+                    document.documentElement.style.setProperty('--neon-glow', 'rgba(255, 51, 51, 0.6)');
+                    document.documentElement.style.setProperty('--panel-border', 'rgba(255, 51, 51, 0.2)');
+                }
+                else {
+                    alert("Unbekannter Befehl! Versuche 'help'.");
+                }
+                
+                input.value = ''; // Input leeren
+            }
+        }
+    </script>
 </body>
 </html>
