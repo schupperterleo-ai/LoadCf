@@ -1,40 +1,67 @@
-<!-- Ersetze deinen bisherigen <tbody id="leaderboard-body"> Block hiermit -->
-<tbody id="leaderboard-body">
-    <tr>
-        <td style="font-weight: 900; font-size: 16px; color: #ffaa00;">1</td>
-        <td style="display: flex; align-items: center; gap: 15px;">
-            <!-- Minecraft Kopf -->
-            <img src="https://mc-heads.net/avatar/octryx/32" style="width: 32px; height: 32px; border-radius: 6px;">
-            <div style="display: flex; flex-direction: column;">
-                <span class="username">octryx ★</span>
-                <span style="font-size: 11px; color: var(--text-secondary);">HT1 • 206 pts</span>
-            </div>
-        </td>
-        <!-- Icon Sektion -->
-        <td style="text-align: right;">
-            <div style="display: flex; gap: 8px; justify-content: flex-end;">
-                <div class="icon-slot"><img src="https://iconpvp.xyz/assets/icons/helmet.png" title="HT1"></div>
-                <div class="icon-slot"><img src="https://iconpvp.xyz/assets/icons/sword.png" title="HT1"></div>
-                <div class="icon-slot"><img src="https://iconpvp.xyz/assets/icons/potion.png" title="HT2"></div>
-                <div class="icon-slot"><img src="https://iconpvp.xyz/assets/icons/heart.png" title="LT2"></div>
-            </div>
-        </td>
-    </tr>
-</tbody>
+<!DOCTYPE html>
+<html lang="de" oncopy="return false;" oncut="return false;" onpaste="return false;">
+<head>
+    <style>
+        :root { --bg: #050a14; --card: #0b111e; --accent: #3b82f6; --text: #ffffff; }
+        body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; }
+        .nav { display: flex; padding: 20px; align-items: center; gap: 20px; border-bottom: 1px solid #17253b; }
+        .btn { background: var(--accent); padding: 8px 16px; border-radius: 8px; cursor: pointer; color: white; border: none; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; }
+        .modal-box { background: var(--card); padding: 20px; border-radius: 12px; display: flex; flex-direction: column; gap: 10px; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
 
-<!-- Füge dieses CSS hinzu, um die Icon-Slots wie auf image_b60bbb.png zu stylen -->
-<style>
-    .icon-slot {
-        width: 36px;
-        height: 36px;
-        background: #0e1726;
-        border: 1px solid #17253b;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: 0.2s;
-    }
-    .icon-slot:hover { border-color: var(--accent-cyan); }
-    .icon-slot img { width: 24px; height: 24px; image-rendering: pixelated; }
-</style>
+<div class="nav">
+    <div onclick="openLogin()">ICON TIERS</div>
+    <input type="text" id="search" placeholder="Search player..." onkeyup="filterTable()">
+    <button class="btn" onclick="window.location.href='https://discord.gg/deinlink'">Join Discord</button>
+</div>
+
+<div id="login-modal" class="modal">
+    <div class="modal-box">
+        <input type="text" id="user" placeholder="Username">
+        <input type="password" id="pass" placeholder="Password">
+        <button class="btn" onclick="auth()">Login</button>
+    </div>
+</div>
+
+<div id="admin-panel" class="hidden" style="padding: 20px; background: #111;">
+    <h3>Admin Dashboard</h3>
+    <input type="text" id="newPlayer" placeholder="Player Name">
+    <input type="text" id="newTier" placeholder="Tier (z.B. HT1)">
+    <button class="btn" onclick="addData()">Save</button>
+</div>
+
+<div id="main-content">
+    <table id="rank-table" style="width: 100%; border-collapse: collapse;">
+        <thead><tr><th>#</th><th>Player</th><th>Tiers</th><th>Points</th></tr></thead>
+        <tbody id="table-body">
+            </tbody>
+    </table>
+</div>
+
+<script>
+// Logik für Login
+function openLogin() { document.getElementById('login-modal').style.display = 'flex'; }
+function auth() {
+    let u = document.getElementById('user').value;
+    let p = document.getElementById('pass').value;
+    if(u === 'L4lyx' && p === 'Tini2013!') {
+        document.getElementById('admin-panel').classList.remove('hidden');
+        document.getElementById('login-modal').style.display = 'none';
+    } else { alert('Falsch!'); }
+}
+
+// Beispiel für Daten-Injektion
+function addData() {
+    const table = document.getElementById('table-body');
+    const name = document.getElementById('newPlayer').value;
+    const tier = document.getElementById('newTier').value;
+    table.innerHTML += `<tr><td>1</td><td><img src="https://mc-heads.net/avatar/${name}/32"> ${name}</td><td>${tier}</td><td>0</td></tr>`;
+}
+</script>
+
+</body>
+</html>
