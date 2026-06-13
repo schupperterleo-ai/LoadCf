@@ -105,11 +105,12 @@
             text-transform: uppercase;
             padding: 4px 2px;
             position: relative;
-            transition: color 0.2s;
+            transition: color 0.2s, transform 0.2s;
         }
 
         .mode-btn:hover {
             color: var(--text-main);
+            transform: translateY(-1px);
         }
 
         .mode-btn.active {
@@ -151,17 +152,12 @@
         }
 
         .btn:hover {
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
-        .btn-cyan {
-            border-color: var(--accent-cyan);
-            color: var(--accent-cyan);
-        }
-        .btn-cyan:hover {
-            background: rgba(0, 191, 255, 0.1);
-        }
-
+        .btn-cyan { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+        .btn-cyan:hover { background: rgba(0, 191, 255, 0.1); box-shadow: 0 0 10px rgba(0, 191, 255, 0.2); }
         .btn-purple { border-color: var(--accent-purple); color: var(--accent-purple); }
         .btn-purple:hover { background: rgba(168, 85, 247, 0.1); }
         .btn-danger { border-color: #ff2a74; color: #ff2a74; }
@@ -176,10 +172,11 @@
             border-radius: 6px;
             width: 180px;
             font-size: 13px;
+            transition: border-color 0.2s;
         }
         .search-bar:focus { outline: none; border-color: var(--accent-cyan); }
 
-        /* LEADERBOARD TABLE LOOK */
+        /* LEADERBOARD TABLE LOOK & ANIMATIONS */
         .leaderboard-table {
             width: 100%;
             border-collapse: collapse;
@@ -188,6 +185,7 @@
             border-radius: 8px;
             overflow: hidden;
             margin-top: 20px;
+            animation: fadeIn 0.4s ease-in-out;
         }
 
         .leaderboard-table th {
@@ -209,7 +207,7 @@
         }
 
         .leaderboard-table tr { transition: background-color 0.15s; }
-        .leaderboard-table tr:hover { background-color: rgba(23, 37, 59, 0.2); }
+        .leaderboard-table tr:hover { background-color: rgba(23, 37, 59, 0.3); }
 
         .rank-number { font-weight: 900; width: 40px; font-size: 16px; color: var(--text-secondary); }
         .rank-1 { color: #ffaa00; }
@@ -218,7 +216,7 @@
 
         .username { font-weight: 700; color: #ffffff; font-size: 15px; }
 
-        /* NEUES LOGO / BADGE SYSTEM */
+        /* LOGO / BADGE SYSTEM */
         .badge-list {
             display: flex;
             gap: 12px;
@@ -242,9 +240,19 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
             box-shadow: inset 0 0 8px rgba(0,0,0,0.6);
-            transition: transform 0.2s;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .tier-badge-container:hover .icon-wrapper {
+            transform: scale(1.15);
+        }
+
+        .mode-logo-img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            image-rendering: pixelated;
         }
 
         /* Orange leuchtender Rahmen für High Tiers, Blauer Rahmen für Low Tiers */
@@ -255,7 +263,7 @@
         .border-line-lt { color: #38bdf8; font-weight: 800; font-size: 11px; text-transform: uppercase; }
 
         /* SPALTEN ANSICHT */
-        .tier-columns { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-top: 20px; }
+        .tier-columns { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-top: 20px; animation: fadeIn 0.4s ease-in-out; }
         .tier-column { background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; }
         .tier-header { padding: 15px; text-align: center; font-weight: 800; font-size: 13px; border-bottom: 1px solid var(--border-color); background-color: rgba(23, 37, 59, 0.3); letter-spacing: 0.5px; }
         .t1-h { color: #ffaa00; } .t2-h { color: #cbd5e1; } .t3-h { color: #ff7b1a; } .t4-h { color: #38bdf8; } .t5-h { color: #94a3b8; }
@@ -269,17 +277,106 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .tier-user-card:hover {
+            transform: translateX(3px);
+            border-color: var(--text-secondary);
         }
 
         .avatar { width: 32px; height: 32px; border-radius: 4px; image-rendering: pixelated; background-color: #1f2937; }
 
-        /* MODALS */
+        /* MODALS & ANIMATION */
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; z-index: 2000;
         }
-        .modal-box { background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; width: 360px; }
-        .modal-header { font-size: 18px; font-weight: 800; text-align: center; margin-bottom: 20px; letter-spacing: 1px; }
+        
+        /* EXAKTES DESIGN NACH IMAGE_B760D4.PNG */
+        .points-modal-box {
+            background-color: #080d19;
+            border: 1.5px solid #1a2a42;
+            border-radius: 16px;
+            padding: 30px;
+            width: 460px;
+            position: relative;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05);
+            animation: modalScaleUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .points-title-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .points-title-container h2 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            color: #ffffff;
+            text-transform: uppercase;
+        }
+
+        .help-btn {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            width: 26px;
+            height: 26px;
+            background-color: #121c2e;
+            border: 1px solid #233654;
+            border-radius: 6px;
+            color: #4b6285;
+            font-size: 13px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .points-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px 16px;
+        }
+
+        /* Die äußere Box für jedes Tier */
+        .points-row-box {
+            background-color: #0b1220;
+            border: 1px solid #16243d;
+            border-radius: 10px;
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .points-row-box:hover {
+            border-color: #243b61;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.1);
+        }
+
+        /* Die Bezeichnungen links */
+        .points-label-ht { font-weight: 800; font-size: 14px; color: #ff7b1a; letter-spacing: 0.5px; }
+        .points-label-lt { font-weight: 800; font-size: 14px; color: #708aff; letter-spacing: 0.5px; }
+
+        /* Die inneren kleinen Boxen rechts für die Zahlen */
+        .points-value-badge {
+            background-color: #070b14;
+            border: 1px solid #142036;
+            border-radius: 6px;
+            padding: 4px 10px;
+            min-width: 50px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: #6c7f99;
+        }
 
         /* ADMIN CONTROL PANEL */
         .admin-panel { background-color: var(--panel-bg); border: 1px solid var(--accent-purple); border-radius: 8px; padding: 20px; margin-bottom: 25px; }
@@ -289,11 +386,23 @@
         .admin-form input, .admin-form select { background-color: #060913; border: 1px solid var(--border-color); color: white; padding: 10px; border-radius: 6px; }
         .admin-player-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 6px; }
         .save-notice { color: #2ea043; font-size: 12px; font-weight: bold; margin-top: 5px; display: none; }
+
+        /* ANIMATIONS KEYFRAMES */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes modalScaleUp {
+            from { opacity: 0; transform: scale(0.92); }
+            to { opacity: 1; transform: scale(1); }
+        }
     </style>
 </head>
 <body>
 
     <div class="app-wrapper">
+        <!-- Navbar -->
         <nav class="navbar">
             <div class="nav-left">
                 <div class="brand-logo" onclick="switchMode('overall')">LOAD<span>TIERS</span></div>
@@ -310,6 +419,7 @@
             </div>
         </nav>
 
+        <!-- Spielmodi Tabs -->
         <div class="sub-nav">
             <button class="mode-btn active" id="mode-overall" onclick="switchMode('overall')">Overall</button>
             <button class="mode-btn" id="mode-sword" onclick="switchMode('sword')">Sword</button>
@@ -323,6 +433,7 @@
         </div>
 
         <div class="main-container">
+            <!-- Admin Dashboard -->
             <div id="admin-panel" class="admin-panel" style="display: none;">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
                     <h3 style="margin:0; color: var(--accent-purple);" id="admin-panel-title">Admin Dashboard</h3>
@@ -363,44 +474,60 @@
                 </div>
             </div>
 
+            <!-- Dynamische Tabellen / Spalten -->
             <div id="content-area"></div>
         </div>
     </div>
 
+    <!-- EXAKTES NEUES RANK POINTS MENÜ (IMAGE_B760D4.PNG) -->
     <div id="points-modal" class="modal-overlay" onclick="closeModal('points-modal')">
-        <div class="modal-box" onclick="event.stopPropagation()" style="width: 400px;">
-            <div class="modal-header">⚡ RANK POINTS</div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <div style="padding:10px; background:#0e1726; border-radius:6px; display:flex; justify-content:space-between;"><span>HT1</span><span style="color:var(--accent-cyan)">60 PTS</span></div>
-                <div style="padding:10px; background:#0e1726; border-radius:6px; display:flex; justify-content:space-between;"><span>LT1</span><span style="color:var(--accent-cyan)">45 PTS</span></div>
-                <div style="padding:10px; background:#0e1726; border-radius:6px; display:flex; justify-content:space-between;"><span>HT2</span><span style="color:var(--accent-cyan)">30 PTS</span></div>
-                <div style="padding:10px; background:#0e1726; border-radius:6px; display:flex; justify-content:space-between;"><span>LT2</span><span style="color:var(--accent-cyan)">20 PTS</span></div>
-                <div style="padding:10px; background:#0e1726; border-radius:6px; display:flex; justify-content:space-between;"><span>HT3</span><span style="color:var(--accent-cyan)">10 PTS</span></div>
-                <div style="padding:10px; background:#0e1726; border-radius:6px; display:flex; justify-content:space-between;"><span>LT3</span><span style="color:var(--accent-cyan)">6 PTS</span></div>
+        <div class="points-modal-box" onclick="event.stopPropagation()">
+            <div class="help-btn">?</div>
+            <div class="points-title-container">
+                <span style="color:#ffaa00; font-size: 18px;">⚡</span>
+                <h2>Rank Points</h2>
+            </div>
+            <div class="points-grid">
+                <!-- Spalte 1: High Tiers -->
+                <div class="points-row-box"><span class="points-label-ht">HT1</span><div class="points-value-badge">60 PTS</div></div>
+                <!-- Spalte 2: Low Tiers -->
+                <div class="points-row-box"><span class="points-label-lt">LT1</span><div class="points-value-badge">45 PTS</div></div>
+                
+                <div class="points-row-box"><span class="points-label-ht">HT2</span><div class="points-value-badge">30 PTS</div></div>
+                <div class="points-row-box"><span class="points-label-lt">LT2</span><div class="points-value-badge">20 PTS</div></div>
+                
+                <div class="points-row-box"><span class="points-label-ht">HT3</span><div class="points-value-badge">10 PTS</div></div>
+                <div class="points-row-box"><span class="points-label-lt">LT3</span><div class="points-value-badge">6 PTS</div></div>
+                
+                <div class="points-row-box"><span class="points-label-ht">HT4</span><div class="points-value-badge">4 PTS</div></div>
+                <div class="points-row-box"><span class="points-label-lt">LT4</span><div class="points-value-badge">3 PTS</div></div>
+                
+                <div class="points-row-box"><span class="points-label-ht">HT5</span><div class="points-value-badge">2 PTS</div></div>
+                <div class="points-row-box"><span class="points-label-lt">LT5</span><div class="points-value-badge">1 PTS</div></div>
             </div>
         </div>
     </div>
 
     <div id="login-modal" class="modal-overlay" onclick="closeModal('login-modal')">
-        <div class="modal-box" onclick="event.stopPropagation()">
-            <div class="modal-header">🔑 Admin Login</div>
+        <div class="modal-box" onclick="event.stopPropagation()" style="background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; width: 360px;">
+            <div class="modal-header" style="font-size: 18px; font-weight: 800; text-align: center; margin-bottom: 20px; letter-spacing: 1px;">🔑 Admin Login</div>
             <input type="text" id="login-user" placeholder="Username" style="width:100%; padding:10px; margin-bottom:10px; background:#060913; border:1px solid var(--border-color); color:white; border-radius:6px; box-sizing:border-box;">
-            <input type="password" id="login-pass" placeholder="Passwort" style="width:100%; padding:10px; margin-bottom:15px; background:#060913; border:1px solid var(--border-color); color:white; border-radius:6px; box-sizing:box-box;">
+            <input type="password" id="login-pass" placeholder="Passwort" style="width:100%; padding:10px; margin-bottom:15px; background:#060913; border:1px solid var(--border-color); color:white; border-radius:6px; box-sizing:border-box;">
             <button class="btn btn-purple" style="width:100%; justify-content:center;" onclick="submitLogin()">Login</button>
         </div>
     </div>
 
     <script>
-        // Icons Zuordnung für jeden Spielmodus
+        // DIE RECHTEN MINECRAFT LOGO INTERNET-LINKS FÜR DEINE MODI
         const modeIcons = {
-            sword: "⚔️",
-            cpvp: "🔮",
-            axe: "🪓",
-            smp: "🌲",
-            diapot: "🧪",
-            mace: "🔨",
-            uhc: "🍎",
-            nethpot: "🔥"
+            sword: "https://minecraft.wiki/images/Diamond_Sword_JE3_BE3.png",
+            cpvp: "https://minecraft.wiki/images/End_Crystal_JE2_BE2.png",
+            axe: "https://minecraft.wiki/images/Diamond_Axe_JE3_BE3.png",
+            smp: "https://minecraft.wiki/images/Oak_Log_%28UD%29_JE5_BE3.png",
+            diapot: "https://minecraft.wiki/images/Splash_Potion_of_Healing_JE2_BE2.png",
+            mace: "https://minecraft.wiki/images/Mace_JE1_BE1.png",
+            uhc: "https://minecraft.wiki/images/Golden_Apple_JE2_BE2.png",
+            nethpot: "https://minecraft.wiki/images/Netherite_Chestplate_JE3_BE2.png"
         };
 
         const pointValues = {
@@ -408,7 +535,6 @@
             'LT3': 6,  'HT4': 4,  'LT4': 3,  'HT5': 2,  'LT5': 1
         };
 
-        // ECHTE SPIELER AUS DEINEM SCREENSHOT DIREKT ALS DEFAULT EINGEBAUT!
         const defaultPlayers = [
             { name: "LetsJanTV", ranks: { cpvp: "HT3", sword: "HT3", uhc: "HT4", mace: "HT4" } },
             { name: "L4lyx", ranks: { cpvp: "HT4", sword: "LT3", uhc: "LT4" } },
@@ -454,7 +580,6 @@
             if (loggedInUser) { renderAdminDeleteList(); }
         }
 
-        // Leaderboard mit echten Icons im Tabellen-Layout
         function renderLeaderboard(filter = "") {
             const contentArea = document.getElementById('content-area');
             let sorted = [...players].map(p => ({ ...p, totalPts: calculateTotalPoints(p) })).sort((a, b) => b.totalPts - a.totalPts);
@@ -471,7 +596,6 @@
             sorted.forEach((p, index) => {
                 let rankClass = index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : index === 2 ? 'rank-3' : '';
                 
-                // Icons generieren
                 let badgesHtml = '';
                 for (let mode in p.ranks) {
                     let tier = p.ranks[mode];
@@ -479,11 +603,13 @@
                     let isHT = tier.startsWith('HT');
                     let borderClass = isHT ? 'border-ht' : 'border-lt';
                     let textClass = isHT ? 'border-line-ht' : 'border-line-lt';
-                    let iconSymbol = modeIcons[mode] || "⚔️";
+                    let imgUrl = modeIcons[mode] || modeIcons.sword;
 
                     badgesHtml += `
                         <div class="tier-badge-container">
-                            <div class="icon-wrapper ${borderClass}">${iconSymbol}</div>
+                            <div class="icon-wrapper ${borderClass}">
+                                <img src="${imgUrl}" class="mode-logo-img" alt="${mode}">
+                            </div>
                             <span class="${textClass}">${tier}</span>
                         </div>
                     `;
@@ -581,6 +707,17 @@
             document.getElementById('admin-panel').style.display = 'none';
             document.getElementById('admin-status-text').innerText = "Status: Guest";
             render();
+        }
+
+        function createNewAdminAccount() {
+            const u = document.getElementById('new-admin-user').value.trim();
+            const p = document.getElementById('new-admin-pass').value;
+            if(!u || !p) return;
+            adminAccounts[u] = p;
+            saveToLocalStorage();
+            document.getElementById('new-admin-user').value = '';
+            document.getElementById('new-admin-pass').value = '';
+            alert(`Admin Account für ${u} wurde erstellt!`);
         }
 
         function addOrUpdatePlayer() {
