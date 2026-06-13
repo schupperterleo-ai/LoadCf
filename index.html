@@ -25,6 +25,24 @@
             margin: 0;
             padding: 0;
             min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Partikel Canvas */
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .app-wrapper {
+            position: relative;
+            z-index: 2;
         }
 
         /* Top Navigation */
@@ -47,10 +65,18 @@
             font-size: 20px;
             font-weight: 800;
             letter-spacing: 1px;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.2s;
+        }
+
+        .brand-logo:hover {
+            transform: scale(1.05);
         }
 
         .brand-logo span {
             color: var(--accent-cyan);
+            text-shadow: 0 0 10px var(--accent-cyan);
         }
 
         .nav-links {
@@ -78,14 +104,15 @@
             gap: 15px;
         }
 
-        /* Sub-Navigation für Spielmodi */
+        /* Sub-Navigation für Spielmodi (Exakt wie im Bildschirmfoto) */
         .sub-nav {
             display: flex;
             justify-content: center;
-            gap: 25px;
-            background-color: rgba(11, 17, 26, 0.5);
-            padding: 12px;
+            gap: 20px;
+            background-color: rgba(11, 17, 26, 0.7);
+            padding: 14px;
             border-bottom: 1px solid var(--border-color);
+            backdrop-filter: blur(5px);
         }
 
         .mode-btn {
@@ -93,16 +120,34 @@
             border: none;
             color: var(--text-secondary);
             font-weight: 700;
-            font-size: 12px;
+            font-size: 13px;
             letter-spacing: 1px;
             cursor: pointer;
             text-transform: uppercase;
-            padding-bottom: 4px;
+            padding: 4px 8px;
+            position: relative;
+            transition: color 0.3s, text-shadow 0.3s;
         }
 
-        .mode-btn.active, .mode-btn:hover {
+        .mode-btn:hover {
+            color: var(--text-main);
+        }
+
+        .mode-btn.active {
             color: var(--accent-cyan);
-            border-bottom: 2px solid var(--accent-cyan);
+            text-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+        }
+
+        .mode-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--accent-cyan);
+            box-shadow: 0 0 10px var(--accent-cyan);
+            animation: lineGlow 0.3s ease-out;
         }
 
         /* Haupt-Inhalt */
@@ -125,16 +170,38 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
         }
 
         .btn-cyan {
             border-color: var(--accent-cyan);
             color: var(--accent-cyan);
+            box-shadow: 0 0 5px rgba(56, 189, 248, 0.2);
+        }
+        .btn-cyan:hover {
+            background: rgba(56, 189, 248, 0.1);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
         }
 
         .btn-purple {
             border-color: var(--accent-purple);
             color: var(--accent-purple);
+        }
+        .btn-purple:hover {
+            background: rgba(168, 85, 247, 0.1);
+        }
+
+        .btn-danger {
+            border-color: #ff2a74;
+            color: #ff2a74;
+            background: transparent;
+        }
+        .btn-danger:hover {
+            background: rgba(255, 42, 116, 0.1);
         }
 
         /* Suchfeld */
@@ -145,9 +212,14 @@
             padding: 8px 12px;
             border-radius: 6px;
             width: 200px;
+            transition: border-color 0.2s;
+        }
+        .search-bar:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
         }
 
-        /* SPALTEN-ANSICHT (Bild 1) */
+        /* SPALTEN-ANSICHT ANIMATIONEN */
         .tier-columns {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -160,7 +232,17 @@
             border: 1px solid var(--border-color);
             border-radius: 8px;
             overflow: hidden;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
+
+        /* Gestaffeltes Hereinfliegen der Spalten */
+        .tier-column:nth-child(1) { animation-delay: 0.05s; }
+        .tier-column:nth-child(2) { animation-delay: 0.1s; }
+        .tier-column:nth-child(3) { animation-delay: 0.15s; }
+        .tier-column:nth-child(4) { animation-delay: 0.2s; }
+        .tier-column:nth-child(5) { animation-delay: 0.25s; }
 
         .tier-header {
             padding: 15px;
@@ -179,7 +261,7 @@
 
         .tier-list-content {
             padding: 10px;
-            min-height: 400px;
+            min-height: 450px;
             display: flex;
             flex-direction: column;
             gap: 8px;
@@ -193,6 +275,14 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            animation: cardPulse 3s infinite ease-in-out;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .tier-user-card:hover {
+            transform: scale(1.02);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
         }
 
         .user-info {
@@ -206,7 +296,6 @@
             height: 28px;
             border-radius: 50%;
             background-color: #30363d;
-            background-size: cover;
         }
 
         .username {
@@ -214,7 +303,7 @@
             font-weight: 600;
         }
 
-        /* LEADERBOARD-ANSICHT (Bild 2) */
+        /* LEADERBOARD ANIMATION */
         .leaderboard-table {
             width: 100%;
             border-collapse: collapse;
@@ -223,6 +312,9 @@
             border-radius: 8px;
             overflow: hidden;
             margin-top: 20px;
+            opacity: 0;
+            transform: translateY(15px);
+            animation: fadeUp 0.4s ease-out forwards;
         }
 
         .leaderboard-table th {
@@ -241,19 +333,20 @@
             font-size: 14px;
         }
 
-        .rank-number {
-            font-weight: 800;
-            width: 40px;
+        .leaderboard-table tr {
+            transition: background-color 0.2s;
         }
-        .rank-1 { color: #f59e0b; }
+
+        .leaderboard-table tr:hover {
+            background-color: rgba(56, 189, 248, 0.03);
+        }
+
+        .rank-number { font-weight: 800; width: 40px; }
+        .rank-1 { color: #f59e0b; text-shadow: 0 0 5px rgba(245, 158, 11, 0.5); }
         .rank-2 { color: #cbd5e1; }
         .rank-3 { color: #b45309; }
 
-        .badge-list {
-            display: flex;
-            gap: 6px;
-        }
-
+        .badge-list { display: flex; gap: 6px; }
         .badge {
             font-size: 10px;
             font-weight: 800;
@@ -261,11 +354,10 @@
             border-radius: 4px;
             text-transform: uppercase;
         }
-
         .badge-ht { background-color: rgba(249, 115, 22, 0.15); color: #ff7b1a; border: 1px solid rgba(249, 115, 22, 0.3); }
         .badge-lt { background-color: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
 
-        /* MODAL POP-UPS (Bild 3 / Login) */
+        /* MODAL ANIMATIONEN (Bild 3 / Login) */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -273,11 +365,12 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(4px);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
             justify-content: center;
             align-items: center;
             z-index: 2000;
+            transition: opacity 0.3s ease;
         }
 
         .modal-box {
@@ -287,10 +380,15 @@
             padding: 25px;
             width: 360px;
             position: relative;
+            transform: scale(0.7);
+            opacity: 0;
+            animation: zoomIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         }
 
         .modal-points-box {
             width: 450px;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.2);
         }
 
         .modal-header {
@@ -318,87 +416,139 @@
             font-weight: 700;
         }
 
-        /* Admin Panel Styling */
+        /* Admin Management List */
         .admin-panel {
             background-color: var(--panel-bg);
             border: 1px solid var(--accent-purple);
             border-radius: 8px;
             padding: 20px;
             margin-bottom: 25px;
+            animation: fadeUp 0.3s ease;
         }
 
         .admin-form {
             display: flex;
             flex-wrap: wrap;
             gap: 12px;
+            margin-bottom: 20px;
         }
 
         .admin-form input, .admin-form select {
             background-color: var(--bg-dark);
             border: 1px solid var(--border-color);
             color: white;
-            padding: 8px;
+            padding: 10px;
             border-radius: 6px;
+        }
+
+        .admin-player-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            margin-bottom: 6px;
+        }
+
+        /* KEYFRAME ANIMATIONEN */
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes zoomIn {
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes lineGlow {
+            from { width: 0; opacity: 0; }
+            to { width: 100%; opacity: 1; }
+        }
+
+        @keyframes cardPulse {
+            0%, 100% { border-color: var(--border-color); }
+            50% { border-color: rgba(56, 189, 248, 0.3); }
         }
     </style>
 </head>
 <body>
 
-    <nav class="navbar">
-        <div class="nav-left">
-            <div class="brand-logo">LOAD<span>TIERS</span></div>
-            <div class="nav-links">
-                <div class="nav-link active" onclick="switchMainTab('rankings')">RANKINGS</div>
-                <div class="nav-link">STAFF</div>
-                <div class="nav-link">DISCORD</div>
-            </div>
-        </div>
-        <div class="nav-right">
-            <div id="admin-status-text" style="font-size: 12px; color: var(--text-secondary)">Status: Guest</div>
-            <button class="btn btn-cyan" onclick="openModal('points-modal')">⚡ Rank Points</button>
-            <input type="text" class="search-bar" id="search-input" placeholder="Search player..." oninput="handleSearch()">
-        </div>
-    </nav>
+    <!-- Hintergrund Partikel Canvas -->
+    <canvas id="particles-canvas"></canvas>
 
-    <div class="sub-nav">
-        <button class="mode-btn active" id="mode-overall" onclick="switchMode('overall')">Overall</button>
-        <button class="mode-btn" id="mode-sword" onclick="switchMode('sword')">Sword</button>
-        <button class="mode-btn" id="mode-cpvp" onclick="switchMode('cpvp')">CPvP</button>
-        <button class="mode-btn" id="mode-nethpot" onclick="switchMode('nethpot')">Nethpot</button>
+    <div class="app-wrapper">
+        <!-- Top Navigation Bar (Klick auf LOADTIERS führt zu Overall) -->
+        <nav class="navbar">
+            <div class="nav-left">
+                <div class="brand-logo" onclick="switchMode('overall')">LOAD<span>TIERS</span></div>
+                <div class="nav-links">
+                    <div class="nav-link active" onclick="switchMode('overall')">RANKINGS</div>
+                    <div class="nav-link">STAFF</div>
+                    <div class="nav-link">DISCORD</div>
+                </div>
+            </div>
+            <div class="nav-right">
+                <div id="admin-status-text" style="font-size: 12px; color: var(--text-secondary)">Status: Guest</div>
+                <button class="btn btn-cyan" onclick="openModal('points-modal')">⚡ Rank Points</button>
+                <input type="text" class="search-bar" id="search-input" placeholder="Search player..." oninput="handleSearch()">
+            </div>
+        </nav>
+
+        <!-- Sub-Nav für Spielmodi (Vollständig wie auf dem Screenshot) -->
+        <div class="sub-nav">
+            <button class="mode-btn active" id="mode-overall" onclick="switchMode('overall')">Overall</button>
+            <button class="mode-btn" id="mode-sword" onclick="switchMode('sword')">Sword</button>
+            <button class="mode-btn" id="mode-cpvp" onclick="switchMode('cpvp')">CPvP</button>
+            <button class="mode-btn" id="mode-axe" onclick="switchMode('axe')">Axe</button>
+            <button class="mode-btn" id="mode-smp" onclick="switchMode('smp')">SMP</button>
+            <button class="mode-btn" id="mode-diapot" onclick="switchMode('diapot')">Diapot</button>
+            <button class="mode-btn" id="mode-mace" onclick="switchMode('mace')">Mace</button>
+            <button class="mode-btn" id="mode-uhc" onclick="switchMode('uhc')">UHC</button>
+            <button class="mode-btn" id="mode-nethpot" onclick="switchMode('nethpot')">Nethpot</button>
+        </div>
+
+        <!-- Hauptfenster -->
+        <div class="main-container">
+
+            <!-- Admin Control Panel (Spieler hinzufügen & Löschen-Liste) -->
+            <div id="admin-panel" class="admin-panel" style="display: none;">
+                <h3 style="margin-top:0; color: var(--accent-purple)">Admin Dashboard (L4lyx)</h3>
+                <div class="admin-form">
+                    <input type="text" id="new-player-name" placeholder="Spieler Name">
+                    <select id="new-player-mode">
+                        <option value="sword">Sword</option>
+                        <option value="cpvp">CPvP</option>
+                        <option value="axe">Axe</option>
+                        <option value="smp">SMP</option>
+                        <option value="diapot">Diapot</option>
+                        <option value="mace">Mace</option>
+                        <option value="uhc">UHC</option>
+                        <option value="nethpot">Nethpot</option>
+                    </select>
+                    <select id="new-player-tier">
+                        <option value="HT1">HT1</option><option value="LT1">LT1</option>
+                        <option value="HT2">HT2</option><option value="LT2">LT2</option>
+                        <option value="HT3">HT3</option><option value="LT3">LT3</option>
+                        <option value="HT4">HT4</option><option value="LT4">LT4</option>
+                        <option value="HT5">HT5</option><option value="LT5">LT5</option>
+                    </select>
+                    <button class="btn btn-purple" onclick="addOrUpdatePlayer()">Hinzufügen / Update</button>
+                    <button class="btn" onclick="logoutAdmin()" style="border-color: #ff2a74; color: #ff2a74;">Logout</button>
+                </div>
+                
+                <h4 style="color: var(--text-secondary); margin-bottom: 8px;">Spieler verwalten (Löschen)</h4>
+                <div id="admin-delete-list" style="max-height: 180px; overflow-y: auto; background: rgba(0,0,0,0.2); padding: 10px; border-radius:6px;">
+                    <!-- Wird dynamisch befüllt -->
+                </div>
+            </div>
+
+            <!-- Dynamische Tabellen / Spalten -->
+            <div id="content-area"></div>
+        </div>
     </div>
 
-    <div class="main-container">
-
-        <div id="admin-panel" class="admin-panel" style="display: none;">
-            <h3 style="margin-top:0; color: var(--accent-purple)">Admin Dashboard (L4lyx)</h3>
-            <div class="admin-form">
-                <input type="text" id="new-player-name" placeholder="Spieler Name">
-                <select id="new-player-mode">
-                    <option value="sword">Sword</option>
-                    <option value="cpvp">CPvP</option>
-                    <option value="nethpot">Nethpot</option>
-                </select>
-                <select id="new-player-tier">
-                    <option value="HT1">HT1</option>
-                    <option value="LT1">LT1</option>
-                    <option value="HT2">HT2</option>
-                    <option value="LT2">LT2</option>
-                    <option value="HT3">HT3</option>
-                    <option value="LT3">LT3</option>
-                    <option value="HT4">HT4</option>
-                    <option value="LT4">LT4</option>
-                    <option value="HT5">HT5</option>
-                    <option value="LT5">LT5</option>
-                </select>
-                <button class="btn btn-purple" onclick="addOrUpdatePlayer()">Spieler Speichern / Updaten</button>
-                <button class="btn" onclick="logoutAdmin()" style="border-color: #ff2a74; color: #ff2a74;">Logout</button>
-            </div>
-        </div>
-
-        <div id="content-area"></div>
-
-    </div>
-
+    <!-- POP-UP 1: RANK POINTS OVERLAY -->
     <div id="points-modal" class="modal-overlay" onclick="closeModal('points-modal')">
         <div class="modal-box modal-points-box" onclick="event.stopPropagation()">
             <div class="modal-header">⚡ RANK POINTS</div>
@@ -417,12 +567,13 @@
         </div>
     </div>
 
-    <div id="login-modal" class="modal-overlay">
-        <div class="modal-box">
+    <!-- POP-UP 2: LOGIN MODAL -->
+    <div id="login-modal" class="modal-overlay" onclick="closeModal('login-modal')">
+        <div class="modal-box" onclick="event.stopPropagation()">
             <div class="modal-header">🔑 Admin Login</div>
-            <div id="login-error" style="color: #ff2a74; font-size:12px; margin-bottom:10px; text-align:center; display:none;">Falsches Passwort!</div>
-            <input type="text" id="login-user" placeholder="Username" style="width:100%; padding:8px; margin-bottom:10px; background:#0d1117; border:1px solid var(--border-color); color:white; border-radius:6px;">
-            <input type="password" id="login-pass" placeholder="Passwort" style="width:100%; padding:8px; margin-bottom:15px; background:#0d1117; border:1px solid var(--border-color); color:white; border-radius:6px;">
+            <div id="login-error" style="color: #ff2a74; font-size:12px; margin-bottom:10px; text-align:center; display:none;">Anmeldedaten falsch!</div>
+            <input type="text" id="login-user" placeholder="Username" style="width:100%; padding:10px; margin-bottom:10px; background:#0d1117; border:1px solid var(--border-color); color:white; border-radius:6px; box-sizing:border-box;">
+            <input type="password" id="login-pass" placeholder="Passwort" style="width:100%; padding:10px; margin-bottom:15px; background:#0d1117; border:1px solid var(--border-color); color:white; border-radius:6px; box-sizing:border-box;">
             <div style="display:flex; justify-content:space-between;">
                 <button class="btn btn-purple" onclick="submitLogin()">Login</button>
                 <button class="btn" onclick="closeModal('login-modal')">Abbrechen</button>
@@ -431,44 +582,98 @@
     </div>
 
     <script>
-        // Punktetabelle Definition
+        // --- BACKGROUND PARTICLES SYSTEM ---
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = Math.random() * 0.3 - 0.15;
+                this.speedY = Math.random() * -0.4 - 0.1; // Float upwards
+                this.alpha = Math.random() * 0.5 + 0.2;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.y < 0) {
+                    this.y = canvas.height;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.fillStyle = '#38bdf8';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < 65; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+        initParticles();
+        animateParticles();
+
+
+        // --- LOGIK & DATEN ---
         const pointValues = {
             'HT1': 60, 'LT1': 45, 'HT2': 30, 'LT2': 20, 'HT3': 10,
             'LT3': 6,  'HT4': 4,  'LT4': 3,  'HT5': 2,  'LT5': 1
         };
 
-        // Standard-Spielerliste (Exakt wie auf deinen Screenshots)
         let players = [
-            { name: "octryx ★", ranks: { sword: "HT1", cpvp: "HT1", nethpot: "HT2" } },
-            { name: "zNiclas_", ranks: { sword: "HT1", cpvp: "LT2", nethpot: "LT3" } },
-            { name: "Peentin 爱", ranks: { sword: "LT1", cpvp: "LT2", nethpot: "HT3" } },
-            { name: "why¿lxo?🍄", ranks: { sword: "LT2", cpvp: "HT3", nethpot: "HT3" } },
-            { name: "D2rx", ranks: { sword: "LT2", cpvp: "HT3", nethpot: "HT3" } },
-            { name: "Elan @ for ss", ranks: { sword: "HT2", cpvp: "HT3", nethpot: "HT3" } },
-            { name: "TheRealJero @for help", ranks: { sword: "HT3", cpvp: "HT3", nethpot: "HT3" } },
-            { name: "Frosch", ranks: { sword: "HT3", cpvp: "LT3", nethpot: "LT3" } },
-            { name: "mrbanane", ranks: { sword: "LT3", cpvp: "LT4", nethpot: "LT4" } }
+            { name: "octryx ★", ranks: { sword: "HT1", cpvp: "HT1", axe: "HT2", nethpot: "LT1" } },
+            { name: "zNiclas_", ranks: { sword: "HT1", cpvp: "LT2", smp: "HT3" } },
+            { name: "Peentin 爱", ranks: { sword: "LT1", cpvp: "LT2", diapot: "HT1" } },
+            { name: "why¿lxo?🍄", ranks: { sword: "LT2", mace: "HT3", nethpot: "HT3" } },
+            { name: "D2rx", ranks: { sword: "LT2", uhc: "HT3" } },
+            { name: "Elan @ for ss", ranks: { sword: "HT2", cpvp: "HT3" } },
+            { name: "TheRealJero @for help", ranks: { sword: "HT3", smp: "LT1" } },
+            { name: "Frosch", ranks: { sword: "HT3", nethpot: "LT3" } }
         ];
 
         let currentMode = 'overall';
         let isAdmin = false;
 
-        // Hilfsfunktionen für Punkteberechnung
         function calculateTotalPoints(player) {
             let total = 0;
             for (let mode in player.ranks) {
-                let tier = player.ranks[mode];
-                total += pointValues[tier] || 0;
+                total += pointValues[player.ranks[mode]] || 0;
             }
             return total;
         }
 
         function getTierGroup(tierStr) {
             if (!tierStr) return null;
-            return tierStr.replace('HT', '').replace('LT', ''); // Gibt 1, 2, 3, 4 oder 5 zurück
+            return tierStr.replace('HT', '').replace('LT', '');
         }
 
-        // Modus wechseln (Overall vs. Einzel-Modi)
         function switchMode(mode) {
             currentMode = mode;
             document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
@@ -476,34 +681,31 @@
             render();
         }
 
-        // Modus Render-Verteiler
         function render() {
             const searchVal = document.getElementById('search-input').value.toLowerCase();
-            
             if (currentMode === 'overall') {
                 renderLeaderboard(searchVal);
             } else {
                 renderColumns(searchVal);
             }
+            if (isAdmin) renderAdminDeleteList();
         }
 
-        // 1. Spaltenansicht rendern (Bild 1)
+        // Columns Ansicht
         function renderColumns(filter = "") {
             const contentArea = document.getElementById('content-area');
-            
             let html = `<div class="tier-columns">`;
             for (let i = 1; i <= 5; i++) {
-                let tierTitle = i === 1 || i === 2 || i === 3 ? `?? Tier ${i}` : `Tier ${i}`;
+                let tierTitle = i <= 3 ? `?? Tier ${i}` : `Tier ${i}`;
                 html += `
                     <div class="tier-column">
                         <div class="tier-header t${i}-h">${tierTitle}</div>
-                        <div class="tier-list-content" id="tier-col-${i}">
+                        <div class="tier-list-content">
                 `;
 
-                // Filter & Sortiere Spieler für diese Spalte
                 let columnPlayers = players.filter(p => {
-                    let playerTier = p.ranks[currentMode];
-                    return playerTier && getTierGroup(playerTier) == i && p.name.toLowerCase().includes(filter);
+                    let pTier = p.ranks[currentMode];
+                    return pTier && getTierGroup(pTier) == i && p.name.toLowerCase().includes(filter);
                 });
 
                 columnPlayers.forEach(p => {
@@ -511,15 +713,13 @@
                     let arrow = specificTier.startsWith('HT') ? '▲' : '▼';
                     let arrowColor = specificTier.startsWith('HT') ? '#f97316' : '#38bdf8';
                     
-                    let deleteButton = isAdmin ? `<span onclick="deletePlayerData('${p.name}')" style="color:#ff2a74; cursor:pointer; font-weight:800; font-size:12px; margin-left:5px;">X</span>` : '';
-
                     html += `
                         <div class="tier-user-card">
                             <div class="user-info">
                                 <div class="avatar"></div>
                                 <span class="username">${p.name}</span>
                             </div>
-                            <span style="color: ${arrowColor}; font-weight:bold; font-size:11px;">${arrow} ${deleteButton}</span>
+                            <span style="color: ${arrowColor}; font-weight:bold; font-size:11px;">${specificTier} ${arrow}</span>
                         </div>
                     `;
                 });
@@ -530,40 +730,26 @@
             contentArea.innerHTML = html;
         }
 
-        // 2. Leaderboard-Tabelle rendern (Bild 2)
+        // Leaderboard Tabelle
         function renderLeaderboard(filter = "") {
             const contentArea = document.getElementById('content-area');
-            
-            // Berechne Punkte und Sortiere das Leaderboard
-            let sorted = [...players].map(p => {
-                return { ...p, totalPts: calculateTotalPoints(p) };
-            }).sort((a, b) => b.totalPts - a.totalPts);
-
-            if (filter) {
-                sorted = sorted.filter(p => p.name.toLowerCase().includes(filter));
-            }
+            let sorted = [...players].map(p => ({ ...p, totalPts: calculateTotalPoints(p) })).sort((a, b) => b.totalPts - a.totalPts);
+            if (filter) sorted = sorted.filter(p => p.name.toLowerCase().includes(filter));
 
             let html = `
                 <table class="leaderboard-table">
                     <thead>
-                        <tr>
-                            <th style="width: 50px;">#</th>
-                            <th>Player</th>
-                            <th>Tiers</th>
-                            <th style="text-align: right;">Pts</th>
-                        </tr>
+                        <tr><th style="width:50px;">#</th><th>Player</th><th>Tiers</th><th style="text-align:right;">Pts</th></tr>
                     </thead>
                     <tbody>
             `;
 
             sorted.forEach((p, index) => {
                 let rankClass = index < 3 ? `rank-${index + 1}` : '';
-                
                 let badgesHtml = '';
                 for (let mode in p.ranks) {
                     let t = p.ranks[mode];
-                    let bClass = t.startsWith('HT') ? 'badge-ht' : 'badge-lt';
-                    badgesHtml += `<span class="badge ${bClass}">${t}</span> `;
+                    badgesHtml += `<span class="badge ${t.startsWith('HT') ? 'badge-ht' : 'badge-lt'}">${mode}:${t}</span> `;
                 }
 
                 html += `
@@ -576,7 +762,7 @@
                             </div>
                         </td>
                         <td><div class="badge-list">${badgesHtml}</div></td>
-                        <td style="text-align: right; font-weight: 800; color: var(--accent-cyan);">${p.totalPts}</td>
+                        <td style="text-align:right; font-weight:800; color:var(--accent-cyan);">${p.totalPts}</td>
                     </tr>
                 `;
             });
@@ -585,7 +771,21 @@
             contentArea.innerHTML = html;
         }
 
-        // Suchfunktion-Trigger (Öffnet Login wenn man "login" eintippt)
+        // Admin-Löschliste im Dashboard rendern
+        function renderAdminDeleteList() {
+            const listDiv = document.getElementById('admin-delete-list');
+            listDiv.innerHTML = '';
+            players.forEach(p => {
+                const div = document.createElement('div');
+                div.className = 'admin-player-row';
+                div.innerHTML = `
+                    <span style="font-size:13px; font-weight:600;">${p.name}</span>
+                    <button class="btn btn-danger" style="padding:2px 8px; font-size:11px;" onclick="deletePlayer('${p.name}')">Löschen</button>
+                `;
+                listDiv.appendChild(div);
+            });
+        }
+
         function handleSearch() {
             const val = document.getElementById('search-input').value.trim();
             if (val.toLowerCase() === 'login') {
@@ -596,15 +796,12 @@
             }
         }
 
-        // Modals öffnen & schließen
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        // Login Logik
         function submitLogin() {
             const u = document.getElementById('login-user').value;
             const p = document.getElementById('login-pass').value;
-
             if (u === 'L4lyx' && p === 'Tini2013!') {
                 isAdmin = true;
                 document.getElementById('admin-status-text').innerText = "Status: L4lyx (Admin)";
@@ -625,16 +822,13 @@
             render();
         }
 
-        // Admin-Aktion: Hinzufügen / Bearbeiten
         function addOrUpdatePlayer() {
             const name = document.getElementById('new-player-name').value.trim();
             const mode = document.getElementById('new-player-mode').value;
             const tier = document.getElementById('new-player-tier').value;
-
             if (!name) return;
 
             let existing = players.find(p => p.name.toLowerCase() === name.toLowerCase());
-
             if (existing) {
                 existing.ranks[mode] = tier;
             } else {
@@ -642,18 +836,15 @@
                 newP.ranks[mode] = tier;
                 players.push(newP);
             }
-
             document.getElementById('new-player-name').value = '';
             render();
         }
 
-        // Admin-Aktion: Löschen
-        function deletePlayerData(name) {
+        function deletePlayer(name) {
             players = players.filter(p => p.name !== name);
             render();
         }
 
-        // Initialer Start beim Laden der Seite
         render();
     </script>
 </body>
