@@ -5,17 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LoadCf - Tiers & Rankings</title>
     <style>
-        /* --- DESIGN IM ICON-TIERS LOOK --- */
+        /* --- DESIGN IM ECHTEN ICON-TIERS LOOK --- */
         :root {
-            --bg-dark: #06090e;
-            --panel-bg: #0b111a;
-            --card-bg: #111924;
-            --border-color: #1b2736;
+            --bg-dark: #050811;
+            --panel-bg: #0b111e;
+            --card-bg: #0e1726;
+            --border-color: #17253b;
             --text-main: #f0f6fc;
-            --text-secondary: #8b949e;
-            --accent-cyan: #38bdf8;
+            --text-secondary: #62758d;
+            --accent-cyan: #00bfff;
             --accent-purple: #a855f7;
-            --neon-orange: #f97316;
+            --neon-orange: #ff7b1a;
             --success-green: #238636;
         }
 
@@ -27,30 +27,13 @@
             padding: 0;
             min-height: 100vh;
             overflow-x: hidden;
-            position: relative;
-        }
-
-        /* Partikel Canvas */
-        #particles-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        .app-wrapper {
-            position: relative;
-            z-index: 2;
         }
 
         /* Top Navigation */
         .navbar {
             background-color: var(--panel-bg);
             border-bottom: 1px solid var(--border-color);
-            padding: 10px 40px;
+            padding: 15px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -63,21 +46,16 @@
         }
 
         .brand-logo {
-            font-size: 20px;
-            font-weight: 800;
-            letter-spacing: 1px;
+            font-size: 22px;
+            font-weight: 900;
+            letter-spacing: 1.5px;
             cursor: pointer;
             user-select: none;
-            transition: transform 0.2s;
-        }
-
-        .brand-logo:hover {
-            transform: scale(1.05);
+            color: #ffffff;
         }
 
         .brand-logo span {
             color: var(--accent-cyan);
-            text-shadow: 0 0 10px var(--accent-cyan);
         }
 
         .nav-links {
@@ -88,10 +66,10 @@
         .nav-link {
             color: var(--text-secondary);
             text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
+            font-weight: 700;
+            font-size: 13px;
             cursor: pointer;
-            padding: 5px 10px;
+            letter-spacing: 0.5px;
             transition: color 0.2s;
         }
 
@@ -105,15 +83,15 @@
             gap: 15px;
         }
 
-        /* Sub-Navigation für Spielmodi (Aus Bildschirmfoto vom 2026-06-13 21-35-13.png) */
+        /* Sub-Navigation für Spielmodi */
         .sub-nav {
             display: flex;
             justify-content: center;
-            gap: 20px;
-            background-color: rgba(11, 17, 26, 0.7);
-            padding: 14px;
+            gap: 25px;
+            background-color: rgba(11, 17, 30, 0.8);
+            padding: 16px;
             border-bottom: 1px solid var(--border-color);
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(10px);
         }
 
         .mode-btn {
@@ -125,9 +103,9 @@
             letter-spacing: 1px;
             cursor: pointer;
             text-transform: uppercase;
-            padding: 4px 8px;
+            padding: 4px 2px;
             position: relative;
-            transition: color 0.3s, text-shadow 0.3s;
+            transition: color 0.2s;
         }
 
         .mode-btn:hover {
@@ -136,364 +114,194 @@
 
         .mode-btn.active {
             color: var(--accent-cyan);
-            text-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
         }
 
         .mode-btn.active::after {
             content: '';
             position: absolute;
-            bottom: -15px;
+            bottom: -18px;
             left: 0;
             width: 100%;
             height: 3px;
             background-color: var(--accent-cyan);
-            box-shadow: 0 0 10px var(--accent-cyan);
-            animation: lineGlow 0.3s ease-out;
+            box-shadow: 0 0 12px var(--accent-cyan);
         }
 
         /* Haupt-Inhalt */
         .main-container {
-            max-width: 1400px;
+            max-width: 1300px;
             margin: 30px auto;
             padding: 0 20px;
         }
 
         /* Action Buttons */
         .btn {
-            background-color: var(--card-bg);
+            background-color: #0e1726;
             border: 1px solid var(--border-color);
             color: var(--text-main);
             padding: 8px 16px;
             border-radius: 6px;
             cursor: pointer;
-            font-weight: 600;
-            font-size: 13px;
+            font-weight: 700;
+            font-size: 12px;
             display: flex;
             align-items: center;
             gap: 6px;
-            transition: all 0.2s ease;
+            transition: all 0.2s;
         }
 
         .btn:hover {
-            transform: translateY(-2px);
+            transform: translateY(-1px);
         }
 
         .btn-cyan {
             border-color: var(--accent-cyan);
             color: var(--accent-cyan);
-            box-shadow: 0 0 5px rgba(56, 189, 248, 0.2);
         }
         .btn-cyan:hover {
-            background: rgba(56, 189, 248, 0.1);
-            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+            background: rgba(0, 191, 255, 0.1);
         }
 
-        .btn-purple {
-            border-color: var(--accent-purple);
-            color: var(--accent-purple);
-        }
-        .btn-purple:hover {
-            background: rgba(168, 85, 247, 0.1);
-        }
-
-        .btn-danger {
-            border-color: #ff2a74;
-            color: #ff2a74;
-            background: transparent;
-        }
-        .btn-danger:hover {
-            background: rgba(255, 42, 116, 0.1);
-        }
+        .btn-purple { border-color: var(--accent-purple); color: var(--accent-purple); }
+        .btn-purple:hover { background: rgba(168, 85, 247, 0.1); }
+        .btn-danger { border-color: #ff2a74; color: #ff2a74; }
+        .btn-danger:hover { background: rgba(255, 42, 116, 0.1); }
 
         /* Suchfeld */
         .search-bar {
-            background-color: var(--bg-dark);
+            background-color: #060913;
             border: 1px solid var(--border-color);
             color: var(--text-main);
-            padding: 8px 12px;
+            padding: 8px 14px;
             border-radius: 6px;
-            width: 200px;
-            transition: border-color 0.2s;
-        }
-        .search-bar:focus {
-            outline: none;
-            border-color: var(--accent-cyan);
-        }
-
-        /* SPALTEN-ANSICHT ANIMATIONEN */
-        .tier-columns {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .tier-column {
-            background-color: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            overflow: hidden;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeUp 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-        }
-
-        .tier-column:nth-child(1) { animation-delay: 0.05s; }
-        .tier-column:nth-child(2) { animation-delay: 0.1s; }
-        .tier-column:nth-child(3) { animation-delay: 0.15s; }
-        .tier-column:nth-child(4) { animation-delay: 0.2s; }
-        .tier-column:nth-child(5) { animation-delay: 0.25s; }
-
-        .tier-header {
-            padding: 15px;
-            text-align: center;
-            font-weight: 700;
-            font-size: 14px;
-            border-bottom: 1px solid var(--border-color);
-            background-color: rgba(27, 39, 54, 0.2);
-        }
-
-        .t1-h { color: #f59e0b; }
-        .t2-h { color: #e2e8f0; }
-        .t3-h { color: #f97316; }
-        .t4-h { color: #38bdf8; }
-        .t5-h { color: #94a3b8; }
-
-        .tier-list-content {
-            padding: 10px;
-            min-height: 450px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .tier-user-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            animation: cardPulse 3s infinite ease-in-out;
-            transition: transform 0.2s, border-color 0.2s;
-        }
-
-        .tier-user-card:hover {
-            transform: scale(1.02);
-            border-color: var(--accent-cyan);
-            box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .avatar {
-            width: 28px;
-            height: 28px;
-            border-radius: 4px;
-            background-color: #30363d;
-            image-rendering: pixelated;
-            box-shadow: 0 0 5px rgba(0,0,0,0.5);
-        }
-
-        .username {
+            width: 180px;
             font-size: 13px;
-            font-weight: 600;
         }
+        .search-bar:focus { outline: none; border-color: var(--accent-cyan); }
 
-        /* LEADERBOARD ANIMATION */
+        /* LEADERBOARD TABLE LOOK */
         .leaderboard-table {
             width: 100%;
             border-collapse: collapse;
-            background-color: var(--panel-bg);
+            background-color: #080d1a;
             border: 1px solid var(--border-color);
             border-radius: 8px;
             overflow: hidden;
             margin-top: 20px;
-            opacity: 0;
-            transform: translateY(15px);
-            animation: fadeUp 0.4s ease-out forwards;
         }
 
         .leaderboard-table th {
-            background-color: rgba(27, 39, 54, 0.3);
-            padding: 12px 16px;
+            background-color: rgba(23, 37, 59, 0.4);
+            padding: 14px 20px;
             text-align: left;
-            font-size: 12px;
+            font-size: 11px;
             text-transform: uppercase;
             color: var(--text-secondary);
+            letter-spacing: 0.5px;
             border-bottom: 1px solid var(--border-color);
         }
 
         .leaderboard-table td {
-            padding: 14px 16px;
+            padding: 16px 20px;
             border-bottom: 1px solid var(--border-color);
             font-size: 14px;
+            vertical-align: middle;
         }
 
-        .leaderboard-table tr {
-            transition: background-color 0.2s;
-        }
+        .leaderboard-table tr { transition: background-color 0.15s; }
+        .leaderboard-table tr:hover { background-color: rgba(23, 37, 59, 0.2); }
 
-        .leaderboard-table tr:hover {
-            background-color: rgba(56, 189, 248, 0.03);
-        }
-
-        .rank-number { font-weight: 800; width: 40px; }
-        .rank-1 { color: #f59e0b; text-shadow: 0 0 5px rgba(245, 158, 11, 0.5); }
+        .rank-number { font-weight: 900; width: 40px; font-size: 16px; color: var(--text-secondary); }
+        .rank-1 { color: #ffaa00; }
         .rank-2 { color: #cbd5e1; }
         .rank-3 { color: #b45309; }
 
-        .badge-list { display: flex; gap: 6px; flex-wrap: wrap; }
-        .badge {
-            font-size: 10px;
-            font-weight: 800;
-            padding: 2px 6px;
-            border-radius: 4px;
-            text-transform: uppercase;
-        }
-        .badge-ht { background-color: rgba(249, 115, 22, 0.15); color: #ff7b1a; border: 1px solid rgba(249, 115, 22, 0.3); }
-        .badge-lt { background-color: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+        .username { font-weight: 700; color: #ffffff; font-size: 15px; }
 
-        /* MODAL ANIMATIONEN */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(5px);
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-        }
-
-        .modal-box {
-            background-color: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 25px;
-            width: 360px;
-            position: relative;
-            transform: scale(0.7);
-            opacity: 0;
-            animation: zoomIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-        }
-
-        .modal-points-box {
-            width: 450px;
-            border-color: var(--accent-cyan);
-            box-shadow: 0 0 25px rgba(56, 189, 248, 0.2);
-        }
-
-        .modal-header {
-            font-size: 18px;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 20px;
-            letter-spacing: 1px;
-        }
-
-        .points-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .points-row {
+        /* NEUES LOGO / BADGE SYSTEM */
+        .badge-list {
             display: flex;
-            justify-content: space-between;
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            padding: 10px 14px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 700;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
         }
 
-        /* Admin Management List */
-        .admin-panel {
-            background-color: var(--panel-bg);
-            border: 1px solid var(--accent-purple);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 25px;
-            animation: fadeUp 0.3s ease;
-        }
-
-        .admin-sections {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-top: 15px;
-        }
-
-        @media (max-width: 900px) {
-            .admin-sections { grid-template-columns: 1fr; }
-        }
-
-        .admin-box-sub {
-            background: rgba(0,0,0,0.15);
-            border: 1px solid var(--border-color);
-            padding: 15px;
-            border-radius: 8px;
-        }
-
-        .admin-form {
+        .tier-badge-container {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-        }
-
-        .admin-form input, .admin-form select {
-            background-color: var(--bg-dark);
-            border: 1px solid var(--border-color);
-            color: white;
-            padding: 10px;
-            border-radius: 6px;
-        }
-
-        .admin-player-row {
-            display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 8px 12px;
-            background: var(--card-bg);
+            gap: 4px;
+            width: 44px;
+        }
+
+        /* ECHTE LOGOS ALS BILDER STYLE */
+        .icon-wrapper {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background-color: #0e1726;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.6);
+            transition: transform 0.2s;
+        }
+
+        .mode-logo-img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            image-rendering: pixelated; /* Macht das Minecraft-Feeling perfekt knackig scharf */
+        }
+
+        /* Orange leuchtender Rahmen für High Tiers, Blauer Rahmen für Low Tiers */
+        .border-ht { border: 1.5px solid #ff7b1a; box-shadow: 0 0 8px rgba(249, 115, 22, 0.25); }
+        .border-line-ht { color: #ff7b1a; font-weight: 800; font-size: 11px; text-transform: uppercase; }
+
+        .border-lt { border: 1.5px solid #38bdf8; box-shadow: 0 0 8px rgba(56, 189, 248, 0.25); }
+        .border-line-lt { color: #38bdf8; font-weight: 800; font-size: 11px; text-transform: uppercase; }
+
+        /* SPALTEN ANSICHT */
+        .tier-columns { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-top: 20px; }
+        .tier-column { background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; }
+        .tier-header { padding: 15px; text-align: center; font-weight: 800; font-size: 13px; border-bottom: 1px solid var(--border-color); background-color: rgba(23, 37, 59, 0.3); letter-spacing: 0.5px; }
+        .t1-h { color: #ffaa00; } .t2-h { color: #cbd5e1; } .t3-h { color: #ff7b1a; } .t4-h { color: #38bdf8; } .t5-h { color: #94a3b8; }
+        .tier-list-content { padding: 10px; min-height: 450px; display: flex; flex-direction: column; gap: 8px; }
+        
+        .tier-user-card {
+            background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 6px;
-            margin-bottom: 6px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
-        /* Live Save Toast / Text */
-        .save-notice {
-            color: #2ea043;
-            font-size: 12px;
-            font-weight: bold;
-            margin-top: 5px;
-            display: none;
-            animation: zoomIn 0.2s ease;
-        }
+        .avatar { width: 32px; height: 32px; border-radius: 4px; image-rendering: pixelated; background-color: #1f2937; }
 
-        /* KEYFRAME ANIMATIONEN */
-        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
-        @keyframes zoomIn { to { opacity: 1; transform: scale(1); } }
-        @keyframes lineGlow { from { width: 0; opacity: 0; } to { width: 100%; opacity: 1; } }
-        @keyframes cardPulse { 0%, 100% { border-color: var(--border-color); } 50% { border-color: rgba(56, 189, 248, 0.3); } }
+        /* MODALS */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; z-index: 2000;
+        }
+        .modal-box { background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; width: 360px; }
+        .modal-header { font-size: 18px; font-weight: 800; text-align: center; margin-bottom: 20px; letter-spacing: 1px; }
+
+        /* ADMIN CONTROL PANEL */
+        .admin-panel { background-color: var(--panel-bg); border: 1px solid var(--accent-purple); border-radius: 8px; padding: 20px; margin-bottom: 25px; }
+        .admin-sections { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px; }
+        .admin-box-sub { background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; }
+        .admin-form { display: flex; flex-direction: column; gap: 12px; }
+        .admin-form input, .admin-form select { background-color: #060913; border: 1px solid var(--border-color); color: white; padding: 10px; border-radius: 6px; }
+        .admin-player-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 6px; }
+        .save-notice { color: #2ea043; font-size: 12px; font-weight: bold; margin-top: 5px; display: none; }
     </style>
 </head>
 <body>
 
-    <!-- Hintergrund Partikel Canvas -->
-    <canvas id="particles-canvas"></canvas>
-
     <div class="app-wrapper">
-        <!-- Top Navigation Bar -->
+        <!-- Navbar -->
         <nav class="navbar">
             <div class="nav-left">
                 <div class="brand-logo" onclick="switchMode('overall')">LOAD<span>TIERS</span></div>
@@ -510,7 +318,7 @@
             </div>
         </nav>
 
-        <!-- Sub-Nav für Spielmodi (Exakt aus deinem Bildschirmfoto vom 2026-06-13 21-35-13.png) -->
+        <!-- Spielmodi Tabs -->
         <div class="sub-nav">
             <button class="mode-btn active" id="mode-overall" onclick="switchMode('overall')">Overall</button>
             <button class="mode-btn" id="mode-sword" onclick="switchMode('sword')">Sword</button>
@@ -523,22 +331,18 @@
             <button class="mode-btn" id="mode-nethpot" onclick="switchMode('nethpot')">Nethpot</button>
         </div>
 
-        <!-- Hauptfenster -->
         <div class="main-container">
-
-            <!-- Admin Control Panel Dashboard -->
+            <!-- Admin Dashboard -->
             <div id="admin-panel" class="admin-panel" style="display: none;">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
                     <h3 style="margin:0; color: var(--accent-purple);" id="admin-panel-title">Admin Dashboard</h3>
                     <button class="btn btn-danger" onclick="logoutAdmin()" style="padding: 5px 12px;">Logout</button>
                 </div>
-
                 <div class="admin-sections">
-                    <!-- Spalte 1: Spieler hinzufügen / verwalten -->
                     <div class="admin-box-sub">
                         <h4 style="margin-top:0; color: var(--accent-cyan);">Spieler hinzufügen / updaten</h4>
                         <div class="admin-form">
-                            <input type="text" id="new-player-name" placeholder="Minecraft Name (für Kopf)">
+                            <input type="text" id="new-player-name" placeholder="Minecraft Name">
                             <select id="new-player-mode">
                                 <option value="sword">Sword</option><option value="cpvp">CPvP</option>
                                 <option value="axe">Axe</option><option value="smp">SMP</option>
@@ -553,24 +357,18 @@
                                 <option value="HT5">HT5</option><option value="LT5">LT5</option>
                             </select>
                             <button class="btn btn-cyan" onclick="addOrUpdatePlayer()">Spieler Speichern</button>
-                            <div id="player-save-status" class="save-notice">✔ Spieler erfolgreich im Browser gespeichert!</div>
+                            <div id="player-save-status" class="save-notice">✔ Erfolgreich im Browser gespeichert!</div>
                         </div>
-
                         <h4 style="color: var(--text-secondary); margin-bottom: 8px; margin-top: 15px;">Spieler löschen</h4>
-                        <div id="admin-delete-list" style="max-height: 150px; overflow-y: auto; background: rgba(0,0,0,0.2); padding: 8px; border-radius:6px;"></div>
+                        <div id="admin-delete-list" style="max-height: 150px; overflow-y: auto;"></div>
                     </div>
-
-                    <!-- Spalte 2: NUR FÜR L4LYX sichtbar - Unter-Admins erstellen -->
                     <div class="admin-box-sub" id="l4lyx-only-section" style="display: none;">
                         <h4 style="margin-top:0; color: var(--accent-purple);">👑 Admin Erstellung (Nur L4lyx)</h4>
                         <div class="admin-form">
-                            <input type="text" id="new-admin-user" placeholder="Neuer Admin Username">
-                            <input type="password" id="new-admin-pass" placeholder="Neuer Admin Passwort">
-                            <button class="btn btn-purple" onclick="createNewAdminAccount()">Admin Account Erstellen</button>
-                            <div id="admin-save-status" class="save-notice">✔ Admin Account dauerhaft registriert!</div>
+                            <input type="text" id="new-admin-user" placeholder="Admin Username">
+                            <input type="password" id="new-admin-pass" placeholder="Passwort">
+                            <button class="btn btn-purple" onclick="createNewAdminAccount()">Account Erstellen</button>
                         </div>
-                        <h4 style="color: var(--text-secondary); margin-bottom: 8px; margin-top: 15px;">Aktuelle Admins</h4>
-                        <div id="admin-accounts-list" style="max-height: 150px; overflow-y: auto; background: rgba(0,0,0,0.2); padding: 8px; border-radius:6px;"></div>
                     </div>
                 </div>
             </div>
@@ -580,109 +378,68 @@
         </div>
     </div>
 
-    <!-- POP-UP 1: RANK POINTS OVERLAY -->
+    <!-- Modals -->
     <div id="points-modal" class="modal-overlay" onclick="closeModal('points-modal')">
-        <div class="modal-box modal-points-box" onclick="event.stopPropagation()">
+        <div class="modal-box" onclick="event.stopPropagation()" style="width: 400px;">
             <div class="modal-header">⚡ RANK POINTS</div>
-            <div class="points-grid">
-                <div class="points-row"><span style="color:#ff7b1a">HT1</span><span style="color:var(--accent-cyan)">60 PTS</span></div>
-                <div class="points-row"><span style="color:#38bdf8">LT1</span><span style="color:var(--accent-cyan)">45 PTS</span></div>
-                <div class="points-row"><span style="color:#ff7b1a">HT2</span><span style="color:var(--accent-cyan)">30 PTS</span></div>
-                <div class="points-row"><span style="color:#38bdf8">LT2</span><span style="color:var(--accent-cyan)">20 PTS</span></div>
-                <div class="points-row"><span style="color:#ff7b1a">HT3</span><span style="color:var(--accent-cyan)">10 PTS</span></div>
-                <div class="points-row"><span style="color:#38bdf8">LT3</span><span style="color:var(--accent-cyan)">6 PTS</span></div>
-                <div class="points-row"><span style="color:#ff7b1a">HT4</span><span style="color:var(--accent-cyan)">4 PTS</span></div>
-                <div class="points-row"><span style="color:#38bdf8">LT4</span><span style="color:var(--accent-cyan)">3 PTS</span></div>
-                <div class="points-row"><span style="color:#ff7b1a">HT5</span><span style="color:var(--accent-cyan)">2 PTS</span></div>
-                <div class="points-row"><span style="color:#38bdf8">LT5</span><span style="color:var(--accent-cyan)">1 PTS</span></div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div style="padding:10px; background:#0e1726; border-radius:6px; display:flex; justify-content:space-between;"><span>HT1</span><span style="color:var(--accent-cyan)">60 PTS</span></div>
+                <div style="padding:10px; background:#0e1726; border-radius:6px; display:flex; justify-content:space-between;"><span>LT1</span><span style="color:var(--accent-cyan)">45 PTS</span></div>
+                <div style="padding:10px; background:#0e1726; border-radius:6px; display:flex; justify-content:space-between;"><span>HT2</span><span style="color:var(--accent-cyan)">30 PTS</span></div>
+                <div style="padding:10px; background:#0e1726; border-radius:6px; display:flex; justify-content:space-between;"><span>LT2</span><span style="color:var(--accent-cyan)">20 PTS</span></div>
+                <div style="padding:10px; background:#0e1726; border-radius:6px; display:flex; justify-content:space-between;"><span>HT3</span><span style="color:var(--accent-cyan)">10 PTS</span></div>
+                <div style="padding:10px; background:#0e1726; border-radius:6px; display:flex; justify-content:space-between;"><span>LT3</span><span style="color:var(--accent-cyan)">6 PTS</span></div>
             </div>
         </div>
     </div>
 
-    <!-- POP-UP 2: LOGIN MODAL -->
     <div id="login-modal" class="modal-overlay" onclick="closeModal('login-modal')">
         <div class="modal-box" onclick="event.stopPropagation()">
             <div class="modal-header">🔑 Admin Login</div>
-            <div id="login-error" style="color: #ff2a74; font-size:12px; margin-bottom:10px; text-align:center; display:none;">Anmeldedaten falsch!</div>
-            <input type="text" id="login-user" placeholder="Username" style="width:100%; padding:10px; margin-bottom:10px; background:#0d1117; border:1px solid var(--border-color); color:white; border-radius:6px; box-sizing:border-box;">
-            <input type="password" id="login-pass" placeholder="Passwort" style="width:100%; padding:10px; margin-bottom:15px; background:#0d1117; border:1px solid var(--border-color); color:white; border-radius:6px; box-sizing:border-box;">
-            <div style="display:flex; justify-content:space-between;">
-                <button class="btn btn-purple" onclick="submitLogin()">Login</button>
-                <button class="btn" onclick="closeModal('login-modal')">Abbrechen</button>
-            </div>
+            <input type="text" id="login-user" placeholder="Username" style="width:100%; padding:10px; margin-bottom:10px; background:#060913; border:1px solid var(--border-color); color:white; border-radius:6px; box-sizing:border-box;">
+            <input type="password" id="login-pass" placeholder="Passwort" style="width:100%; padding:10px; margin-bottom:15px; background:#060913; border:1px solid var(--border-color); color:white; border-radius:6px; box-sizing:box-box;">
+            <button class="btn btn-purple" style="width:100%; justify-content:center;" onclick="submitLogin()">Login</button>
         </div>
     </div>
 
     <script>
-        // --- BACKGROUND PARTICLES SYSTEM ---
-        const canvas = document.getElementById('particles-canvas');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
+        // DIE RECHTEN MINECRAFT LOGO INTERNET-LINKS FÜR DEINE MODI
+        const modeIcons = {
+            sword: "https://minecraft.wiki/images/Diamond_Sword_JE3_BE3.png",
+            cpvp: "https://minecraft.wiki/images/End_Crystal_JE2_BE2.png",
+            axe: "https://minecraft.wiki/images/Diamond_Axe_JE3_BE3.png",
+            smp: "https://minecraft.wiki/images/Oak_Log_%28UD%29_JE5_BE3.png",
+            diapot: "https://minecraft.wiki/images/Splash_Potion_of_Healing_JE2_BE2.png",
+            mace: "https://minecraft.wiki/images/Mace_JE1_BE1.png",
+            uhc: "https://minecraft.wiki/images/Golden_Apple_JE2_BE2.png",
+            nethpot: "https://minecraft.wiki/images/Netherite_Chestplate_JE3_BE2.png"
+        };
 
-        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 0.5;
-                this.speedX = Math.random() * 0.3 - 0.15;
-                this.speedY = Math.random() * -0.4 - 0.1;
-                this.alpha = Math.random() * 0.5 + 0.2;
-            }
-            update() {
-                this.y += this.speedY;
-                if (this.y < 0) { this.y = canvas.height; this.x = Math.random() * canvas.width; }
-            }
-            draw() {
-                ctx.save(); ctx.globalAlpha = this.alpha; ctx.fillStyle = '#38bdf8';
-                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); ctx.restore();
-            }
-        }
-        for (let i = 0; i < 65; i++) particles.push(new Particle());
-        function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => { p.update(); p.draw(); });
-            requestAnimationFrame(animateParticles);
-        }
-        animateParticles();
-
-        // --- HILFSFUNKTION FÜR MINECRAFT SKIN-AVATAR ---
-        function getMinecraftHeadUrl(username) {
-            let cleanName = username.replace(/[^a-zA-Z0-9_]/g, "");
-            if(!cleanName) return "https://minotar.net/avatar/MHF_Steve/28";
-            return `https://minotar.net/avatar/${cleanName}/28`;
-        }
-
-        // --- DATENSTRUKTUR & LOCALSTORAGE INTEGRATION ---
         const pointValues = {
             'HT1': 60, 'LT1': 45, 'HT2': 30, 'LT2': 20, 'HT3': 10,
             'LT3': 6,  'HT4': 4,  'LT4': 3,  'HT5': 2,  'LT5': 1
         };
 
-        // Standard-Daten falls im Browser noch nichts existiert
         const defaultPlayers = [
-            { name: "octryx", ranks: { sword: "HT1", cpvp: "HT1", axe: "HT2", nethpot: "LT1" } },
-            { name: "zNiclas_", ranks: { sword: "HT1", cpvp: "LT2", smp: "HT3" } },
-            { name: "Peentin", ranks: { sword: "LT1", cpvp: "LT2", diapot: "HT1" } },
-            { name: "D2rx", ranks: { sword: "LT2", uhc: "HT3" } },
-            { name: "Frosch", ranks: { sword: "HT3", nethpot: "LT3" } }
+            { name: "LetsJanTV", ranks: { cpvp: "HT3", sword: "HT3", uhc: "HT4", mace: "HT4" } },
+            { name: "L4lyx", ranks: { cpvp: "HT4", sword: "LT3", uhc: "LT4" } },
+            { name: "__moha__", ranks: { cpvp: "LT3", sword: "HT5", uhc: "LT4" } },
+            { name: "EXD_Fouly", ranks: { cpvp: "HT3" } },
+            { name: "GoonUkraine", ranks: { cpvp: "HT4", sword: "LT4" } },
+            { name: "Slayerx_1", ranks: { cpvp: "HT4", sword: "HT5" } },
+            { name: "king768", ranks: { cpvp: "HT4" } },
+            { name: "Lowriss768", ranks: { cpvp: "HT4" } },
+            { name: "GabrielLopes122", ranks: { cpvp: "HT4" } },
+            { name: "Aenvar", ranks: { sword: "LT4" } }
         ];
 
-        const defaultAdmins = {
-            "L4lyx": "Tini2013!"
-        };
+        const defaultAdmins = { "L4lyx": "Tini2013!" };
 
-        // Hier laden wir die Daten direkt aus dem Browser-Speicher!
         let players = JSON.parse(localStorage.getItem('loadtiers_players')) || defaultPlayers;
         let adminAccounts = JSON.parse(localStorage.getItem('loadtiers_admins')) || defaultAdmins;
-
         let currentMode = 'overall';
-        let loggedInUser = null; 
+        let loggedInUser = null;
 
-        // Speicher-Funktion, die alles sichert
         function saveToLocalStorage() {
             localStorage.setItem('loadtiers_players', JSON.stringify(players));
             localStorage.setItem('loadtiers_admins', JSON.stringify(adminAccounts));
@@ -694,11 +451,6 @@
             return total;
         }
 
-        function getTierGroup(tierStr) {
-            if (!tierStr) return null;
-            return tierStr.replace('HT', '').replace('LT', '');
-        }
-
         function switchMode(mode) {
             currentMode = mode;
             document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
@@ -708,57 +460,11 @@
 
         function render() {
             const searchVal = document.getElementById('search-input').value.toLowerCase();
-            if (currentMode === 'overall') {
-                renderLeaderboard(searchVal);
-            } else {
-                renderColumns(searchVal);
-            }
-            if (loggedInUser) {
-                renderAdminDeleteList();
-                renderAdminAccountsList();
-            }
+            if (currentMode === 'overall') { renderLeaderboard(searchVal); } 
+            else { renderColumns(searchVal); }
+            if (loggedInUser) { renderAdminDeleteList(); }
         }
 
-        // Spaltenansicht
-        function renderColumns(filter = "") {
-            const contentArea = document.getElementById('content-area');
-            let html = `<div class="tier-columns">`;
-            for (let i = 1; i <= 5; i++) {
-                let tierTitle = i <= 3 ? `?? Tier ${i}` : `Tier ${i}`;
-                html += `
-                    <div class="tier-column">
-                        <div class="tier-header t${i}-h">${tierTitle}</div>
-                        <div class="tier-list-content">
-                `;
-
-                let columnPlayers = players.filter(p => {
-                    let pTier = p.ranks[currentMode];
-                    return pTier && getTierGroup(pTier) == i && p.name.toLowerCase().includes(filter);
-                });
-
-                columnPlayers.forEach(p => {
-                    let specificTier = p.ranks[currentMode];
-                    let arrow = specificTier.startsWith('HT') ? '▲' : '▼';
-                    let arrowColor = specificTier.startsWith('HT') ? '#f97316' : '#38bdf8';
-                    
-                    html += `
-                        <div class="tier-user-card">
-                            <div class="user-info">
-                                <img class="avatar" src="${getMinecraftHeadUrl(p.name)}" alt="">
-                                <span class="username">${p.name}</span>
-                            </div>
-                            <span style="color: ${arrowColor}; font-weight:bold; font-size:11px;">${specificTier} ${arrow}</span>
-                        </div>
-                    `;
-                });
-
-                html += `</div></div>`;
-            }
-            html += `</div>`;
-            contentArea.innerHTML = html;
-        }
-
-        // Leaderboard Tabelle
         function renderLeaderboard(filter = "") {
             const contentArea = document.getElementById('content-area');
             let sorted = [...players].map(p => ({ ...p, totalPts: calculateTotalPoints(p) })).sort((a, b) => b.totalPts - a.totalPts);
@@ -767,30 +473,45 @@
             let html = `
                 <table class="leaderboard-table">
                     <thead>
-                        <tr><th style="width:50px;">#</th><th>Player</th><th>Tiers</th><th style="text-align:right;">Pts</th></tr>
+                        <tr><th style="width:60px;">#</th><th>Player</th><th>Tiers</th><th style="text-align:right; width:100px;">Pts</th></tr>
                     </thead>
                     <tbody>
             `;
 
             sorted.forEach((p, index) => {
-                let rankClass = index < 3 ? `rank-${index + 1}` : '';
+                let rankClass = index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : index === 2 ? 'rank-3' : '';
+                
                 let badgesHtml = '';
                 for (let mode in p.ranks) {
-                    let t = p.ranks[mode];
-                    badgesHtml += `<span class="badge ${t.startsWith('HT') ? 'badge-ht' : 'badge-lt'}">${mode}:${t}</span> `;
+                    let tier = p.ranks[mode];
+                    if(!tier) continue;
+                    let isHT = tier.startsWith('HT');
+                    let borderClass = isHT ? 'border-ht' : 'border-lt';
+                    let textClass = isHT ? 'border-line-ht' : 'border-line-lt';
+                    let imgUrl = modeIcons[mode] || modeIcons.sword;
+
+                    // HIER ERSETZEN WIR DIE EMOJIS DURCH DIE INTEGRIERTEN MINECRAFT BILDER
+                    badgesHtml += `
+                        <div class="tier-badge-container">
+                            <div class="icon-wrapper ${borderClass}">
+                                <img src="${imgUrl}" class="mode-logo-img" alt="${mode}">
+                            </div>
+                            <span class="${textClass}">${tier}</span>
+                        </div>
+                    `;
                 }
 
                 html += `
                     <tr>
-                        <td class="rank-number ${rankClass}">${index + 1}</td>
+                        <td class="rank-number ${rankClass}">#${index + 1}</td>
                         <td>
-                            <div style="display:flex; align-items:center; gap:10px;">
-                                <img class="avatar" src="${getMinecraftHeadUrl(p.name)}" alt="">
-                                <span style="font-weight:600;">${p.name}</span>
+                            <div style="display:flex; align-items:center; gap:12px;">
+                                <img class="avatar" src="https://minotar.net/avatar/${p.name}/32" onerror="this.src='https://minotar.net/avatar/MHF_Steve/32'">
+                                <span class="username">${p.name}</span>
                             </div>
                         </td>
                         <td><div class="badge-list">${badgesHtml}</div></td>
-                        <td style="text-align:right; font-weight:800; color:var(--accent-cyan);">${p.totalPts}</td>
+                        <td style="text-align:right; font-weight:900; color:var(--accent-cyan); font-size:16px;">${p.totalPts}</td>
                     </tr>
                 `;
             });
@@ -799,39 +520,48 @@
             contentArea.innerHTML = html;
         }
 
-        // Admin-Löschliste
+        function renderColumns(filter = "") {
+            const contentArea = document.getElementById('content-area');
+            let html = `<div class="tier-columns">`;
+            for (let i = 1; i <= 5; i++) {
+                html += `
+                    <div class="tier-column">
+                        <div class="tier-header t${i}-h">TIER ${i}</div>
+                        <div class="tier-list-content">
+                `;
+                let columnPlayers = players.filter(p => {
+                    let t = p.ranks[currentMode];
+                    return t && t.css === undefined && t.includes(i.toString()) && p.name.toLowerCase().includes(filter);
+                });
+
+                columnPlayers.forEach(p => {
+                    let tier = p.ranks[currentMode];
+                    let isHT = tier.startsWith('HT');
+                    html += `
+                        <div class="tier-user-card">
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <img class="avatar" src="https://minotar.net/avatar/${p.name}/32">
+                                <span style="font-weight:600; font-size:13px;">${p.name}</span>
+                            </div>
+                            <span style="color:${isHT ? '#ff7b1a':'#38bdf8'}; font-weight:800; font-size:11px;">${tier}</span>
+                        </div>
+                    `;
+                });
+                html += `</div></div>`;
+            }
+            html += `</div>`;
+            contentArea.innerHTML = html;
+        }
+
         function renderAdminDeleteList() {
             const listDiv = document.getElementById('admin-delete-list');
             listDiv.innerHTML = '';
             players.forEach(p => {
                 const div = document.createElement('div');
                 div.className = 'admin-player-row';
-                div.innerHTML = `
-                    <span style="font-size:13px; font-weight:600;">${p.name}</span>
-                    <button class="btn btn-danger" style="padding:2px 8px; font-size:11px;" onclick="deletePlayer('${p.name}')">Löschen</button>
-                `;
+                div.innerHTML = `<span>${p.name}</span><button class="btn btn-danger" style="padding:2px 8px;" onclick="deletePlayer('${p.name}')">Löschen</button>`;
                 listDiv.appendChild(div);
             });
-        }
-
-        // Liste aller Admins anzeigen
-        function renderAdminAccountsList() {
-            const listDiv = document.getElementById('admin-accounts-list');
-            if(!listDiv) return;
-            listDiv.innerHTML = '';
-            for (let user in adminAccounts) {
-                const div = document.createElement('div');
-                div.className = 'admin-player-row';
-                let deleteButton = '';
-                if (loggedInUser === 'L4lyx' && user !== 'L4lyx') {
-                    deleteButton = `<button class="btn btn-danger" style="padding:2px 8px; font-size:11px;" onclick="deleteAdminAccount('${user}')">Entfernen</button>`;
-                }
-                div.innerHTML = `
-                    <span style="font-size:13px; font-weight:600; color:var(--accent-purple);">${user} ${user === 'L4lyx' ? '👑' : ''}</span>
-                    ${deleteButton}
-                `;
-                listDiv.appendChild(div);
-            }
         }
 
         function handleSearch() {
@@ -845,73 +575,37 @@
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        // Login System
         function submitLogin() {
             const u = document.getElementById('login-user').value.trim();
             const p = document.getElementById('login-pass').value;
-
             if (adminAccounts[u] && adminAccounts[u] === p) {
                 loggedInUser = u;
-                document.getElementById('admin-status-text').innerText = `Status: ${u} (Admin)`;
-                document.getElementById('admin-status-text').style.color = u === 'L4lyx' ? "var(--accent-purple)" : "var(--accent-cyan)";
-                document.getElementById('admin-panel-title').innerText = `Admin Dashboard (${u})`;
+                document.getElementById('admin-status-text').innerText = `Status: ${u}`;
                 document.getElementById('admin-panel').style.display = 'block';
-                
-                if (u === 'L4lyx') {
-                    document.getElementById('l4lyx-only-section').style.display = 'block';
-                } else {
-                    document.getElementById('l4lyx-only-section').style.display = 'none';
-                }
-
+                if (u === 'L4lyx') document.getElementById('l4lyx-only-section').style.display = 'block';
                 closeModal('login-modal');
-                document.getElementById('login-user').value = '';
-                document.getElementById('login-pass').value = '';
-                document.getElementById('login-error').style.display = 'none';
                 render();
-            } else {
-                document.getElementById('login-error').style.display = 'block';
             }
         }
 
         function logoutAdmin() {
             loggedInUser = null;
-            document.getElementById('admin-status-text').innerText = "Status: Guest";
-            document.getElementById('admin-status-text').style.color = "var(--text-secondary)";
             document.getElementById('admin-panel').style.display = 'none';
+            document.getElementById('admin-status-text').innerText = "Status: Guest";
             render();
         }
 
-        // Neuen Unter-Admin erstellen & Speichern
         function createNewAdminAccount() {
-            if (loggedInUser !== 'L4lyx') return;
             const u = document.getElementById('new-admin-user').value.trim();
-            const p = document.getElementById('new-admin-pass').value.trim();
-
-            if (!u || !p) return;
-            if (adminAccounts[u]) { alert("Dieser Admin existiert bereits!"); return; }
-
+            const p = document.getElementById('new-admin-pass').value;
+            if(!u || !p) return;
             adminAccounts[u] = p;
-            saveToLocalStorage(); // Speichert es dauerhaft im Browser!
-            
+            saveToLocalStorage();
             document.getElementById('new-admin-user').value = '';
             document.getElementById('new-admin-pass').value = '';
-            
-            // Zeige Erfolgsmeldung
-            let status = document.getElementById('admin-save-status');
-            status.style.display = 'block';
-            setTimeout(() => { status.style.display = 'none'; }, 3000);
-            
-            render();
+            alert(`Admin Account für ${u} wurde erstellt!`);
         }
 
-        function deleteAdminAccount(username) {
-            if (loggedInUser !== 'L4lyx' || username === 'L4lyx') return;
-            delete adminAccounts[username];
-            saveToLocalStorage(); // Speichert Löschung im Browser!
-            render();
-        }
-
-        // Spieler hinzufügen & Speichern
         function addOrUpdatePlayer() {
             const name = document.getElementById('new-player-name').value.trim();
             const mode = document.getElementById('new-player-mode').value;
@@ -919,28 +613,19 @@
             if (!name) return;
 
             let existing = players.find(p => p.name.toLowerCase() === name.toLowerCase());
-            if (existing) {
-                existing.ranks[mode] = tier;
-            } else {
-                let newP = { name: name, ranks: {} };
-                newP.ranks[mode] = tier;
-                players.push(newP);
-            }
-            
-            saveToLocalStorage(); // Speichert den Spieler dauerhaft im Browser!
-            document.getElementById('new-player-name').value = '';
-            
-            // Zeige Erfolgsmeldung
-            let status = document.getElementById('player-save-status');
-            status.style.display = 'block';
-            setTimeout(() => { status.style.display = 'none'; }, 3000);
+            if (existing) { existing.ranks[mode] = tier; } 
+            else { let n = { name: name, ranks: {} }; n.ranks[mode] = tier; players.push(n); }
 
+            saveToLocalStorage();
+            document.getElementById('new-player-name').value = '';
+            let s = document.getElementById('player-save-status');
+            s.style.display = 'block'; setTimeout(() => s.style.display = 'none', 2000);
             render();
         }
 
         function deletePlayer(name) {
             players = players.filter(p => p.name !== name);
-            saveToLocalStorage(); // Speichert Löschung im Browser!
+            saveToLocalStorage();
             render();
         }
 
