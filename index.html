@@ -25,11 +25,30 @@
         #main-cursor::after { content: ''; position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; background: #fff; border-radius: 50%; transform: translate(-50%, -50%); }
         #particle-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
 
+        /* --- STYLISCHE NAVIGATIONSLEISTE (NAVBAR) --- */
+        .navbar {
+            position: fixed; top: 0; left: 0; width: 100%; height: 60px;
+            background: rgba(12, 3, 3, 0.9); border-bottom: 1px solid var(--panel-border);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 30px; z-index: 1000; backdrop-filter: blur(5px);
+        }
+        .nav-logo { font-size: 20px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; }
+        .nav-logo span { color: var(--neon-red); text-shadow: 0 0 10px var(--neon-red); }
+        
+        .nav-links { display: flex; gap: 20px; }
+        .nav-item {
+            background: transparent; border: none; color: #fff; font-size: 11px;
+            font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+            padding: 8px 16px; border-radius: 4px; transition: all 0.2s;
+        }
+        .nav-item:hover { background: rgba(255, 51, 51, 0.1); color: var(--neon-red); }
+        .nav-item.disabled { color: var(--text-muted); pointer-events: none; opacity: 0.4; }
+
         /* --- LANDING PAGE (STARTSEITE) --- */
-        .landing-container { position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; text-align: center; padding: 20px; }
-        .hero-title { font-size: 48px; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 10px; }
+        .landing-container { position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; text-align: center; padding: 20px; padding-top: 80px; }
+        .hero-title { font-size: 44px; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 10px; margin-top: -40px; }
         .hero-title span { color: var(--neon-red); text-shadow: 0 0 15px var(--neon-red); }
-        .hero-sub { color: var(--text-muted); font-size: 14px; font-weight: 600; margin-bottom: 40px; text-transform: uppercase; letter-spacing: 2px; }
+        .hero-sub { color: var(--text-muted); font-size: 13px; font-weight: 600; margin-bottom: 35px; text-transform: uppercase; letter-spacing: 2px; }
         
         .search-box { background: var(--panel-bg); border: 1px solid var(--panel-border); padding: 30px; border-radius: 12px; width: 100%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.7); }
         .url-input-row { display: flex; background: #000; border: 1px solid var(--panel-border); border-radius: 6px; padding: 10px; align-items: center; margin-bottom: 20px; }
@@ -43,12 +62,12 @@
         .btn-login { background: #120505; border: 1px solid var(--panel-border); color: #fff; }
 
         /* --- BIO PROFIL SEITE --- */
-        #bio-view-page { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; display: none; background-size: cover; background-position: center; justify-content: center; align-items: center; }
+        #bio-view-page { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; display: none; background-size: cover; background-position: center; justify-content: center; align-items: center; padding-top: 60px; }
         .bio-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(4,2,2,0.5); backdrop-filter: blur(4px); z-index: 1; }
         
         .unmute-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5,2,2,0.98); z-index: 100; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(10px); }
 
-        .bio-card { position: relative; z-index: 10; width: 100%; max-width: 400px; background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 12px; padding: 35px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.9); transition: margin 0.3s ease; }
+        .bio-card { position: relative; z-index: 10; width: 100%; max-width: 400px; background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 12px; padding: 35px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.9); transition: all 0.3s ease; }
         .bio-avatar { width: 90px; height: 90px; border-radius: 50%; border: 2px solid var(--neon-red); box-shadow: 0 0 15px var(--neon-glow); object-fit: cover; margin-bottom: 15px; }
         .bio-name { font-size: 26px; font-weight: 900; text-transform: uppercase; text-shadow: 0 0 10px var(--neon-red); margin-bottom: 5px; }
         .bio-tagline { font-size: 12px; color: var(--text-muted); margin-bottom: 25px; font-weight: 600; }
@@ -56,19 +75,16 @@
         .bio-links-container { display: flex; flex-direction: column; gap: 12px; }
         .bio-link-button { background: rgba(0,0,0,0.6); border: 1px solid rgba(255,51,51,0.15); padding: 14px; color: #fff; text-decoration: none; border-radius: 6px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s; }
         .bio-link-button:hover { border-color: var(--neon-red); background: rgba(255,51,51,0.05); transform: translateY(-2px); }
-        
-        .edit-floating-btn { position: absolute; top: 20px; right: 20px; background: rgba(255,51,51,0.1); border: 1px solid var(--neon-red); color: #fff; padding: 8px 15px; font-size: 10px; font-weight: 800; text-transform: uppercase; border-radius: 4px; z-index: 80; }
 
         /* --- LIVE EDITOR SIDEBAR --- */
-        #editor-panel { position: fixed; top: 0; left: 0; width: 420px; height: 100%; background: #080202; border-right: 1px solid var(--panel-border); z-index: 200; display: none; padding: 30px; overflow-y: auto; }
+        #editor-panel { position: fixed; top: 60px; left: 0; width: 420px; height: calc(100% - 60px); background: #080202; border-right: 1px solid var(--panel-border); z-index: 200; display: none; padding: 30px; overflow-y: auto; }
         .editor-title { font-size: 20px; font-weight: 900; text-transform: uppercase; color: var(--neon-red); margin-bottom: 25px; }
         .input-group { margin-bottom: 16px; display: flex; flex-direction: column; gap: 5px; }
         .input-group label { font-size: 10px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; }
         
-        /* Style für die coolen Upload-Buttons */
         .file-upload-btn { background: #120505; border: 1px solid var(--panel-border); color: #fff; padding: 10px; border-radius: 4px; font-weight: 600; font-size: 11px; text-transform: uppercase; text-align: center; display: block; width: 100%; transition: all 0.2s; }
         .file-upload-btn:hover { border-color: var(--neon-red); background: rgba(255,51,51,0.05); }
-        .input-group input[type="file"] { display: none; } /* Versteckt das hässliche Standard-Feld */
+        .input-group input[type="file"] { display: none; }
 
         .input-group input[type="text"], .input-group select { background: #000; border: 1px solid var(--panel-border); padding: 10px; color: #fff; border-radius: 4px; font-weight: 600; font-size: 13px; }
         .input-group input:focus { outline: none; border-color: var(--neon-red); }
@@ -81,7 +97,15 @@
     <div class="grid-bg"></div>
     <div id="main-cursor"></div>
 
-    <!-- ---------------- STARTSEITE ---------------- -->
+    <div class="navbar">
+        <div class="nav-logo" onclick="goHome()">Load<span>Space</span></div>
+        <div class="nav-links">
+            <button class="nav-item" onclick="goHome()">🏠 Home</button>
+            <button class="nav-item" onclick="triggerCreateMode()">➕ Profil erstellen</button>
+            <button class="nav-item disabled" id="nav-edit-btn" onclick="openEditor()">⚙ Profil editieren</button>
+        </div>
+    </div>
+
     <div class="landing-container" id="view-landing">
         <div class="hero-title">Load<span>Space</span></div>
         <div class="hero-sub">The Ultimate Link-In-Bio Network</div>
@@ -95,19 +119,16 @@
         </div>
     </div>
 
-    <!-- ---------------- BIO SEITE (GUNS.LOL LOOK) ---------------- -->
     <div id="bio-view-page">
-        <button class="edit-floating-btn" id="editor-trigger" onclick="openEditor()">⚙ Edit Profile</button>
         <div class="bio-overlay"></div>
         <canvas id="particle-canvas"></canvas>
         <audio id="bio-audio" loop></audio>
 
-        <!-- Click to Enter Wall -->
         <div class="unmute-overlay" id="click-unmute-wall" onclick="playBioMusic()">
             <button class="action-btn btn-claim" style="max-width: 200px;">Click to Enter</button>
         </div>
 
-        <div class="bio-card">
+        <div class="bio-card" id="main-bio-card">
             <img src="default-avatar.png" alt="Avatar" class="bio-avatar" id="view-avatar">
             <div class="bio-name" id="view-name">NAME</div>
             <div class="bio-tagline" id="view-tagline">TAGLINE</div>
@@ -116,7 +137,6 @@
         </div>
     </div>
 
-    <!-- ---------------- LIVE EDITOR SIDEBAR ---------------- -->
     <div id="editor-panel">
         <div class="editor-title">⚡ Control Center</div>
         
@@ -129,7 +149,6 @@
             <input type="text" id="edit-tagline" oninput="liveRefresh()">
         </div>
 
-        <!-- DATEI UPLOAD BUTTONS -->
         <div class="input-group">
             <label>Profilbild Hochladen</label>
             <label class="file-upload-btn" for="upload-avatar">📂 Datei auswählen...</label>
@@ -155,7 +174,6 @@
             </select>
         </div>
 
-        <!-- LINK BUILDER -->
         <div class="input-group" style="margin-top: 25px;">
             <label style="color: var(--neon-red); margin-bottom: 10px;">🔗 Custom Links & Buttons</label>
             <div id="links-builder-area"></div>
@@ -163,18 +181,38 @@
         </div>
 
         <div class="control-btns" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 30px;">
-            <button class="action-btn btn-login" onclick="closeEditorAndExit()">Exit</button>
+            <button class="action-btn btn-login" onclick="closeEditorPanel()">Close Editor</button>
             <button class="action-btn btn-claim" onclick="saveData()">Save Changes</button>
         </div>
     </div>
 
-    <!-- ---------------- ENGINE JAVASCRIPT ---------------- -->
     <script>
         const cursor = document.getElementById('main-cursor');
         document.addEventListener('mousemove', (e) => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
 
         let currentUsername = "";
         let profileData = {};
+
+        // NAVBAR-NAVIGATION: HOME / LOGOUT
+        function goHome() {
+            document.getElementById('bio-audio').pause();
+            document.getElementById('editor-panel').style.display = 'none';
+            document.getElementById('bio-view-page').style.display = 'none';
+            document.getElementById('view-landing').style.display = 'flex';
+            
+            // Edit-Button deaktivieren, da kein Profil geladen ist
+            const editBtn = document.getElementById('nav-edit-btn');
+            editBtn.classList.add('disabled');
+            
+            // Card-Verschiebung zurücksetzen
+            document.getElementById('main-bio-card').style.marginLeft = '0px';
+        }
+
+        function triggerCreateMode() {
+            goHome();
+            document.getElementById('search-username').focus();
+            document.getElementById('search-username').placeholder = "neuer_wunschname";
+        }
 
         function lookupOrCreateProfile() {
             const user = document.getElementById('search-username').value.trim().toLowerCase();
@@ -204,22 +242,21 @@
             document.getElementById('view-landing').style.display = 'none';
             document.getElementById('bio-view-page').style.display = 'flex';
             
+            // Edit-Button in der Leiste freischalten!
+            document.getElementById('nav-edit-btn').classList.remove('disabled');
+            
             renderBioPage();
         }
 
         function renderBioPage() {
             document.getElementById('view-name').innerText = profileData.name;
             document.getElementById('view-tagline').innerText = profileData.tagline;
-            
-            // Profilbild zuweisen
             document.getElementById('view-avatar').src = profileData.avatar || 'default-avatar.png';
             
-            // Banner zuweisen
             const bgPage = document.getElementById('bio-view-page');
             const bannerFile = profileData.banner || 'default-banner.jpg';
             bgPage.style.backgroundImage = `url('${bannerFile}')`;
 
-            // Links rendern
             const holder = document.getElementById('view-links-holder');
             holder.innerHTML = '';
             profileData.customLinks.forEach(link => {
@@ -236,7 +273,6 @@
             liveParticleRefresh();
         }
 
-        // VERARBEITET DEN DATEI-UPLOAD VOM LOKALEN PC
         function handleFileUpload(inputElement, type) {
             const file = inputElement.files[0];
             if (!file) return;
@@ -244,21 +280,14 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 const base64Data = e.target.result;
-                
-                // Live in die Profildaten einspeisen
-                if (type === 'avatar') {
-                    profileData.avatar = base64Data;
-                } else if (type === 'banner') {
-                    profileData.banner = base64Data;
-                } else if (type === 'music') {
+                if (type === 'avatar') profileData.avatar = base64Data;
+                else if (type === 'banner') profileData.banner = base64Data;
+                else if (type === 'music') {
                     profileData.music = base64Data;
-                    // Musik sofort live im Editor abspielen zum Testen
                     const audio = document.getElementById('bio-audio');
                     audio.src = base64Data;
                     audio.play().catch(() => {});
                 }
-                
-                // Direkt die Seite aktualisieren, damit man die Änderung sieht!
                 renderBioPage();
             };
             reader.readAsDataURL(file);
@@ -268,12 +297,12 @@
             document.getElementById('click-unmute-wall').style.display = 'none';
             const audio = document.getElementById('bio-audio');
             const musicFile = profileData.music || 'default-music.mp3';
-            
             audio.src = musicFile;
             audio.volume = 0.3;
             audio.play().catch(() => console.log("Audio blockiert"));
         }
 
+        // ÖFFNET DAS EDIT-PANEL ÜBER DIE NAVBAR
         function openEditor() {
             document.getElementById('edit-name').value = profileData.name;
             document.getElementById('edit-tagline').value = profileData.tagline;
@@ -286,7 +315,13 @@
             });
 
             document.getElementById('editor-panel').style.display = 'block';
-            document.querySelector('.bio-card').style.marginLeft = '440px';
+            // Verschiebt das Profil nach rechts, um Platz für das Panel zu machen
+            document.getElementById('main-bio-card').style.marginLeft = '440px';
+        }
+
+        function closeEditorPanel() {
+            document.getElementById('editor-panel').style.display = 'none';
+            document.getElementById('main-bio-card').style.marginLeft = '0px';
         }
 
         function addNewLinkRow(name, url) {
@@ -319,14 +354,9 @@
             let database = JSON.parse(localStorage.getItem('loadspace_network')) || {};
             database[currentUsername] = profileData;
             localStorage.setItem('loadspace_network', JSON.stringify(database));
-            alert("🔒 Profile saved including uploaded files!");
+            alert("🔒 Änderungen erfolgreich in der Matrix gespeichert!");
         }
-
-        function closeEditorAndExit() {
-            document.getElementById('bio-audio').pause();
-            location.reload();
-        }
-
+        
         // --- PARTIKEL SYSTEM ---
         const canvas = document.getElementById('particle-canvas');
         const ctx = canvas.getContext('2d');
