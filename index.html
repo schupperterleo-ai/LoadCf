@@ -171,17 +171,28 @@
         
         .tier-user-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; display: flex; align-items: center; justify-content: space-between; transition: all 0.2s ease; }
         .tier-user-card:hover { transform: translateX(2px); border-color: var(--accent-cyan); background-color: #121d30; }
-        .avatar { width: 32px; height: 32px; border-radius: 6px; image-rendering: pixelated; }
-
-        /* Badge Icon Styles */
+        
+        /* Modern CSS Badge Icons (Ersetzt die defekten Bild-Logos) */
         .badge-list { display: flex; gap: 12px; }
         .tier-badge-container { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 44px; }
-        .icon-wrapper { width: 36px; height: 36px; border-radius: 8px; background-color: #0e1726; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 8px rgba(0,0,0,0.6); }
-        .mode-logo-img { width: 24px; height: 24px; object-fit: contain; image-rendering: pixelated; }
         
-        .border-ht { border: 1.5px solid #ff7b1a; box-shadow: 0 0 8px rgba(249, 115, 22, 0.25); }
+        .icon-wrapper { 
+            width: 36px; 
+            height: 36px; 
+            border-radius: 8px; 
+            background-color: #060913; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.6);
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+        }
+        
+        .border-ht { border: 1.5px solid #ff7b1a; box-shadow: 0 0 8px rgba(249, 115, 22, 0.3); background: rgba(249, 115, 22, 0.05); }
         .border-line-ht { color: #ff7b1a; font-weight: 800; font-size: 11px; }
-        .border-lt { border: 1.5px solid #38bdf8; box-shadow: 0 0 8px rgba(56, 189, 248, 0.25); }
+        .border-lt { border: 1.5px solid #38bdf8; box-shadow: 0 0 8px rgba(56, 189, 248, 0.3); background: rgba(56, 189, 248, 0.05); }
         .border-line-lt { color: #38bdf8; font-weight: 800; font-size: 11px; }
 
         /* Admin Dashboard & Views */
@@ -194,7 +205,20 @@
         /* Staff Elements */
         .staff-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 20px; }
         .staff-card { background-color: rgba(6, 11, 20, 0.85); border: 1.5px solid #121d30; border-radius: 16px; padding: 18px; display: flex; align-items: center; gap: 14px; backdrop-filter: blur(8px); }
-        .staff-img { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid #1f304a; }
+        
+        /* Fallback CSS Avatar falls kein Bild existiert */
+        .staff-avatar-placeholder { 
+            width: 48px; 
+            height: 48px; 
+            border-radius: 50%; 
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            border: 2px solid #1f304a; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: #ffffff;
+        }
         .staff-info { display: flex; flex-direction: column; gap: 4px; }
         .staff-name { font-weight: 800; color: #ffffff; font-size: 14px; }
         .staff-particle-sub { font-size: 11px; font-weight: 600; color: var(--accent-cyan); opacity: 0.85; }
@@ -278,13 +302,35 @@
                         </tr>
                     </tbody>
                 </table>
+                
+                <!-- Beispiel für die Badges im Tier-Grid -->
+                <div class="tier-columns" style="margin-top: 40px;">
+                    <div class="tier-column">
+                        <div class="tier-header t1-h">Tier 1 Elite</div>
+                        <div class="tier-list-content">
+                            <div class="tier-user-card">
+                                <span class="username" style="font-size:13px;">octryx</span>
+                                <div class="badge-list">
+                                    <div class="tier-badge-container">
+                                        <div class="icon-wrapper border-ht">HT</div>
+                                        <span class="border-line-ht">Sword</span>
+                                    </div>
+                                    <div class="tier-badge-container">
+                                        <div class="icon-wrapper border-lt">LT</div>
+                                        <span class="border-line-lt">CPvP</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Staff View -->
             <div id="view-staff" style="display: none;">
                 <div class="staff-grid">
                     <div class="staff-card">
-                        <div class="staff-img"></div>
+                        <div class="staff-avatar-placeholder">W</div>
                         <div class="staff-info">
                             <span class="staff-name">Willi</span>
                             <span class="staff-particle-sub">Network Owner</span>
