@@ -3,82 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Player Database - L4lyx</title>
+    <title>LoadCf - Player DB</title>
     <style>
-        /* --- HIER IST DAS CSS DESIGN --- */
-        :root {
-            --bg-color: #0b0c10;
-            --card-bg: #1f2833;
-            --neon-blue: #45f3ff;
-            --neon-red: #ff2a74;
-            --text-color: #c5c6c7;
-        }
-
+        /* --- CSS DESIGN EXAKT WIE AUF DEN BILDERN --- */
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0d1117; /* GitHub Dark Background */
+            color: #c9d1d9;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
             margin: 0;
-            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
 
         .container {
-            max-width: 800px;
-            margin: 0 auto;
+            width: 800px;
+            max-width: 90%;
+            background-color: #161b22; /* Slightly Lighter Dark */
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 24px;
         }
 
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid var(--card-bg);
-            padding-bottom: 15px;
-            margin-bottom: 30px;
+            margin-bottom: 24px;
         }
 
         .logo {
-            font-size: 24px;
-            font-weight: bold;
-            letter-spacing: 2px;
+            font-size: 28px;
+            font-weight: 600;
         }
 
-        .neon-text {
-            color: var(--neon-blue);
-            text-shadow: 0 0 10px var(--neon-blue);
-        }
-
-        .status-bar {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .neon-purple {
+            color: #a040f0;
+            text-shadow: 0 0 10px #a040f0;
         }
 
         .status-guest {
-            color: var(--neon-red);
-            font-weight: bold;
+            color: #40c0e0; /* Bright blue-cyan */
         }
 
         .status-admin {
-            color: var(--neon-blue);
-            font-weight: bold;
-            text-shadow: 0 0 5px var(--neon-blue);
+            color: #a040f0;
+            text-shadow: 0 0 5px #a040f0;
         }
 
-        /* Suchleiste & Inputs */
+        /* Suchleiste - WIE AUF BILD 2 */
+        .search-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
         input[type="text"], input[type="password"] {
             width: 100%;
             padding: 12px;
-            background: #151a21;
-            border: 1px solid #334155;
+            background-color: #0d1117;
+            border: 2px solid #30363d; /* Subtle borders until focused */
             border-radius: 6px;
-            color: white;
+            color: #c9d1d9;
             box-sizing: border-box;
-            margin-bottom: 10px;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]#search-input {
+            border: 2px solid #40c0e0; /* Teal-Cyan border, WIE AUF BILD 2 */
         }
 
         input:focus {
             outline: none;
-            border-color: var(--neon-blue);
+            border-color: #a040f0; /* Purple border on focus */
+        }
+
+        /* Spielerliste & Player-Cards - WIE AUF DEN BILDERN */
+        .player-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .player-item {
+            background-color: #161b22;
+            border: 2px solid #40c0e0; /* Teal-Cyan glowing borders */
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: box-shadow 0.2s;
+        }
+
+        .player-item:hover {
+            box-shadow: 0 0 10px rgba(64, 192, 224, 0.5);
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .player-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #30363d;
+            border: 1px solid #40c0e0;
+        }
+
+        .player-name {
+            font-weight: 600;
+        }
+
+        .player-rank {
+            color: #40c0e0; /* Rank color matches borders */
+            font-size: 14px;
         }
 
         /* Buttons */
@@ -88,89 +132,55 @@
             border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
-            transition: 0.2s;
-        }
-
-        .btn:hover {
-            opacity: 0.9;
+            transition: background-color 0.2s;
         }
 
         .btn-primary {
-            background-color: var(--neon-blue);
-            color: black;
-        }
-
-        .btn-danger {
-            background-color: var(--neon-red);
+            background-color: #a040f0; /* Purple main action */
             color: white;
         }
 
-        /* Admin Sektion */
+        .btn-danger {
+            background-color: #ff2a74;
+            color: white;
+        }
+
+        /* Admin Sektion (Sperren, Hinzufügen, Edit) */
         .admin-section {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 25px;
-            border-left: 4px solid var(--neon-blue);
-        }
-
-        .form-group {
-            display: flex;
-            gap: 10px;
-        }
-
-        .form-group input {
-            margin-bottom: 0;
-        }
-
-        /* Spielerliste */
-        .player-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .player-item {
-            background: var(--card-bg);
-            padding: 15px;
-            margin-bottom: 10px;
+            background-color: #161b22;
+            padding: 16px;
             border-radius: 6px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            margin-bottom: 20px;
+            border: 2px solid #a040f0; /* Purple to show admin status */
         }
 
-        /* Login Modal (Standardmäßig versteckt) */
+        /* Login Modal (WIE AUF BILD 2) */
         .modal {
-            display: none; /* Wichtig: Versteckt das Fenster am Anfang */
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             justify-content: center;
             align-items: center;
             z-index: 1000;
         }
 
         .modal-content {
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 10px;
-            width: 300px;
-            border: 2px solid var(--neon-blue);
-        }
-
-        .modal-buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 15px;
+            background-color: #161b22;
+            padding: 24px;
+            border-radius: 6px;
+            width: 320px;
+            border: 2px solid #a040f0;
         }
 
         .error-msg {
-            color: var(--neon-red);
-            margin-bottom: 10px;
+            color: #ff2a74;
+            margin-bottom: 12px;
             font-size: 14px;
+            text-align: center;
         }
     </style>
 </head>
@@ -178,22 +188,22 @@
 
     <div class="container">
         <header>
-            <div class="logo">PLAYER <span class="neon-text">DB</span></div>
+            <div class="logo">PLAYER <span class="neon-purple">DB</span></div>
             <div class="status-bar">
                 Status: <span id="auth-status" class="status-guest">Guest</span>
                 <button id="logout-btn" class="btn btn-danger" style="display: none; padding: 5px 10px;" onclick="logout()">Logout</button>
             </div>
         </header>
 
-        <section class="search-section">
+        <section class="search-container">
             <input type="text" id="search-input" placeholder="Search player (type 'login' to sign in)..." oninput="checkSearchTrigger()">
         </section>
 
         <section id="admin-controls" class="admin-section" style="display: none;">
             <h3>Admin Panel</h3>
-            <div class="form-group">
+            <div style="display: flex; gap: 10px;">
                 <input type="text" id="player-name" placeholder="Player Name">
-                <input type="text" id="player-rank" placeholder="Rank (e.g., MVP, VIP)">
+                <input type="text" id="player-rank" placeholder="Rank (e.g., MVP)">
                 <button onclick="addPlayer()" class="btn btn-primary">Add Player</button>
             </div>
         </section>
@@ -211,7 +221,7 @@
             <div id="login-error" class="error-msg" style="display: none;">Falsche Anmeldedaten!</div>
             <input type="text" id="username" placeholder="Username">
             <input type="password" id="password" placeholder="Password">
-            <div class="modal-buttons">
+            <div style="display: flex; justify-content: space-between; margin-top: 15px;">
                 <button onclick="attemptLogin()" class="btn btn-primary">Login</button>
                 <button onclick="closeLoginModal()" class="btn btn-danger">Abbrechen</button>
             </div>
@@ -219,22 +229,20 @@
     </div>
 
     <script>
-        // --- HIER IST DIE JAVASCRIPT LOGIK ---
-        
-        // Beispiel-Daten für Spieler
+        // --- JAVASCRIPT LOGIK MIT DEINEN BEISPIELDATEN ---
         let players = [
-            { id: 1, name: "Willi", rank: "Admin" },
-            { id: 2, name: "Dennis", rank: "MVP" },
+            { id: 1, name: "schupperterleo-ai L4lyx", rank: "L4lyx" },
+            { id: 2, name: "Dennis", rank: "Admin" },
             { id: 3, name: "Marie", rank: "VIP" }
         ];
 
         let isAdmin = false;
 
-        // Prüft, ob im Suchfeld "login" eingegeben wurde
+        // Login-Trigger per Suchfeld
         function checkSearchTrigger() {
             const searchVal = document.getElementById('search-input').value.trim();
             if (searchVal.toLowerCase() === 'login') {
-                document.getElementById('search-input').value = ''; // Feld leeren
+                document.getElementById('search-input').value = ''; 
                 openLoginModal();
             } else {
                 renderPlayers(searchVal);
@@ -253,7 +261,7 @@
             document.getElementById('password').value = '';
         }
 
-        // Login Überprüfung
+        // Login Überprüfung mit DEINEN Daten
         function attemptLogin() {
             const user = document.getElementById('username').value;
             const pass = document.getElementById('password').value;
@@ -272,7 +280,7 @@
             updateUI();
         }
 
-        // Schaltet Admin-Funktionen frei oder sperrt sie
+        // UI-Update (Admin vs. Guest)
         function updateUI() {
             const statusText = document.getElementById('auth-status');
             const adminControls = document.getElementById('admin-controls');
@@ -289,10 +297,10 @@
                 adminControls.style.display = "none";
                 logoutBtn.style.display = "none";
             }
-            renderPlayers(); // Liste neu laden, um Edit-Knöpfe zu zeigen/verstecken
+            renderPlayers(); // Liste neu laden
         }
 
-        // Spieler anzeigen (und filtern per Suche)
+        // Spieler anzeigen & filtern
         function renderPlayers(filter = "") {
             const list = document.getElementById('player-list');
             list.innerHTML = "";
@@ -304,7 +312,7 @@
                 li.className = "player-item";
                 
                 let actionsHtml = "";
-                // Edit und Delete Knöpfe nur zeigen, wenn man eingeloggt ist
+                // Edit/Delete nur für Admin
                 if (isAdmin) {
                     actionsHtml = `
                         <div>
@@ -315,8 +323,12 @@
                 }
 
                 li.innerHTML = `
-                    <div>
-                        <strong>${player.name}</strong> - <span style="color: #45f3ff;">${player.rank}</span>
+                    <div class="player-info">
+                        <div class="player-icon"></div>
+                        <div>
+                            <span class="player-name">${player.name}</span><br>
+                            <span class="player-rank">${player.rank}</span>
+                        </div>
                     </div>
                     ${actionsHtml}
                 `;
@@ -324,7 +336,7 @@
             });
         }
 
-        // Spieler hinzufügen (Nur Admin)
+        // Hinzufügen (Nur Admin)
         function addPlayer() {
             const nameInput = document.getElementById('player-name');
             const rankInput = document.getElementById('player-rank');
@@ -343,13 +355,13 @@
             renderPlayers();
         }
 
-        // Spieler löschen (Nur Admin)
+        // Löschen (Nur Admin)
         function deletePlayer(id) {
             players = players.filter(p => p.id !== id);
             renderPlayers();
         }
 
-        // Spieler editieren (Nur Admin)
+        // Editieren (Nur Admin)
         function editPlayer(id) {
             const player = players.find(p => p.id === id);
             if (!player) return;
@@ -357,18 +369,13 @@
             const newName = prompt("Neuer Name für " + player.name + ":", player.name);
             const newRank = prompt("Neuer Rang für " + player.name + ":", player.rank);
 
-            if (newName !== null && newName.trim() !== "") {
-                player.name = newName;
-            }
-            if (newRank !== null && newRank.trim() !== "") {
-                player.rank = newRank;
-            }
+            if (newName !== null && newName.trim() !== "") player.name = newName;
+            if (newRank !== null && newRank.trim() !== "") player.rank = newRank;
             
             renderPlayers();
         }
 
-        // Start-Aufruf beim Laden der Seite
-        renderPlayers();
+        renderPlayers(); // Initiale Anzeige
     </script>
 </body>
 </html>
