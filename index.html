@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LoadTiers - Tiers & Rankings</title>
+    <title>LoadCf - Tiers & Rankings</title>
     <style>
         :root {
             --bg-dark: #050811;
@@ -137,7 +137,7 @@
         .avatar { width: 32px; height: 32px; border-radius: 6px; image-rendering: pixelated; transition: transform 0.2s; }
         .tier-user-card:hover .avatar { transform: scale(1.1); }
 
-        /* Premium Modals Design */
+        /* Modals Design */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(3, 5, 10, 0.85); backdrop-filter: blur(8px); justify-content: center; align-items: center; z-index: 2000; animation: fadeInModal 0.25s linear; }
         
         /* Rank Points Panel */
@@ -147,7 +147,7 @@
         .points-row-box:hover { border-color: #243b61; }
         .points-value-badge { background-color: #070b14; border: 1px solid #142036; border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: 700; color: #6c7f99; }
 
-        /* MINI PROFILE MODAL (image_b70736.png Style) */
+        /* Profile Modal */
         .profile-card {
             background-color: #060b13; border: 1.5px solid #111e33; border-radius: 24px; width: 440px; padding: 35px; position: relative;
             box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 30px rgba(0,191,255,0.05);
@@ -169,16 +169,19 @@
         .profile-mode-tier { font-size: 15px; font-weight: 800; }
         .profile-rank-bottom { font-size: 36px; font-weight: 900; color: rgba(255,255,255,0.15); margin-top: 15px; letter-spacing: -1px; }
 
-        /* STAFF GRID LOOK */
+        /* STAFF GRID LOOK WITH CUSTOM SUBTITLES */
         .staff-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 20px; animation: superEntrance 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
         .staff-card { background-color: rgba(6, 11, 20, 0.85); border: 1.5px solid #121d30; border-radius: 16px; padding: 18px; display: flex; align-items: center; gap: 14px; backdrop-filter: blur(8px); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
         .staff-card:hover { border-color: #243c61; transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.5); }
         .staff-img { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; background: #162235; border: 2px solid #1f304a; transition: transform 0.3s ease; }
-        .staff-card:hover .staff-img { transform: rotate(6px) scale(1.05); }
-        .staff-info { display: flex; flex-direction: column; gap: 4px; }
+        .staff-card:hover .staff-img { transform: rotate(6deg) scale(1.05); }
+        .staff-info { display: flex; flex-direction: column; gap: 4px; flex-grow: 1; }
         .staff-name { font-weight: 800; color: #ffffff; font-size: 14px; }
         
-        .staff-badge { font-size: 9px; font-weight: 800; padding: 4px 8px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px; text-transform: uppercase; letter-spacing: 0.5px; width: fit-content; }
+        /* Das Partikel-Label unter dem Namen */
+        .staff-particle-sub { font-size: 11px; font-weight: 600; color: var(--accent-cyan); opacity: 0.85; letter-spacing: 0.5px; }
+
+        .staff-badge { font-size: 9px; font-weight: 800; padding: 4px 8px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px; text-transform: uppercase; letter-spacing: 0.5px; width: fit-content; margin-top: 2px; }
         .badge-owner { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
         .badge-coowner { background: rgba(249, 115, 22, 0.15); color: #f97316; border: 1px solid rgba(249, 115, 22, 0.3); }
         .badge-overseer { background: rgba(168, 85, 247, 0.15); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.3); }
@@ -204,7 +207,6 @@
 </head>
 <body>
 
-    <!-- Die Partikel im Hintergrund -->
     <div class="particles"></div>
 
     <div class="app-wrapper">
@@ -262,7 +264,8 @@
                         <h4 style="margin-top:0; color: #22c55e;">Staff verwalten</h4>
                         <div class="admin-form">
                             <input type="text" id="staff-name-in" placeholder="Anzeige-Name">
-                            <input type="text" id="staff-discord-in" placeholder="Discord ID">
+                            <input type="text" id="staff-particle-in" placeholder="Untertitel (z.B. bold, fanc x)">
+                            <input type="text" id="staff-discord-in" placeholder="Discord ID für Avatar">
                             <select id="staff-title-in">
                                 <option value="NETWORK OWNER">Network Owner</option>
                                 <option value="CO OWNER">Co Owner</option>
@@ -355,13 +358,12 @@
         const pointValues = { 'HT1': 60, 'LT1': 45, 'HT2': 30, 'LT2': 20, 'HT3': 10, 'LT3': 6, 'HT4': 4, 'LT4': 3, 'HT5': 2, 'LT5': 1 };
 
         const defaultStaff = [
-            { name: "TheRealJero @for help", discord: "111111111111111111", title: "NETWORK OWNER" },
-            { name: "Lucky @for timeout", discord: "222222222222222222", title: "NETWORK OWNER" },
-            { name: "Sebastian @ for Tech Supp...", discord: "333333333333333333", title: "CO OWNER" },
-            { name: "FleXy @ For alL", discord: "444444444444444444", title: "CO OWNER" }
+            { name: "TheRealJero", particle: "bold x", discord: "111111111111111111", title: "NETWORK OWNER" },
+            { name: "Lucky", particle: "fanc", discord: "222222222222222222", title: "NETWORK OWNER" },
+            { name: "Sebastian", particle: "tech", discord: "333333333333333333", title: "CO OWNER" },
+            { name: "FleXy", particle: "fanc x", discord: "444444444444444444", title: "CO OWNER" }
         ];
 
-        // Deine exakte, vollständige Spielerliste aus dem Backup
         const defaultPlayers = [
             { name: "Ayko", ranks: { sword: "HT1", cpvp: "LT1", axe: "HT2" } },
             { name: "vance", ranks: { sword: "LT1", cpvp: "HT2", axe: "LT2" } },
@@ -534,6 +536,7 @@
                 else if(t.includes("DEV")) badgeClass = "badge-dev";
                 else if(t.includes("ADMIN")) badgeClass = "badge-admin";
 
+                // Discord ID wird NUR im Hintergrund für das Bild genutzt - völlig unsichtbar auf der Oberfläche
                 let discordAvatarUrl = `https://cdn.discordapp.com/embed/avatars/0.png`; 
                 if(s.discord && s.discord.length > 10) {
                     discordAvatarUrl = `https://images.discordapp.net/avatars/${s.discord}/a_0.png?size=64`;
@@ -544,7 +547,8 @@
                         <img class="staff-img" src="${discordAvatarUrl}" onerror="this.src='https://cdn.discordapp.com/embed/avatars/1.png'">
                         <div class="staff-info">
                             <div class="staff-name">${s.name}</div>
-                            <div style="font-size:11px; color:var(--text-secondary); margin-bottom:2px;">ID: ${s.discord}</div>
+                            <!-- Partikel Untertitel direkt unter dem Namen -->
+                            <div class="staff-particle-sub">${s.particle || 'member'}</div>
                             <div class="staff-badge ${badgeClass}">♦ ${s.title}</div>
                         </div>
                     </div>
@@ -564,20 +568,22 @@
             const sList = document.getElementById('admin-staff-delete-list'); sList.innerHTML = '';
             staffList.forEach(s => {
                 let d = document.createElement('div'); d.className = 'admin-player-row';
-                d.innerHTML = `<span>${s.name}</span><button class="btn btn-danger" style="padding:2px 6px;" onclick="deleteStaff('${s.name}')">X</button>`;
+                d.innerHTML = `<span>${s.name} (${s.particle || 'kein'})</span><button class="btn btn-danger" style="padding:2px 6px;" onclick="deleteStaff('${s.name}')">X</button>`;
                 sList.appendChild(d);
             });
         }
 
         function addStaff() {
             let name = document.getElementById('staff-name-in').value.trim();
+            let particle = document.getElementById('staff-particle-in').value.trim();
             let dc = document.getElementById('staff-discord-in').value.trim();
             let title = document.getElementById('staff-title-in').value;
             if(!name || !dc) return;
 
-            staffList.push({ name: name, discord: dc, title: title });
+            staffList.push({ name: name, particle: particle || "member", discord: dc, title: title });
             save(); render();
             document.getElementById('staff-name-in').value = '';
+            document.getElementById('staff-particle-in').value = '';
             document.getElementById('staff-discord-in').value = '';
         }
 
