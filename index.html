@@ -234,7 +234,6 @@
             width: 44px;
         }
 
-        /* ECHTE LOGOS ALS BILDER STYLE */
         .icon-wrapper {
             width: 36px;
             height: 36px;
@@ -243,15 +242,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 18px;
             box-shadow: inset 0 0 8px rgba(0,0,0,0.6);
             transition: transform 0.2s;
-        }
-
-        .mode-logo-img {
-            width: 24px;
-            height: 24px;
-            object-fit: contain;
-            image-rendering: pixelated; /* Macht das Minecraft-Feeling perfekt knackig scharf */
         }
 
         /* Orange leuchtender Rahmen für High Tiers, Blauer Rahmen für Low Tiers */
@@ -301,7 +294,6 @@
 <body>
 
     <div class="app-wrapper">
-        <!-- Navbar -->
         <nav class="navbar">
             <div class="nav-left">
                 <div class="brand-logo" onclick="switchMode('overall')">LOAD<span>TIERS</span></div>
@@ -318,7 +310,6 @@
             </div>
         </nav>
 
-        <!-- Spielmodi Tabs -->
         <div class="sub-nav">
             <button class="mode-btn active" id="mode-overall" onclick="switchMode('overall')">Overall</button>
             <button class="mode-btn" id="mode-sword" onclick="switchMode('sword')">Sword</button>
@@ -332,7 +323,6 @@
         </div>
 
         <div class="main-container">
-            <!-- Admin Dashboard -->
             <div id="admin-panel" class="admin-panel" style="display: none;">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
                     <h3 style="margin:0; color: var(--accent-purple);" id="admin-panel-title">Admin Dashboard</h3>
@@ -373,12 +363,10 @@
                 </div>
             </div>
 
-            <!-- Dynamische Tabellen / Spalten -->
             <div id="content-area"></div>
         </div>
     </div>
 
-    <!-- Modals -->
     <div id="points-modal" class="modal-overlay" onclick="closeModal('points-modal')">
         <div class="modal-box" onclick="event.stopPropagation()" style="width: 400px;">
             <div class="modal-header">⚡ RANK POINTS</div>
@@ -403,16 +391,16 @@
     </div>
 
     <script>
-        // DIE RECHTEN MINECRAFT LOGO INTERNET-LINKS FÜR DEINE MODI
+        // Icons Zuordnung für jeden Spielmodus
         const modeIcons = {
-            sword: "https://minecraft.wiki/images/Diamond_Sword_JE3_BE3.png",
-            cpvp: "https://minecraft.wiki/images/End_Crystal_JE2_BE2.png",
-            axe: "https://minecraft.wiki/images/Diamond_Axe_JE3_BE3.png",
-            smp: "https://minecraft.wiki/images/Oak_Log_%28UD%29_JE5_BE3.png",
-            diapot: "https://minecraft.wiki/images/Splash_Potion_of_Healing_JE2_BE2.png",
-            mace: "https://minecraft.wiki/images/Mace_JE1_BE1.png",
-            uhc: "https://minecraft.wiki/images/Golden_Apple_JE2_BE2.png",
-            nethpot: "https://minecraft.wiki/images/Netherite_Chestplate_JE3_BE2.png"
+            sword: "⚔️",
+            cpvp: "🔮",
+            axe: "🪓",
+            smp: "🌲",
+            diapot: "🧪",
+            mace: "🔨",
+            uhc: "🍎",
+            nethpot: "🔥"
         };
 
         const pointValues = {
@@ -420,6 +408,7 @@
             'LT3': 6,  'HT4': 4,  'LT4': 3,  'HT5': 2,  'LT5': 1
         };
 
+        // ECHTE SPIELER AUS DEINEM SCREENSHOT DIREKT ALS DEFAULT EINGEBAUT!
         const defaultPlayers = [
             { name: "LetsJanTV", ranks: { cpvp: "HT3", sword: "HT3", uhc: "HT4", mace: "HT4" } },
             { name: "L4lyx", ranks: { cpvp: "HT4", sword: "LT3", uhc: "LT4" } },
@@ -465,6 +454,7 @@
             if (loggedInUser) { renderAdminDeleteList(); }
         }
 
+        // Leaderboard mit echten Icons im Tabellen-Layout
         function renderLeaderboard(filter = "") {
             const contentArea = document.getElementById('content-area');
             let sorted = [...players].map(p => ({ ...p, totalPts: calculateTotalPoints(p) })).sort((a, b) => b.totalPts - a.totalPts);
@@ -481,6 +471,7 @@
             sorted.forEach((p, index) => {
                 let rankClass = index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : index === 2 ? 'rank-3' : '';
                 
+                // Icons generieren
                 let badgesHtml = '';
                 for (let mode in p.ranks) {
                     let tier = p.ranks[mode];
@@ -488,14 +479,11 @@
                     let isHT = tier.startsWith('HT');
                     let borderClass = isHT ? 'border-ht' : 'border-lt';
                     let textClass = isHT ? 'border-line-ht' : 'border-line-lt';
-                    let imgUrl = modeIcons[mode] || modeIcons.sword;
+                    let iconSymbol = modeIcons[mode] || "⚔️";
 
-                    // HIER ERSETZEN WIR DIE EMOJIS DURCH DIE INTEGRIERTEN MINECRAFT BILDER
                     badgesHtml += `
                         <div class="tier-badge-container">
-                            <div class="icon-wrapper ${borderClass}">
-                                <img src="${imgUrl}" class="mode-logo-img" alt="${mode}">
-                            </div>
+                            <div class="icon-wrapper ${borderClass}">${iconSymbol}</div>
                             <span class="${textClass}">${tier}</span>
                         </div>
                     `;
@@ -593,17 +581,6 @@
             document.getElementById('admin-panel').style.display = 'none';
             document.getElementById('admin-status-text').innerText = "Status: Guest";
             render();
-        }
-
-        function createNewAdminAccount() {
-            const u = document.getElementById('new-admin-user').value.trim();
-            const p = document.getElementById('new-admin-pass').value;
-            if(!u || !p) return;
-            adminAccounts[u] = p;
-            saveToLocalStorage();
-            document.getElementById('new-admin-user').value = '';
-            document.getElementById('new-admin-pass').value = '';
-            alert(`Admin Account für ${u} wurde erstellt!`);
         }
 
         function addOrUpdatePlayer() {
