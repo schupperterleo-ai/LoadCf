@@ -226,9 +226,8 @@
                     <div class="admin-box-sub">
                         <h4 style="margin-top:0; color: #22c55e;">Staff verwalten</h4>
                         <div class="admin-form">
-                            <input type="text" id="staff-name-in" placeholder="Name (z.B. L4lyx @help)">
-                            <input type="text" id="staff-discord-in" placeholder="Discord ID">
-                            <input type="text" id="staff-avatar-in" placeholder="Avatar Bild-URL">
+                            <input type="text" id="staff-name-in" placeholder="Anzeige-Name (z.B. TheRealJero @help)">
+                            <input type="text" id="staff-discord-in" placeholder="Discord ID (z.B. 453123567123)">
                             <select id="staff-title-in">
                                 <option value="NETWORK OWNER">Network Owner</option>
                                 <option value="CO OWNER">Co Owner</option>
@@ -254,12 +253,12 @@
                 </div>
             </div>
 
-            <!-- Hier landet die Tabelle oder die Staff-Ansicht -->
+            <!-- Hauptinhalt -->
             <div id="content-area"></div>
         </div>
     </div>
 
-    <!-- MINI PROFILE MODAL (image_b70736.png) -->
+    <!-- MINI PROFILE MODAL -->
     <div id="profile-modal" class="modal-overlay" onclick="closeModal('profile-modal')">
         <div class="profile-card" onclick="event.stopPropagation()">
             <div class="profile-avatar-wrapper">
@@ -321,18 +320,37 @@
 
         const pointValues = { 'HT1': 60, 'LT1': 45, 'HT2': 30, 'LT2': 20, 'HT3': 10, 'LT3': 6, 'HT4': 4, 'LT4': 3, 'HT5': 2, 'LT5': 1 };
 
-        // Standard Staff Liste nach Vorlage
+        // Standard Staff Liste
         const defaultStaff = [
-            { name: "TheRealJero @for help", discord: "jero_help", title: "NETWORK OWNER", avatar: "https://minotar.net/avatar/MHF_Steve/44" },
-            { name: "Lucky @for timeout", discord: "lucky_timeout", title: "NETWORK OWNER", avatar: "https://minotar.net/avatar/MHF_Alex/44" },
-            { name: "Sebastian @ for Tech Supp...", discord: "seb_tech", title: "CO OWNER", avatar: "https://minotar.net/avatar/MHF_Steve/44" },
-            { name: "FleXy @ For alL", discord: "flexy_all", title: "CO OWNER", avatar: "https://minotar.net/avatar/MHF_Alex/44" }
+            { name: "TheRealJero @for help", discord: "111111111111111111", title: "NETWORK OWNER" },
+            { name: "Lucky @for timeout", discord: "222222222222222222", title: "NETWORK OWNER" },
+            { name: "Sebastian @ for Tech Supp...", discord: "333333333333333333", title: "CO OWNER" },
+            { name: "FleXy @ For alL", discord: "444444444444444444", title: "CO OWNER" }
         ];
 
+        // ALLE DEINE SPIELER SIND WIEDER HIER!
         const defaultPlayers = [
-            { name: "LetsJanTV", ranks: { cpvp: "HT3", sword: "HT3", uhc: "HT4", mace: "HT4" } },
-            { name: "L4lyx", ranks: { cpvp: "HT4", sword: "LT3", uhc: "LT4" } },
-            { name: "__moha__", ranks: { cpvp: "LT3", sword: "HT5", uhc: "LT4" } }
+            { name: "Ayko", ranks: { sword: "HT1", cpvp: "LT1", axe: "HT2" } },
+            { name: "vance", ranks: { sword: "LT1", cpvp: "HT2", axe: "LT2" } },
+            { name: "frezzo", ranks: { sword: "HT2", cpvp: "LT2", smp: "HT3" } },
+            { name: "zLuy", ranks: { sword: "LT2", cpvp: "HT3", smp: "LT3" } },
+            { name: "frame", ranks: { sword: "HT3", cpvp: "LT3", diapot: "HT4" } },
+            { name: "simple", ranks: { sword: "LT3", cpvp: "HT4", diapot: "LT4" } },
+            { name: "fixed", ranks: { sword: "HT4", cpvp: "LT4", mace: "HT5" } },
+            { name: "slow", ranks: { sword: "LT4", cpvp: "HT5", mace: "LT5" } },
+            { name: "raw", ranks: { sword: "HT5", uhc: "HT1", nethpot: "LT1" } },
+            { name: "nils", ranks: { sword: "LT5", uhc: "LT1", nethpot: "HT2" } },
+            { name: "unlegit", ranks: { cpvp: "HT1", uhc: "LT2", axe: "HT3" } },
+            { name: "unreall", ranks: { cpvp: "LT1", uhc: "HT3", axe: "LT3" } },
+            { name: "pre", ranks: { cpvp: "HT2", smp: "LT3", diapot: "HT4" } },
+            { name: "block", ranks: { cpvp: "LT2", smp: "HT4", diapot: "LT4" } },
+            { name: "qute", ranks: { cpvp: "HT3", mace: "LT4", uhc: "HT5" } },
+            { name: "zicx", ranks: { cpvp: "LT3", mace: "HT5", uhc: "LT5" } },
+            { name: "fvct", ranks: { axe: "HT1", nethpot: "LT4", sword: "HT2" } },
+            { name: "kili", ranks: { axe: "LT1", nethpot: "HT5", sword: "LT2" } },
+            { name: "kian", ranks: { smp: "HT1", sword: "HT4", cpvp: "LT4" } },
+            { name: "tian", ranks: { smp: "LT1", sword: "LT4", cpvp: "HT5" } },
+            { name: "noname", ranks: { diapot: "HT1", axe: "HT5" } }
         ];
 
         let players = JSON.parse(localStorage.getItem('loadtiers_players')) || defaultPlayers;
@@ -452,7 +470,7 @@
             const contentArea = document.getElementById('content-area');
             let html = `<div class="tier-columns">`;
             for (let i = 1; i <= 5; i++) {
-                html += `<div class="tier-column"><div class="tier-header t${i}-h">TIER i</div><div class="tier-list-content">`;
+                html += `<div class="tier-column"><div class="tier-header t${i}-h">TIER ${i}</div><div class="tier-list-content">`;
                 players.filter(p => p.ranks[currentMode] && p.ranks[currentMode].includes(i.toString()) && p.name.toLowerCase().includes(filter)).forEach(p => {
                     let tier = p.ranks[currentMode];
                     html += `
@@ -483,12 +501,18 @@
                 else if(t.includes("DEV")) badgeClass = "badge-dev";
                 else if(t.includes("ADMIN")) badgeClass = "badge-admin";
 
+                // Discord Avatar URL via API ohne Token-Zwang generieren
+                let discordAvatarUrl = `https://cdn.discordapp.com/embed/avatars/0.png`; 
+                if(s.discord && s.discord.length > 10) {
+                    discordAvatarUrl = `https://images.discordapp.net/avatars/${s.discord}/a_0.png?size=64`;
+                }
+
                 html += `
                     <div class="staff-card">
-                        <img class="staff-img" src="${s.avatar}" onerror="this.src='https://minotar.net/avatar/MHF_Steve/44'">
+                        <img class="staff-img" src="${discordAvatarUrl}" onerror="this.src='https://cdn.discordapp.com/embed/avatars/1.png'">
                         <div class="staff-info">
                             <div class="staff-name">${s.name}</div>
-                            <div style="font-size:11px; color:var(--text-secondary); margin-bottom:2px;">@${s.discord}</div>
+                            <div style="font-size:11px; color:var(--text-secondary); margin-bottom:2px;">ID: ${s.discord}</div>
                             <div class="staff-badge ${badgeClass}">? ${s.title}</div>
                         </div>
                     </div>
@@ -516,16 +540,13 @@
         function addStaff() {
             let name = document.getElementById('staff-name-in').value.trim();
             let dc = document.getElementById('staff-discord-in').value.trim();
-            let av = document.getElementById('staff-avatar-in').value.trim();
             let title = document.getElementById('staff-title-in').value;
             if(!name || !dc) return;
-            if(!av) av = `https://minotar.net/avatar/${name}/44`;
 
-            staffList.push({ name: name, discord: dc, avatar: av, title: title });
+            staffList.push({ name: name, discord: dc, title: title });
             save(); render();
             document.getElementById('staff-name-in').value = '';
             document.getElementById('staff-discord-in').value = '';
-            document.getElementById('staff-avatar-in').value = '';
         }
 
         function deleteStaff(name) { staffList = staffList.filter(s => s.name !== name); save(); render(); }
@@ -541,7 +562,7 @@
         function deletePlayer(name) { players = players.filter(p => p.name !== name); save(); render(); }
         function handleSearch() { let val = document.getElementById('search-input').value.trim(); if(val.toLowerCase() === 'login') { document.getElementById('search-input').value = ''; openModal('login-modal'); } else { render(); } }
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function closeModal(id) { document.getElementById(id).style.none; document.getElementById(id).style.display = 'none'; }
         
         function submitLogin() {
             let u = document.getElementById('login-user').value.trim();
