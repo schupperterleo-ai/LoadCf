@@ -3,379 +3,658 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LoadCf - Player nigga  DB</title>
+    <title>LoadCf - Tiers & Rankings</title>
     <style>
-        /* --- CSS DESIGN EXAKT WIE AUF DEN BILDERN --- */
+        /* --- DESIGN IM ICON-TIERS LOOK --- */
+        :root {
+            --bg-dark: #06090e;
+            --panel-bg: #0b111a;
+            --card-bg: #111924;
+            --border-color: #1b2736;
+            --text-main: #f0f6fc;
+            --text-secondary: #8b949e;
+            --accent-cyan: #38bdf8;
+            --accent-purple: #a855f7;
+            --neon-orange: #f97316;
+        }
+
         body {
-            background-color: #0d1117; /* GitHub Dark Background */
-            color: #c9d1d9;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            padding: 0;
             min-height: 100vh;
         }
 
-        .container {
-            width: 800px;
-            max-width: 90%;
-            background-color: #161b22; /* Slightly Lighter Dark */
-            border: 1px solid #30363d;
-            border-radius: 6px;
-            padding: 24px;
-        }
-
-        header {
+        /* Top Navigation */
+        .navbar {
+            background-color: var(--panel-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 10px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
         }
 
-        .logo {
-            font-size: 28px;
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .brand-logo {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .brand-logo span {
+            color: var(--accent-cyan);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
             font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 5px 10px;
+            transition: color 0.2s;
         }
 
-        .neon-purple {
-            color: #a040f0;
-            text-shadow: 0 0 10px #a040f0;
+        .nav-link.active, .nav-link:hover {
+            color: var(--accent-cyan);
         }
 
-        .status-guest {
-            color: #40c0e0; /* Bright blue-cyan */
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
-        .status-admin {
-            color: #a040f0;
-            text-shadow: 0 0 5px #a040f0;
-        }
-
-        /* Suchleiste - WIE AUF BILD 2 */
-        .search-container {
-            width: 100%;
+        /* Sub-Navigation für Spielmodi */
+        .sub-nav {
             display: flex;
             justify-content: center;
-            margin-bottom: 24px;
-        }
-
-        input[type="text"], input[type="password"] {
-            width: 100%;
+            gap: 25px;
+            background-color: rgba(11, 17, 26, 0.5);
             padding: 12px;
-            background-color: #0d1117;
-            border: 2px solid #30363d; /* Subtle borders until focused */
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .mode-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-weight: 700;
+            font-size: 12px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            text-transform: uppercase;
+            padding-bottom: 4px;
+        }
+
+        .mode-btn.active, .mode-btn:hover {
+            color: var(--accent-cyan);
+            border-bottom: 2px solid var(--accent-cyan);
+        }
+
+        /* Haupt-Inhalt */
+        .main-container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        /* Action Buttons */
+        .btn {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px 16px;
             border-radius: 6px;
-            color: #c9d1d9;
-            box-sizing: border-box;
-            transition: border-color 0.2s;
-        }
-
-        input[type="text"]#search-input {
-            border: 2px solid #40c0e0; /* Teal-Cyan border, WIE AUF BILD 2 */
-        }
-
-        input:focus {
-            outline: none;
-            border-color: #a040f0; /* Purple border on focus */
-        }
-
-        /* Spielerliste & Player-Cards - WIE AUF DEN BILDERN */
-        .player-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .player-item {
-            background-color: #161b22;
-            border: 2px solid #40c0e0; /* Teal-Cyan glowing borders */
-            border-radius: 6px;
-            padding: 16px;
-            margin-bottom: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
             display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-cyan {
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+
+        .btn-purple {
+            border-color: var(--accent-purple);
+            color: var(--accent-purple);
+        }
+
+        /* Suchfeld */
+        .search-bar {
+            background-color: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px 12px;
+            border-radius: 6px;
+            width: 200px;
+        }
+
+        /* SPALTEN-ANSICHT (Bild 1) */
+        .tier-columns {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .tier-column {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .tier-header {
+            padding: 15px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border-color);
+            background-color: rgba(27, 39, 54, 0.2);
+        }
+
+        .t1-h { color: #f59e0b; }
+        .t2-h { color: #e2e8f0; }
+        .t3-h { color: #f97316; }
+        .t4-h { color: #38bdf8; }
+        .t5-h { color: #94a3b8; }
+
+        .tier-list-content {
+            padding: 10px;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .tier-user-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: center;
-            transition: box-shadow 0.2s;
         }
 
-        .player-item:hover {
-            box-shadow: 0 0 10px rgba(64, 192, 224, 0.5);
-        }
-
-        .player-info {
+        .user-info {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
-        .player-icon {
-            width: 40px;
-            height: 40px;
+        .avatar {
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             background-color: #30363d;
-            border: 1px solid #40c0e0;
+            background-size: cover;
         }
 
-        .player-name {
+        .username {
+            font-size: 13px;
             font-weight: 600;
         }
 
-        .player-rank {
-            color: #40c0e0; /* Rank color matches borders */
+        /* LEADERBOARD-ANSICHT (Bild 2) */
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .leaderboard-table th {
+            background-color: rgba(27, 39, 54, 0.3);
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .leaderboard-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-color);
             font-size: 14px;
         }
 
-        /* Buttons */
-        .btn {
-            padding: 10px 20px;
-            border: none;
+        .rank-number {
+            font-weight: 800;
+            width: 40px;
+        }
+        .rank-1 { color: #f59e0b; }
+        .rank-2 { color: #cbd5e1; }
+        .rank-3 { color: #b45309; }
+
+        .badge-list {
+            display: flex;
+            gap: 6px;
+        }
+
+        .badge {
+            font-size: 10px;
+            font-weight: 800;
+            padding: 2px 6px;
             border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.2s;
+            text-transform: uppercase;
         }
 
-        .btn-primary {
-            background-color: #a040f0; /* Purple main action */
-            color: white;
-        }
+        .badge-ht { background-color: rgba(249, 115, 22, 0.15); color: #ff7b1a; border: 1px solid rgba(249, 115, 22, 0.3); }
+        .badge-lt { background-color: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
 
-        .btn-danger {
-            background-color: #ff2a74;
-            color: white;
-        }
-
-        /* Admin Sektion (Sperren, Hinzufügen, Edit) */
-        .admin-section {
-            background-color: #161b22;
-            padding: 16px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            border: 2px solid #a040f0; /* Purple to show admin status */
-        }
-
-        /* Login Modal (WIE AUF BILD 2) */
-        .modal {
+        /* MODAL POP-UPS (Bild 3 / Login) */
+        .modal-overlay {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
             justify-content: center;
             align-items: center;
-            z-index: 1000;
+            z-index: 2000;
         }
 
-        .modal-content {
-            background-color: #161b22;
-            padding: 24px;
-            border-radius: 6px;
-            width: 320px;
-            border: 2px solid #a040f0;
+        .modal-box {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            width: 360px;
+            position: relative;
         }
 
-        .error-msg {
-            color: #ff2a74;
-            margin-bottom: 12px;
-            font-size: 14px;
+        .modal-points-box {
+            width: 450px;
+        }
+
+        .modal-header {
+            font-size: 18px;
+            font-weight: 700;
             text-align: center;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        .points-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .points-row {
+            display: flex;
+            justify-content: space-between;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        /* Admin Panel Styling */
+        .admin-panel {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--accent-purple);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .admin-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .admin-form input, .admin-form select {
+            background-color: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 8px;
+            border-radius: 6px;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <header>
-            <div class="logo">PLAYER <span class="neon-purple">DB</span></div>
-            <div class="status-bar">
-                Status: <span id="auth-status" class="status-guest">Guest</span>
-                <button id="logout-btn" class="btn btn-danger" style="display: none; padding: 5px 10px;" onclick="logout()">Logout</button>
+    <nav class="navbar">
+        <div class="nav-left">
+            <div class="brand-logo">LOAD<span>TIERS</span></div>
+            <div class="nav-links">
+                <div class="nav-link active" onclick="switchMainTab('rankings')">RANKINGS</div>
+                <div class="nav-link">STAFF</div>
+                <div class="nav-link">DISCORD</div>
             </div>
-        </header>
+        </div>
+        <div class="nav-right">
+            <div id="admin-status-text" style="font-size: 12px; color: var(--text-secondary)">Status: Guest</div>
+            <button class="btn btn-cyan" onclick="openModal('points-modal')">⚡ Rank Points</button>
+            <input type="text" class="search-bar" id="search-input" placeholder="Search player..." oninput="handleSearch()">
+        </div>
+    </nav>
 
-        <section class="search-container">
-            <input type="text" id="search-input" placeholder="Search player (type 'login' to sign in)..." oninput="checkSearchTrigger()">
-        </section>
-
-        <section id="admin-controls" class="admin-section" style="display: none;">
-            <h3>Admin Panel</h3>
-            <div style="display: flex; gap: 10px;">
-                <input type="text" id="player-name" placeholder="Player Name">
-                <input type="text" id="player-rank" placeholder="Rank (e.g., MVP)">
-                <button onclick="addPlayer()" class="btn btn-primary">Add Player</button>
-            </div>
-        </section>
-
-        <section class="player-section">
-            <h2>Registered Players</h2>
-            <ul id="player-list" class="player-list">
-                </ul>
-        </section>
+    <div class="sub-nav">
+        <button class="mode-btn active" id="mode-overall" onclick="switchMode('overall')">Overall</button>
+        <button class="mode-btn" id="mode-sword" onclick="switchMode('sword')">Sword</button>
+        <button class="mode-btn" id="mode-cpvp" onclick="switchMode('cpvp')">CPvP</button>
+        <button class="mode-btn" id="mode-nethpot" onclick="switchMode('nethpot')">Nethpot</button>
     </div>
 
-    <div id="login-modal" class="modal">
-        <div class="modal-content">
-            <h3>Admin Login</h3>
-            <div id="login-error" class="error-msg" style="display: none;">Falsche Anmeldedaten!</div>
-            <input type="text" id="username" placeholder="Username">
-            <input type="password" id="password" placeholder="Password">
-            <div style="display: flex; justify-content: space-between; margin-top: 15px;">
-                <button onclick="attemptLogin()" class="btn btn-primary">Login</button>
-                <button onclick="closeLoginModal()" class="btn btn-danger">Abbrechen</button>
+    <div class="main-container">
+
+        <div id="admin-panel" class="admin-panel" style="display: none;">
+            <h3 style="margin-top:0; color: var(--accent-purple)">Admin Dashboard (L4lyx)</h3>
+            <div class="admin-form">
+                <input type="text" id="new-player-name" placeholder="Spieler Name">
+                <select id="new-player-mode">
+                    <option value="sword">Sword</option>
+                    <option value="cpvp">CPvP</option>
+                    <option value="nethpot">Nethpot</option>
+                </select>
+                <select id="new-player-tier">
+                    <option value="HT1">HT1</option>
+                    <option value="LT1">LT1</option>
+                    <option value="HT2">HT2</option>
+                    <option value="LT2">LT2</option>
+                    <option value="HT3">HT3</option>
+                    <option value="LT3">LT3</option>
+                    <option value="HT4">HT4</option>
+                    <option value="LT4">LT4</option>
+                    <option value="HT5">HT5</option>
+                    <option value="LT5">LT5</option>
+                </select>
+                <button class="btn btn-purple" onclick="addOrUpdatePlayer()">Spieler Speichern / Updaten</button>
+                <button class="btn" onclick="logoutAdmin()" style="border-color: #ff2a74; color: #ff2a74;">Logout</button>
+            </div>
+        </div>
+
+        <div id="content-area"></div>
+
+    </div>
+
+    <div id="points-modal" class="modal-overlay" onclick="closeModal('points-modal')">
+        <div class="modal-box modal-points-box" onclick="event.stopPropagation()">
+            <div class="modal-header">⚡ RANK POINTS</div>
+            <div class="points-grid">
+                <div class="points-row"><span style="color:#ff7b1a">HT1</span><span style="color:var(--accent-cyan)">60 PTS</span></div>
+                <div class="points-row"><span style="color:#38bdf8">LT1</span><span style="color:var(--accent-cyan)">45 PTS</span></div>
+                <div class="points-row"><span style="color:#ff7b1a">HT2</span><span style="color:var(--accent-cyan)">30 PTS</span></div>
+                <div class="points-row"><span style="color:#38bdf8">LT2</span><span style="color:var(--accent-cyan)">20 PTS</span></div>
+                <div class="points-row"><span style="color:#ff7b1a">HT3</span><span style="color:var(--accent-cyan)">10 PTS</span></div>
+                <div class="points-row"><span style="color:#38bdf8">LT3</span><span style="color:var(--accent-cyan)">6 PTS</span></div>
+                <div class="points-row"><span style="color:#ff7b1a">HT4</span><span style="color:var(--accent-cyan)">4 PTS</span></div>
+                <div class="points-row"><span style="color:#38bdf8">LT4</span><span style="color:var(--accent-cyan)">3 PTS</span></div>
+                <div class="points-row"><span style="color:#ff7b1a">HT5</span><span style="color:var(--accent-cyan)">2 PTS</span></div>
+                <div class="points-row"><span style="color:#38bdf8">LT5</span><span style="color:var(--accent-cyan)">1 PTS</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="login-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">🔑 Admin Login</div>
+            <div id="login-error" style="color: #ff2a74; font-size:12px; margin-bottom:10px; text-align:center; display:none;">Falsches Passwort!</div>
+            <input type="text" id="login-user" placeholder="Username" style="width:100%; padding:8px; margin-bottom:10px; background:#0d1117; border:1px solid var(--border-color); color:white; border-radius:6px;">
+            <input type="password" id="login-pass" placeholder="Passwort" style="width:100%; padding:8px; margin-bottom:15px; background:#0d1117; border:1px solid var(--border-color); color:white; border-radius:6px;">
+            <div style="display:flex; justify-content:space-between;">
+                <button class="btn btn-purple" onclick="submitLogin()">Login</button>
+                <button class="btn" onclick="closeModal('login-modal')">Abbrechen</button>
             </div>
         </div>
     </div>
 
     <script>
-        // --- JAVASCRIPT LOGIK MIT DEINEN BEISPIELDATEN ---
+        // Punktetabelle Definition
+        const pointValues = {
+            'HT1': 60, 'LT1': 45, 'HT2': 30, 'LT2': 20, 'HT3': 10,
+            'LT3': 6,  'HT4': 4,  'LT4': 3,  'HT5': 2,  'LT5': 1
+        };
+
+        // Standard-Spielerliste (Exakt wie auf deinen Screenshots)
         let players = [
-            { id: 1, name: "schupperterleo-ai L4lyx", rank: "L4lyx" },
-            { id: 2, name: "Dennis", rank: "Admin" },
-            { id: 3, name: "Marie", rank: "VIP" }
+            { name: "octryx ★", ranks: { sword: "HT1", cpvp: "HT1", nethpot: "HT2" } },
+            { name: "zNiclas_", ranks: { sword: "HT1", cpvp: "LT2", nethpot: "LT3" } },
+            { name: "Peentin 爱", ranks: { sword: "LT1", cpvp: "LT2", nethpot: "HT3" } },
+            { name: "why¿lxo?🍄", ranks: { sword: "LT2", cpvp: "HT3", nethpot: "HT3" } },
+            { name: "D2rx", ranks: { sword: "LT2", cpvp: "HT3", nethpot: "HT3" } },
+            { name: "Elan @ for ss", ranks: { sword: "HT2", cpvp: "HT3", nethpot: "HT3" } },
+            { name: "TheRealJero @for help", ranks: { sword: "HT3", cpvp: "HT3", nethpot: "HT3" } },
+            { name: "Frosch", ranks: { sword: "HT3", cpvp: "LT3", nethpot: "LT3" } },
+            { name: "mrbanane", ranks: { sword: "LT3", cpvp: "LT4", nethpot: "LT4" } }
         ];
 
+        let currentMode = 'overall';
         let isAdmin = false;
 
-        // Login-Trigger per Suchfeld
-        function checkSearchTrigger() {
-            const searchVal = document.getElementById('search-input').value.trim();
-            if (searchVal.toLowerCase() === 'login') {
-                document.getElementById('search-input').value = ''; 
-                openLoginModal();
+        // Hilfsfunktionen für Punkteberechnung
+        function calculateTotalPoints(player) {
+            let total = 0;
+            for (let mode in player.ranks) {
+                let tier = player.ranks[mode];
+                total += pointValues[tier] || 0;
+            }
+            return total;
+        }
+
+        function getTierGroup(tierStr) {
+            if (!tierStr) return null;
+            return tierStr.replace('HT', '').replace('LT', ''); // Gibt 1, 2, 3, 4 oder 5 zurück
+        }
+
+        // Modus wechseln (Overall vs. Einzel-Modi)
+        function switchMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`mode-${mode}`).classList.add('active');
+            render();
+        }
+
+        // Modus Render-Verteiler
+        function render() {
+            const searchVal = document.getElementById('search-input').value.toLowerCase();
+            
+            if (currentMode === 'overall') {
+                renderLeaderboard(searchVal);
             } else {
-                renderPlayers(searchVal);
+                renderColumns(searchVal);
             }
         }
 
-        function openLoginModal() {
-            document.getElementById('login-modal').style.display = 'flex';
-            document.getElementById('username').focus();
+        // 1. Spaltenansicht rendern (Bild 1)
+        function renderColumns(filter = "") {
+            const contentArea = document.getElementById('content-area');
+            
+            let html = `<div class="tier-columns">`;
+            for (let i = 1; i <= 5; i++) {
+                let tierTitle = i === 1 || i === 2 || i === 3 ? `?? Tier ${i}` : `Tier ${i}`;
+                html += `
+                    <div class="tier-column">
+                        <div class="tier-header t${i}-h">${tierTitle}</div>
+                        <div class="tier-list-content" id="tier-col-${i}">
+                `;
+
+                // Filter & Sortiere Spieler für diese Spalte
+                let columnPlayers = players.filter(p => {
+                    let playerTier = p.ranks[currentMode];
+                    return playerTier && getTierGroup(playerTier) == i && p.name.toLowerCase().includes(filter);
+                });
+
+                columnPlayers.forEach(p => {
+                    let specificTier = p.ranks[currentMode];
+                    let arrow = specificTier.startsWith('HT') ? '▲' : '▼';
+                    let arrowColor = specificTier.startsWith('HT') ? '#f97316' : '#38bdf8';
+                    
+                    let deleteButton = isAdmin ? `<span onclick="deletePlayerData('${p.name}')" style="color:#ff2a74; cursor:pointer; font-weight:800; font-size:12px; margin-left:5px;">X</span>` : '';
+
+                    html += `
+                        <div class="tier-user-card">
+                            <div class="user-info">
+                                <div class="avatar"></div>
+                                <span class="username">${p.name}</span>
+                            </div>
+                            <span style="color: ${arrowColor}; font-weight:bold; font-size:11px;">${arrow} ${deleteButton}</span>
+                        </div>
+                    `;
+                });
+
+                html += `</div></div>`;
+            }
+            html += `</div>`;
+            contentArea.innerHTML = html;
         }
 
-        function closeLoginModal() {
-            document.getElementById('login-modal').style.display = 'none';
-            document.getElementById('login-error').style.display = 'none';
-            document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
+        // 2. Leaderboard-Tabelle rendern (Bild 2)
+        function renderLeaderboard(filter = "") {
+            const contentArea = document.getElementById('content-area');
+            
+            // Berechne Punkte und Sortiere das Leaderboard
+            let sorted = [...players].map(p => {
+                return { ...p, totalPts: calculateTotalPoints(p) };
+            }).sort((a, b) => b.totalPts - a.totalPts);
+
+            if (filter) {
+                sorted = sorted.filter(p => p.name.toLowerCase().includes(filter));
+            }
+
+            let html = `
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">#</th>
+                            <th>Player</th>
+                            <th>Tiers</th>
+                            <th style="text-align: right;">Pts</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            sorted.forEach((p, index) => {
+                let rankClass = index < 3 ? `rank-${index + 1}` : '';
+                
+                let badgesHtml = '';
+                for (let mode in p.ranks) {
+                    let t = p.ranks[mode];
+                    let bClass = t.startsWith('HT') ? 'badge-ht' : 'badge-lt';
+                    badgesHtml += `<span class="badge ${bClass}">${t}</span> `;
+                }
+
+                html += `
+                    <tr>
+                        <td class="rank-number ${rankClass}">${index + 1}</td>
+                        <td>
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <div class="avatar"></div>
+                                <span style="font-weight:600;">${p.name}</span>
+                            </div>
+                        </td>
+                        <td><div class="badge-list">${badgesHtml}</div></td>
+                        <td style="text-align: right; font-weight: 800; color: var(--accent-cyan);">${p.totalPts}</td>
+                    </tr>
+                `;
+            });
+
+            html += `</tbody></table>`;
+            contentArea.innerHTML = html;
         }
 
-        // Login Überprüfung mit DEINEN Daten
-        function attemptLogin() {
-            const user = document.getElementById('username').value;
-            const pass = document.getElementById('password').value;
+        // Suchfunktion-Trigger (Öffnet Login wenn man "login" eintippt)
+        function handleSearch() {
+            const val = document.getElementById('search-input').value.trim();
+            if (val.toLowerCase() === 'login') {
+                document.getElementById('search-input').value = '';
+                openModal('login-modal');
+            } else {
+                render();
+            }
+        }
 
-            if (user === 'L4lyx' && pass === 'Tini2013!') {
+        // Modals öffnen & schließen
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        // Login Logik
+        function submitLogin() {
+            const u = document.getElementById('login-user').value;
+            const p = document.getElementById('login-pass').value;
+
+            if (u === 'L4lyx' && p === 'Tini2013!') {
                 isAdmin = true;
-                closeLoginModal();
-                updateUI();
+                document.getElementById('admin-status-text').innerText = "Status: L4lyx (Admin)";
+                document.getElementById('admin-status-text').style.color = "var(--accent-purple)";
+                document.getElementById('admin-panel').style.display = 'block';
+                closeModal('login-modal');
+                render();
             } else {
                 document.getElementById('login-error').style.display = 'block';
             }
         }
 
-        function logout() {
+        function logoutAdmin() {
             isAdmin = false;
-            updateUI();
+            document.getElementById('admin-status-text').innerText = "Status: Guest";
+            document.getElementById('admin-status-text').style.color = "var(--text-secondary)";
+            document.getElementById('admin-panel').style.display = 'none';
+            render();
         }
 
-        // UI-Update (Admin vs. Guest)
-        function updateUI() {
-            const statusText = document.getElementById('auth-status');
-            const adminControls = document.getElementById('admin-controls');
-            const logoutBtn = document.getElementById('logout-btn');
+        // Admin-Aktion: Hinzufügen / Bearbeiten
+        function addOrUpdatePlayer() {
+            const name = document.getElementById('new-player-name').value.trim();
+            const mode = document.getElementById('new-player-mode').value;
+            const tier = document.getElementById('new-player-tier').value;
 
-            if (isAdmin) {
-                statusText.innerText = "L4lyx (Admin)";
-                statusText.className = "status-admin";
-                adminControls.style.display = "block";
-                logoutBtn.style.display = "inline-block";
+            if (!name) return;
+
+            let existing = players.find(p => p.name.toLowerCase() === name.toLowerCase());
+
+            if (existing) {
+                existing.ranks[mode] = tier;
             } else {
-                statusText.innerText = "Guest";
-                statusText.className = "status-guest";
-                adminControls.style.display = "none";
-                logoutBtn.style.display = "none";
+                let newP = { name: name, ranks: {} };
+                newP.ranks[mode] = tier;
+                players.push(newP);
             }
-            renderPlayers(); // Liste neu laden
+
+            document.getElementById('new-player-name').value = '';
+            render();
         }
 
-        // Spieler anzeigen & filtern
-        function renderPlayers(filter = "") {
-            const list = document.getElementById('player-list');
-            list.innerHTML = "";
-
-            const filtered = players.filter(p => p.name.toLowerCase().includes(filter.toLowerCase()));
-
-            filtered.forEach(player => {
-                const li = document.createElement('li');
-                li.className = "player-item";
-                
-                let actionsHtml = "";
-                // Edit/Delete nur für Admin
-                if (isAdmin) {
-                    actionsHtml = `
-                        <div>
-                            <button onclick="editPlayer(${player.id})" class="btn btn-primary" style="padding: 5px 10px; margin-right: 5px;">Edit</button>
-                            <button onclick="deletePlayer(${player.id})" class="btn btn-danger" style="padding: 5px 10px;">X</button>
-                        </div>
-                    `;
-                }
-
-                li.innerHTML = `
-                    <div class="player-info">
-                        <div class="player-icon"></div>
-                        <div>
-                            <span class="player-name">${player.name}</span><br>
-                            <span class="player-rank">${player.rank}</span>
-                        </div>
-                    </div>
-                    ${actionsHtml}
-                `;
-                list.appendChild(li);
-            });
+        // Admin-Aktion: Löschen
+        function deletePlayerData(name) {
+            players = players.filter(p => p.name !== name);
+            render();
         }
 
-        // Hinzufügen (Nur Admin)
-        function addPlayer() {
-            const nameInput = document.getElementById('player-name');
-            const rankInput = document.getElementById('player-rank');
-
-            if (nameInput.value.trim() === "") return;
-
-            const newPlayer = {
-                id: Date.now(),
-                name: nameInput.value,
-                rank: rankInput.value || "Player"
-            };
-
-            players.push(newPlayer);
-            nameInput.value = "";
-            rankInput.value = "";
-            renderPlayers();
-        }
-
-        // Löschen (Nur Admin)
-        function deletePlayer(id) {
-            players = players.filter(p => p.id !== id);
-            renderPlayers();
-        }
-
-        // Editieren (Nur Admin)
-        function editPlayer(id) {
-            const player = players.find(p => p.id === id);
-            if (!player) return;
-
-            const newName = prompt("Neuer Name für " + player.name + ":", player.name);
-            const newRank = prompt("Neuer Rang für " + player.name + ":", player.rank);
-
-            if (newName !== null && newName.trim() !== "") player.name = newName;
-            if (newRank !== null && newRank.trim() !== "") player.rank = newRank;
-            
-            renderPlayers();
-        }
-
-        renderPlayers(); // Initiale Anzeige
+        // Initialer Start beim Laden der Seite
+        render();
     </script>
 </body>
 </html>
