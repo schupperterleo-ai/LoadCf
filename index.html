@@ -45,10 +45,10 @@
         .nav-item.disabled { color: var(--text-muted); pointer-events: none; opacity: 0.4; }
 
         /* --- LANDING PAGE (STARTSEITE) --- */
-        .landing-container { position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; text-align: center; padding: 20px; padding-top: 80px; }
-        .hero-title { font-size: 44px; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 10px; margin-top: -40px; }
+        .landing-container { position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; min-height: 100vh; text-align: center; padding: 20px; padding-top: 100px; gap: 30px; }
+        .hero-title { font-size: 44px; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 5px; }
         .hero-title span { color: var(--neon-red); text-shadow: 0 0 15px var(--neon-red); }
-        .hero-sub { color: var(--text-muted); font-size: 13px; font-weight: 600; margin-bottom: 35px; text-transform: uppercase; letter-spacing: 2px; }
+        .hero-sub { color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; margin-top: -25px; }
         
         .search-box { background: var(--panel-bg); border: 1px solid var(--panel-border); padding: 30px; border-radius: 12px; width: 100%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.7); }
         .url-input-row { display: flex; background: #000; border: 1px solid var(--panel-border); border-radius: 6px; padding: 10px; align-items: center; margin-bottom: 20px; }
@@ -60,6 +60,24 @@
         .btn-claim { background: var(--neon-red); color: #fff; box-shadow: 0 0 15px var(--neon-glow); }
         .btn-claim:hover { transform: scale(1.02); box-shadow: 0 0 25px var(--neon-red); }
         .btn-login { background: #120505; border: 1px solid var(--panel-border); color: #fff; }
+
+        /* --- PROFIL-ENTDECKEN LEISTE (EXPLORE SEKTION) --- */
+        .explore-section { background: var(--panel-bg); border: 1px solid var(--panel-border); padding: 25px; border-radius: 12px; width: 100%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.7); text-align: left; }
+        .explore-title { font-size: 12px; font-weight: 800; text-transform: uppercase; color: var(--neon-red); letter-spacing: 1.5px; margin-bottom: 15px; border-bottom: 1px solid rgba(255, 51, 51, 0.1); padding-bottom: 8px; }
+        
+        .profiles-list { display: flex; flex-direction: column; gap: 10px; max-height: 250px; overflow-y: auto; padding-right: 5px; }
+        .profile-item-card { display: flex; align-items: center; gap: 15px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,51,51,0.1); padding: 10px 15px; border-radius: 6px; transition: all 0.2s; }
+        .profile-item-card:hover { border-color: var(--neon-red); background: rgba(255,51,51,0.05); transform: translateX(3px); }
+        .profile-item-avatar { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--neon-red); object-fit: cover; }
+        .profile-item-info { display: flex; flex-direction: column; }
+        .profile-item-name { font-size: 14px; font-weight: 800; color: #fff; text-transform: uppercase; }
+        .profile-item-tag { font-size: 11px; color: var(--text-muted); }
+        .no-profiles-text { font-size: 12px; color: var(--text-muted); text-align: center; font-style: italic; padding: 15px 0; }
+
+        /* Scrollbar für die Profilliste */
+        .profiles-list::-webkit-scrollbar { width: 4px; }
+        .profiles-list::-webkit-scrollbar-track { background: transparent; }
+        .profiles-list::-webkit-scrollbar-thumb { background: var(--panel-border); border-radius: 2px; }
 
         /* --- BIO PROFIL SEITE --- */
         #bio-view-page { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; display: none; background-size: cover; background-position: center; justify-content: center; align-items: center; padding-top: 60px; }
@@ -97,6 +115,7 @@
     <div class="grid-bg"></div>
     <div id="main-cursor"></div>
 
+    <!-- ---------------- NAVBAR LEISTE ---------------- -->
     <div class="navbar">
         <div class="nav-logo" onclick="goHome()">Load<span>Space</span></div>
         <div class="nav-links">
@@ -106,24 +125,38 @@
         </div>
     </div>
 
+    <!-- ---------------- STARTSEITE (HOME) ---------------- -->
     <div class="landing-container" id="view-landing">
-        <div class="hero-title">Load<span>Space</span></div>
-        <div class="hero-sub">The Ultimate Link-In-Bio Network</div>
+        <div>
+            <div class="hero-title">Load<span>Space</span></div>
+            <div class="hero-sub">The Ultimate Link-In-Bio Network</div>
+        </div>
 
+        <!-- Suchen / Erstellen Box -->
         <div class="search-box">
             <div class="url-input-row">
                 <span class="url-prefix">load.space/</span>
                 <input type="text" id="search-username" placeholder="wunschname">
             </div>
-            <button class="action-btn btn-claim" onclick="lookupOrCreateProfile()">Claim / Visit Link</button>
+            <button class="action-btn btn-claim" onclick="lookupOrCreateProfile(document.getElementById('search-username').value)">Claim / Visit Link</button>
+        </div>
+
+        <!-- NEU: ENTECKEN-LISTE FÜR DIE ANDEREN PROFILE -->
+        <div class="explore-section">
+            <div class="explore-title">🌐 Registrierte Netzwerkknoten (Profile)</div>
+            <div class="profiles-list" id="network-profiles-display">
+                <!-- Werden automatisch per JavaScript geladen -->
+            </div>
         </div>
     </div>
 
+    <!-- ---------------- BIO SEITE (GUNS.LOL LOOK) ---------------- -->
     <div id="bio-view-page">
         <div class="bio-overlay"></div>
         <canvas id="particle-canvas"></canvas>
         <audio id="bio-audio" loop></audio>
 
+        <!-- Click to Enter Wall -->
         <div class="unmute-overlay" id="click-unmute-wall" onclick="playBioMusic()">
             <button class="action-btn btn-claim" style="max-width: 200px;">Click to Enter</button>
         </div>
@@ -137,6 +170,7 @@
         </div>
     </div>
 
+    <!-- ---------------- LIVE EDITOR SIDEBAR ---------------- -->
     <div id="editor-panel">
         <div class="editor-title">⚡ Control Center</div>
         
@@ -149,6 +183,7 @@
             <input type="text" id="edit-tagline" oninput="liveRefresh()">
         </div>
 
+        <!-- DATEI UPLOAD BUTTONS -->
         <div class="input-group">
             <label>Profilbild Hochladen</label>
             <label class="file-upload-btn" for="upload-avatar">📂 Datei auswählen...</label>
@@ -174,6 +209,7 @@
             </select>
         </div>
 
+        <!-- LINK BUILDER -->
         <div class="input-group" style="margin-top: 25px;">
             <label style="color: var(--neon-red); margin-bottom: 10px;">🔗 Custom Links & Buttons</label>
             <div id="links-builder-area"></div>
@@ -186,6 +222,7 @@
         </div>
     </div>
 
+    <!-- ---------------- ENGINE JAVASCRIPT ---------------- -->
     <script>
         const cursor = document.getElementById('main-cursor');
         document.addEventListener('mousemove', (e) => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
@@ -193,19 +230,56 @@
         let currentUsername = "";
         let profileData = {};
 
-        // NAVBAR-NAVIGATION: HOME / LOGOUT
+        // Beim ersten Laden der App direkt die Profil-Liste aktualisieren
+        window.onload = function() {
+            loadNetworkProfiles();
+        };
+
+        // LÄDT ALLE PROFILE AUS DEM LOCALSTORAGE UND ZEIGT SIE AN
+        function loadNetworkProfiles() {
+            const display = document.getElementById('network-profiles-display');
+            display.innerHTML = '';
+            
+            let database = JSON.parse(localStorage.getItem('loadspace_network')) || {};
+            let keys = Object.keys(database);
+
+            if(keys.length === 0) {
+                display.innerHTML = `<div class="no-profiles-text">Noch keine Profile im Netzwerk registriert.</div>`;
+                return;
+            }
+
+            keys.forEach(username => {
+                const data = database[username];
+                const avatarSrc = data.avatar || 'default-avatar.png';
+                
+                const card = document.createElement('div');
+                card.className = 'profile-item-card';
+                card.onclick = () => lookupOrCreateProfile(username); // Klick öffnet das Profil direkt
+                
+                card.innerHTML = `
+                    <img src="${avatarSrc}" class="profile-item-avatar" alt="pfp">
+                    <div class="profile-item-info">
+                        <span class="profile-item-name">${data.name || username}</span>
+                        <span class="profile-item-tag">load.space/${username}</span>
+                    </div>
+                `;
+                display.appendChild(card);
+            });
+        }
+
         function goHome() {
             document.getElementById('bio-audio').pause();
             document.getElementById('editor-panel').style.display = 'none';
             document.getElementById('bio-view-page').style.display = 'none';
             document.getElementById('view-landing').style.display = 'flex';
             
-            // Edit-Button deaktivieren, da kein Profil geladen ist
             const editBtn = document.getElementById('nav-edit-btn');
             editBtn.classList.add('disabled');
             
-            // Card-Verschiebung zurücksetzen
             document.getElementById('main-bio-card').style.marginLeft = '0px';
+            
+            // Liste aktualisieren, falls sich ein Name geändert hat
+            loadNetworkProfiles();
         }
 
         function triggerCreateMode() {
@@ -214,8 +288,8 @@
             document.getElementById('search-username').placeholder = "neuer_wunschname";
         }
 
-        function lookupOrCreateProfile() {
-            const user = document.getElementById('search-username').value.trim().toLowerCase();
+        function lookupOrCreateProfile(targetUser) {
+            let user = targetUser ? targetUser.trim().toLowerCase() : "";
             if(!user) return alert("Bitte gib einen Namen ein!");
 
             currentUsername = user;
@@ -242,8 +316,10 @@
             document.getElementById('view-landing').style.display = 'none';
             document.getElementById('bio-view-page').style.display = 'flex';
             
-            // Edit-Button in der Leiste freischalten!
             document.getElementById('nav-edit-btn').classList.remove('disabled');
+            
+            // Wenn man ein Profil öffnet, zeigen wir erst wieder die "Click to Enter" Wall
+            document.getElementById('click-unmute-wall').style.display = 'flex';
             
             renderBioPage();
         }
@@ -302,7 +378,6 @@
             audio.play().catch(() => console.log("Audio blockiert"));
         }
 
-        // ÖFFNET DAS EDIT-PANEL ÜBER DIE NAVBAR
         function openEditor() {
             document.getElementById('edit-name').value = profileData.name;
             document.getElementById('edit-tagline').value = profileData.tagline;
@@ -315,7 +390,6 @@
             });
 
             document.getElementById('editor-panel').style.display = 'block';
-            // Verschiebt das Profil nach rechts, um Platz für das Panel zu machen
             document.getElementById('main-bio-card').style.marginLeft = '440px';
         }
 
@@ -355,6 +429,7 @@
             database[currentUsername] = profileData;
             localStorage.setItem('loadspace_network', JSON.stringify(database));
             alert("🔒 Änderungen erfolgreich in der Matrix gespeichert!");
+            loadNetworkProfiles(); // Aktualisiert die Home-Anzeige direkt nach dem Speichern
         }
         
         // --- PARTIKEL SYSTEM ---
