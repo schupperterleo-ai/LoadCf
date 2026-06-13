@@ -15,6 +15,10 @@
             --accent-cyan: #00bfff;
             --accent-purple: #a855f7;
             --neon-orange: #ff7b1a;
+            
+            /* HT/LT Farben basierend auf deinen Bildern */
+            --color-ht: #ff7b1a;
+            --color-lt: #38bdf8;
         }
 
         body {
@@ -144,45 +148,41 @@
         /* Leaderboard Table Main Layout */
         .leaderboard-table { width: 100%; border-collapse: collapse; background-color: rgba(8, 13, 26, 0.85); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; margin-top: 20px; backdrop-filter: blur(8px); }
         .leaderboard-table th { background-color: rgba(23, 37, 59, 0.5); padding: 16px 20px; text-align: left; font-size: 11px; text-transform: uppercase; color: var(--text-secondary); border-bottom: 1px solid var(--border-color); letter-spacing: 0.5px; }
-        .leaderboard-table td { padding: 14px 20px; border-bottom: 1px solid var(--border-color); font-size: 14px; }
+        .leaderboard-table td { padding: 14px 20px; border-bottom: 1px solid var(--border-color); font-size: 14px; vertical-align: middle; }
         .leaderboard-table tr { transition: transform 0.15s ease, background-color 0.15s ease; cursor: pointer; }
         .leaderboard-table tr:hover { background-color: rgba(23, 37, 59, 0.4); transform: scale(1.002); }
-
-        /* Stagger In Animationen für Zeilen */
-        .leaderboard-table tbody tr { opacity: 0; transform: translateY(10px); animation: fastFadeInRow 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .leaderboard-table tbody tr:nth-child(1) { animation-delay: 20ms; }
-        .leaderboard-table tbody tr:nth-child(2) { animation-delay: 40ms; }
-        .leaderboard-table tbody tr:nth-child(3) { animation-delay: 60ms; }
-        @keyframes fastFadeInRow { to { opacity: 1; transform: translateY(0); } }
 
         .rank-number { font-weight: 900; font-size: 16px; }
         .rank-1 { color: #ffaa00; text-shadow: 0 0 8px rgba(255,170,0,0.3); } 
         .rank-2 { color: #cbd5e1; text-shadow: 0 0 8px rgba(203,213,225,0.3); } 
         .rank-3 { color: #b45309; text-shadow: 0 0 8px rgba(180,83,9,0.3); }
+        
+        .player-cell { display: flex; align-items: center; gap: 12px; }
         .username { font-weight: 700; color: #ffffff; transition: color 0.15s; }
         .leaderboard-table tr:hover .username { color: var(--accent-cyan); }
 
-        /* Tiers Spalten Grid Layout */
-        .tier-columns { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-top: 20px; animation: superEntrance 0.35s cubic-bezier(0.16, 1, 0.3, 1) both; }
-        .tier-column { background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 10px; overflow: hidden; backdrop-filter: blur(8px); }
-        .tier-header { padding: 15px; text-align: center; font-weight: 800; font-size: 13px; border-bottom: 1px solid var(--border-color); background: rgba(23, 37, 59, 0.4); }
-        .t1-h { color: #ffaa00; } .t2-h { color: #cbd5e1; } .t3-h { color: #ff7b1a; } .t4-h { color: #38bdf8; } .t5-h { color: #94a3b8; }
-        .tier-list-content { padding: 10px; min-height: 450px; display: flex; flex-direction: column; gap: 8px; }
+        /* Tier Badge List in Table */
+        .tiers-inline-list { display: flex; gap: 6px; align-items: center; }
         
-        .tier-user-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; display: flex; align-items: center; justify-content: space-between; transition: all 0.2s ease; }
-        .tier-user-card:hover { transform: translateX(2px); border-color: var(--accent-cyan); background-color: #121d30; }
-        .avatar { width: 32px; height: 32px; border-radius: 6px; image-rendering: pixelated; }
-
-        /* Badge Icon Styles */
-        .badge-list { display: flex; gap: 12px; }
-        .tier-badge-container { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 44px; }
-        .icon-wrapper { width: 36px; height: 36px; border-radius: 8px; background-color: #0e1726; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 8px rgba(0,0,0,0.6); }
-        .mode-logo-img { width: 24px; height: 24px; object-fit: contain; image-rendering: pixelated; }
+        /* Das Icon Box System aus deinen Screenshots */
+        .mini-badge {
+            background-color: rgba(10, 17, 32, 0.8);
+            border-radius: 6px;
+            padding: 4px 6px;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-width: 34px;
+            font-size: 9px;
+            font-weight: 800;
+            gap: 3px;
+        }
+        .mini-badge.ht { border: 1px solid var(--color-ht); color: var(--color-ht); box-shadow: 0 0 6px rgba(255,123,26,0.15); }
+        .mini-badge.lt { border: 1px solid var(--color-lt); color: var(--color-lt); box-shadow: 0 0 6px rgba(56,189,248,0.15); }
         
-        .border-ht { border: 1.5px solid #ff7b1a; box-shadow: 0 0 8px rgba(249, 115, 22, 0.25); }
-        .border-line-ht { color: #ff7b1a; font-weight: 800; font-size: 11px; }
-        .border-lt { border: 1.5px solid #38bdf8; box-shadow: 0 0 8px rgba(56, 189, 248, 0.25); }
-        .border-line-lt { color: #38bdf8; font-weight: 800; font-size: 11px; }
+        /* Modus SVG Icons */
+        .badge-icon { width: 14px; height: 14px; display: inline-block; fill: currentColor; }
 
         /* Admin Dashboard & Views */
         .admin-panel { background-color: var(--panel-bg); border: 1px solid var(--accent-purple); border-radius: 12px; padding: 20px; margin-top: 20px; backdrop-filter: blur(10px); }
@@ -191,20 +191,26 @@
         .admin-form { display: flex; flex-direction: column; gap: 12px; }
         .admin-form input, .admin-form select { background-color: #060913; border: 1px solid var(--border-color); color: white; padding: 10px; border-radius: 6px; }
 
-        /* Staff Elements */
+        /* Staff Elements Layout aus image_b70736.png */
         .staff-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 20px; }
-        .staff-card { background-color: rgba(6, 11, 20, 0.85); border: 1.5px solid #121d30; border-radius: 16px; padding: 18px; display: flex; align-items: center; gap: 14px; backdrop-filter: blur(8px); }
-        .staff-img { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid #1f304a; }
+        .staff-card { background-color: rgba(11, 17, 30, 0.75); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; display: flex; align-items: center; gap: 14px; backdrop-filter: blur(8px); }
+        .staff-img { width: 42px; height: 42px; border-radius: 8px; background-color: #1a2333; display: flex; align-items: center; justify-content: center; }
         .staff-info { display: flex; flex-direction: column; gap: 4px; }
         .staff-name { font-weight: 800; color: #ffffff; font-size: 14px; }
-        .staff-particle-sub { font-size: 11px; font-weight: 600; color: var(--accent-cyan); opacity: 0.85; }
+        
+        /* Die farbigen Staff-Schilder */
+        .staff-tag { font-size: 9px; font-weight: 800; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; letter-spacing: 0.5px; width: fit-content; }
+        .tag-owner { background-color: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .tag-overseer { background-color: rgba(168, 85, 247, 0.15); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.3); }
+        .tag-manager { background-color: rgba(234, 179, 8, 0.15); color: #eab308; border: 1px solid rgba(234, 179, 8, 0.3); }
+        .tag-developer { background-color: rgba(6, 182, 212, 0.15); color: #06b6d4; border: 1px solid rgba(6, 182, 212, 0.3); }
+        .tag-admin { background-color: rgba(34, 197, 94, 0.15); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.3); }
 
         /* Modals Overlay System */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(3, 5, 10, 0.85); backdrop-filter: blur(8px); justify-content: center; align-items: center; z-index: 2000; }
         .points-modal-box { background-color: #080d19; border: 1.5px solid #1a2a42; border-radius: 20px; padding: 30px; width: 460px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
 
         @keyframes particleDrive { from { background-position: 0 0, 150px 250px; } to { background-position: 550px 1100px, 950px 1050px; } }
-        @keyframes superEntrance { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -250,50 +256,96 @@
         </div>
 
         <div class="main-container">
-            <!-- Rankings View -->
             <div id="view-rankings">
                 <table class="leaderboard-table">
                     <thead>
                         <tr>
                             <th style="width: 80px;"># Rank</th>
                             <th>Player</th>
+                            <th>Tiers</th>
                             <th style="text-align: right;">Points</th>
                         </tr>
                     </thead>
                     <tbody id="leaderboard-body">
                         <tr>
                             <td><span class="rank-number rank-1">1</span></td>
-                            <td><span class="username">octryx ★</span></td>
+                            <td>
+                                <div class="player-cell">
+                                    <span class="username">octryx ★</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="tiers-inline-list">
+                                    <div class="mini-badge ht"><svg class="badge-icon" viewBox="0 0 24 24"><path d="M5 3h14v4H5zm0 6h14v9a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z"/></svg>HT1</div>
+                                    <div class="mini-badge ht"><svg class="badge-icon" viewBox="0 0 24 24"><path d="M19.5 2.5a2.12 2.12 0 0 0-3 0L7 12l-2-1-2 2 3 3 3 3 2-2-1-2 9.5-9.5a2.12 2.12 0 0 0 0-3zM5 19l-2 2v1h1l2-2z"/></svg>HT1</div>
+                                    <div class="mini-badge lt" style="--color-lt: #d946ef; box-shadow: 0 0 6px rgba(217,70,239,0.25);">
+                                        <svg class="badge-icon" viewBox="0 0 24 24"><path d="M12 2L2 12l10 10 10-10L12 2zm0 4l6 6-6 6-6-6 6-6z"/></svg>LT3
+                                    </div>
+                                    <div class="mini-badge ht"><svg class="badge-icon" viewBox="0 0 24 24"><path d="M16 3h-1V1h-6v2H8v2h8zm-1 4H9l-4 7v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7z"/></svg>HT2</div>
+                                    <div class="mini-badge lt"><svg class="badge-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.5 3 21 5.42 21 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>LT2</div>
+                                </div>
+                            </td>
                             <td style="text-align: right; color: var(--accent-cyan); font-weight:700;">206</td>
                         </tr>
                         <tr>
                             <td><span class="rank-number rank-2">2</span></td>
-                            <td><span class="username">zNiclas_</span></td>
+                            <td>
+                                <div class="player-cell">
+                                    <span class="username">zNiclas_</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="tiers-inline-list">
+                                    <div class="mini-badge ht"><svg class="badge-icon" viewBox="0 0 24 24"><path d="M19.5 2.5a2.12 2.12 0 0 0-3 0L7 12l-2-1-2 2 3 3 3 3 2-2-1-2 9.5-9.5a2.12 2.12 0 0 0 0-3z"/></svg>HT1</div>
+                                    <div class="mini-badge lt"><svg class="badge-icon" viewBox="0 0 24 24"><path d="M12 2L2 12l10 10 10-10L12 2zm0 4l6 6-6 6-6-6 6-6z"/></svg>LT3</div>
+                                </div>
+                            </td>
                             <td style="text-align: right; color: var(--accent-cyan); font-weight:700;">116</td>
-                        </tr>
-                        <tr>
-                            <td><span class="rank-number rank-3">3</span></td>
-                            <td><span class="username">Peentin 爱</span></td>
-                            <td style="text-align: right; color: var(--accent-cyan); font-weight:700;">111</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            <!-- Staff View -->
             <div id="view-staff" style="display: none;">
                 <div class="staff-grid">
                     <div class="staff-card">
-                        <div class="staff-img"></div>
+                        <div class="staff-img">👑</div>
                         <div class="staff-info">
-                            <span class="staff-name">Willi</span>
-                            <span class="staff-particle-sub">Network Owner</span>
+                            <span class="staff-name">KeksBanane</span>
+                            <span class="staff-tag tag-owner">Network Owner</span>
+                        </div>
+                    </div>
+                    <div class="staff-card">
+                        <div class="staff-img">👾</div>
+                        <div class="staff-info">
+                            <span class="staff-name">why¿lxo? 🍄</span>
+                            <span class="staff-tag tag-overseer">Network Overseer</span>
+                        </div>
+                    </div>
+                    <div class="staff-card">
+                        <div class="staff-img">💼</div>
+                        <div class="staff-info">
+                            <span class="staff-name">Elija</span>
+                            <span class="staff-tag tag-manager">Manager</span>
+                        </div>
+                    </div>
+                    <div class="staff-card">
+                        <div class="staff-img">💻</div>
+                        <div class="staff-info">
+                            <span class="staff-name">Demian</span>
+                            <span class="staff-tag tag-developer">Developer</span>
+                        </div>
+                    </div>
+                    <div class="staff-card">
+                        <div class="staff-img">🛡️</div>
+                        <div class="staff-info">
+                            <span class="staff-name">Peentin 爱</span>
+                            <span class="staff-tag tag-admin">Administrator</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Admin Panel View -->
             <div id="view-admin" style="display: none;">
                 <div class="admin-panel">
                     <h3 style="margin:0 0 15px 0; color: var(--accent-purple);">Admin Engine</h3>
@@ -304,7 +356,8 @@
                                 <input type="text" placeholder="Minecraft Name">
                                 <select>
                                     <option value="sword">Sword</option>
-                                    <option value="cpvp">CPvP</option>
+                                    <option value="cpvp">CPvP (Crystal)</option>
+                                    <option value="smp">SMP</option>
                                 </select>
                                 <button class="btn btn-cyan">Hinzufügen</button>
                             </div>
@@ -315,7 +368,6 @@
         </div>
     </div>
 
-    <!-- Modals Layout -->
     <div class="modal-overlay" id="points-modal">
         <div class="points-modal-box">
             <h3 style="margin-top:0;">⚡ Rank Points System</h3>
