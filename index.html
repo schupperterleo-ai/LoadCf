@@ -3,464 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LoadSpace | Premium Bio-Link Network</title>
-    <style>
-        /* --- DESIGN CONFIG & MATRIX RED THEME --- */
-        :root {
-            --bg-dark: #050202;
-            --panel-bg: rgba(12, 3, 3, 0.85);
-            --panel-border: rgba(255, 51, 51, 0.2);
-            --neon-red: #ff3333;
-            --neon-glow: rgba(255, 51, 51, 0.5);
-            --text-main: #ffffff;
-            --text-muted: #835252;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; cursor: none; }
-        body, html { background-color: var(--bg-dark); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
-
-        /* --- BACKGROUND & CURSOR --- */
-        .grid-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(255, 51, 51, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 51, 51, 0.02) 1px, transparent 1px); background-size: 50px 50px; z-index: 1; pointer-events: none; }
-        #main-cursor { width: 22px; height: 22px; border: 2px solid var(--neon-red); border-radius: 50%; position: fixed; transform: translate(-50%, -50%); pointer-events: none; z-index: 10000; box-shadow: 0 0 10px var(--neon-glow); }
-        #main-cursor::after { content: ''; position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; background: #fff; border-radius: 50%; transform: translate(-50%, -50%); }
-        #particle-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
-
-        /* --- STYLISCHE NAVIGATIONSLEISTE (NAVBAR) --- */
-        .navbar {
-            position: fixed; top: 0; left: 0; width: 100%; height: 60px;
-            background: rgba(12, 3, 3, 0.9); border-bottom: 1px solid var(--panel-border);
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0 30px; z-index: 1000; backdrop-filter: blur(5px);
-        }
-        .nav-logo { font-size: 20px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; }
-        .nav-logo span { color: var(--neon-red); text-shadow: 0 0 10px var(--neon-red); }
-        
-        .nav-links { display: flex; gap: 20px; }
-        .nav-item {
-            background: transparent; border: none; color: #fff; font-size: 11px;
-            font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
-            padding: 8px 16px; border-radius: 4px; transition: all 0.2s;
-        }
-        .nav-item:hover { background: rgba(255, 51, 51, 0.1); color: var(--neon-red); }
-        .nav-item.disabled { color: var(--text-muted); pointer-events: none; opacity: 0.4; }
-
-        /* --- LANDING PAGE (STARTSEITE) --- */
-        .landing-container { position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; min-height: 100vh; text-align: center; padding: 20px; padding-top: 100px; gap: 30px; }
-        .hero-title { font-size: 44px; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 5px; }
-        .hero-title span { color: var(--neon-red); text-shadow: 0 0 15px var(--neon-red); }
-        .hero-sub { color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; margin-top: -25px; }
-        
-        .search-box { background: var(--panel-bg); border: 1px solid var(--panel-border); padding: 30px; border-radius: 12px; width: 100%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.7); }
-        .url-input-row { display: flex; background: #000; border: 1px solid var(--panel-border); border-radius: 6px; padding: 10px; align-items: center; margin-bottom: 20px; }
-        .url-prefix { color: var(--text-muted); font-weight: 700; font-size: 14px; margin-right: 5px; }
-        .url-input-row input { background: transparent; border: none; color: #fff; font-size: 14px; font-weight: 700; width: 100%; }
-        .url-input-row input:focus { outline: none; }
-        
-        .action-btn { width: 100%; padding: 14px; border: none; border-radius: 6px; font-weight: 800; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; transition: all 0.2s; margin-bottom: 10px; }
-        .btn-claim { background: var(--neon-red); color: #fff; box-shadow: 0 0 15px var(--neon-glow); }
-        .btn-claim:hover { transform: scale(1.02); box-shadow: 0 0 25px var(--neon-red); }
-        .btn-login { background: #120505; border: 1px solid var(--panel-border); color: #fff; }
-
-        /* --- PROFIL-ENTDECKEN LEISTE (EXPLORE SEKTION) --- */
-        .explore-section { background: var(--panel-bg); border: 1px solid var(--panel-border); padding: 25px; border-radius: 12px; width: 100%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.7); text-align: left; }
-        .explore-title { font-size: 12px; font-weight: 800; text-transform: uppercase; color: var(--neon-red); letter-spacing: 1.5px; margin-bottom: 15px; border-bottom: 1px solid rgba(255, 51, 51, 0.1); padding-bottom: 8px; }
-        
-        .profiles-list { display: flex; flex-direction: column; gap: 10px; max-height: 250px; overflow-y: auto; padding-right: 5px; }
-        .profile-item-card { display: flex; align-items: center; gap: 15px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,51,51,0.1); padding: 10px 15px; border-radius: 6px; transition: all 0.2s; }
-        .profile-item-card:hover { border-color: var(--neon-red); background: rgba(255,51,51,0.05); transform: translateX(3px); }
-        .profile-item-avatar { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--neon-red); object-fit: cover; }
-        .profile-item-info { display: flex; flex-direction: column; }
-        .profile-item-name { font-size: 14px; font-weight: 800; color: #fff; text-transform: uppercase; }
-        .profile-item-tag { font-size: 11px; color: var(--text-muted); }
-        .no-profiles-text { font-size: 12px; color: var(--text-muted); text-align: center; font-style: italic; padding: 15px 0; }
-
-        /* Scrollbar für die Profilliste */
-        .profiles-list::-webkit-scrollbar { width: 4px; }
-        .profiles-list::-webkit-scrollbar-track { background: transparent; }
-        .profiles-list::-webkit-scrollbar-thumb { background: var(--panel-border); border-radius: 2px; }
-
-        /* --- BIO PROFIL SEITE --- */
-        #bio-view-page { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; display: none; background-size: cover; background-position: center; justify-content: center; align-items: center; padding-top: 60px; }
-        .bio-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(4,2,2,0.5); backdrop-filter: blur(4px); z-index: 1; }
-        
-        .unmute-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5,2,2,0.98); z-index: 100; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(10px); }
-
-        .bio-card { position: relative; z-index: 10; width: 100%; max-width: 400px; background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 12px; padding: 35px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.9); transition: all 0.3s ease; }
-        .bio-avatar { width: 90px; height: 90px; border-radius: 50%; border: 2px solid var(--neon-red); box-shadow: 0 0 15px var(--neon-glow); object-fit: cover; margin-bottom: 15px; }
-        .bio-name { font-size: 26px; font-weight: 900; text-transform: uppercase; text-shadow: 0 0 10px var(--neon-red); margin-bottom: 5px; }
-        .bio-tagline { font-size: 12px; color: var(--text-muted); margin-bottom: 25px; font-weight: 600; }
-        
-        .bio-links-container { display: flex; flex-direction: column; gap: 12px; }
-        .bio-link-button { background: rgba(0,0,0,0.6); border: 1px solid rgba(255,51,51,0.15); padding: 14px; color: #fff; text-decoration: none; border-radius: 6px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s; }
-        .bio-link-button:hover { border-color: var(--neon-red); background: rgba(255,51,51,0.05); transform: translateY(-2px); }
-
-        /* --- LIVE EDITOR SIDEBAR --- */
-        #editor-panel { position: fixed; top: 60px; left: 0; width: 420px; height: calc(100% - 60px); background: #080202; border-right: 1px solid var(--panel-border); z-index: 200; display: none; padding: 30px; overflow-y: auto; }
-        .editor-title { font-size: 20px; font-weight: 900; text-transform: uppercase; color: var(--neon-red); margin-bottom: 25px; }
-        .input-group { margin-bottom: 16px; display: flex; flex-direction: column; gap: 5px; }
-        .input-group label { font-size: 10px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; }
-        
-        .file-upload-btn { background: #120505; border: 1px solid var(--panel-border); color: #fff; padding: 10px; border-radius: 4px; font-weight: 600; font-size: 11px; text-transform: uppercase; text-align: center; display: block; width: 100%; transition: all 0.2s; }
-        .file-upload-btn:hover { border-color: var(--neon-red); background: rgba(255,51,51,0.05); }
-        .input-group input[type="file"] { display: none; }
-
-        .input-group input[type="text"], .input-group select { background: #000; border: 1px solid var(--panel-border); padding: 10px; color: #fff; border-radius: 4px; font-weight: 600; font-size: 13px; }
-        .input-group input:focus { outline: none; border-color: var(--neon-red); }
-        
-        .link-builder-row { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 5px; }
-    </style>
+    <title>Player Database - L4lyx</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="grid-bg"></div>
-    <div id="main-cursor"></div>
-
-    <!-- ---------------- NAVBAR LEISTE ---------------- -->
-    <div class="navbar">
-        <div class="nav-logo" onclick="goHome()">Load<span>Space</span></div>
-        <div class="nav-links">
-            <button class="nav-item" onclick="goHome()">🏠 Home</button>
-            <button class="nav-item" onclick="triggerCreateMode()">➕ Profil erstellen</button>
-            <button class="nav-item disabled" id="nav-edit-btn" onclick="openEditor()">⚙ Profil editieren</button>
-        </div>
-    </div>
-
-    <!-- ---------------- STARTSEITE (HOME) ---------------- -->
-    <div class="landing-container" id="view-landing">
-        <div>
-            <div class="hero-title">Load<span>Space</span></div>
-            <div class="hero-sub">The Ultimate Link-In-Bio Network</div>
-        </div>
-
-        <!-- Suchen / Erstellen Box -->
-        <div class="search-box">
-            <div class="url-input-row">
-                <span class="url-prefix">load.space/</span>
-                <input type="text" id="search-username" placeholder="wunschname">
+    <div class="container">
+        <header>
+            <div class="logo">PLAYER <span class="neon-text">DB</span></div>
+            <div class="status-bar">
+                Status: <span id="auth-status" class="status-guest">Guest</span>
+                <button id="logout-btn" class="btn btn-danger" style="display: none;" onclick="logout()">Logout</button>
             </div>
-            <button class="action-btn btn-claim" onclick="lookupOrCreateProfile(document.getElementById('search-username').value)">Claim / Visit Link</button>
-        </div>
+        </header>
 
-        <!-- NEU: ENTECKEN-LISTE FÜR DIE ANDEREN PROFILE -->
-        <div class="explore-section">
-            <div class="explore-title">🌐 Registrierte Netzwerkknoten (Profile)</div>
-            <div class="profiles-list" id="network-profiles-display">
-                <!-- Werden automatisch per JavaScript geladen -->
+        <section class="search-section">
+            <input type="text" id="search-input" placeholder="Search player (type 'login' to sign in)..." oninput="checkSearchTrigger()">
+        </section>
+
+        <section id="admin-controls" class="admin-section" style="display: none;">
+            <h3>Admin Panel</h3>
+            <div class="form-group">
+                <input type="text" id="player-name" placeholder="Player Name">
+                <input type="text" id="player-rank" placeholder="Rank (e.g., MVP, VIP)">
+                <button onclick="addPlayer()" class="btn btn-primary">Add Player</button>
+            </div>
+        </section>
+
+        <section class="player-section">
+            <h2>Registered Players</h2>
+            <ul id="player-list" class="player-list">
+                </ul>
+        </section>
+    </div>
+
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <h3>Admin Login</h3>
+            <div id="login-error" class="error-msg" style="display: none;">Falsche Anmeldedaten!</div>
+            <input type="text" id="username" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+            <div class="modal-buttons">
+                <button onclick="attemptLogin()" class="btn btn-primary">Login</button>
+                <button onclick="closeLoginModal()" class="btn btn-danger">Abbrechen</button>
             </div>
         </div>
     </div>
 
-    <!-- ---------------- BIO SEITE (GUNS.LOL LOOK) ---------------- -->
-    <div id="bio-view-page">
-        <div class="bio-overlay"></div>
-        <canvas id="particle-canvas"></canvas>
-        <audio id="bio-audio" loop></audio>
-
-        <!-- Click to Enter Wall -->
-        <div class="unmute-overlay" id="click-unmute-wall" onclick="playBioMusic()">
-            <button class="action-btn btn-claim" style="max-width: 200px;">Click to Enter</button>
-        </div>
-
-        <div class="bio-card" id="main-bio-card">
-            <img src="default-avatar.png" alt="Avatar" class="bio-avatar" id="view-avatar">
-            <div class="bio-name" id="view-name">NAME</div>
-            <div class="bio-tagline" id="view-tagline">TAGLINE</div>
-            
-            <div class="bio-links-container" id="view-links-holder"></div>
-        </div>
-    </div>
-
-    <!-- ---------------- LIVE EDITOR SIDEBAR ---------------- -->
-    <div id="editor-panel">
-        <div class="editor-title">⚡ Control Center</div>
-        
-        <div class="input-group">
-            <label>Anzeige-Name</label>
-            <input type="text" id="edit-name" oninput="liveRefresh()">
-        </div>
-        <div class="input-group">
-            <label>Beschreibung / Bio</label>
-            <input type="text" id="edit-tagline" oninput="liveRefresh()">
-        </div>
-
-        <!-- DATEI UPLOAD BUTTONS -->
-        <div class="input-group">
-            <label>Profilbild Hochladen</label>
-            <label class="file-upload-btn" for="upload-avatar">📂 Datei auswählen...</label>
-            <input type="file" id="upload-avatar" accept="image/*" onchange="handleFileUpload(this, 'avatar')">
-        </div>
-        <div class="input-group">
-            <label>Hintergrund-Banner Hochladen</label>
-            <label class="file-upload-btn" for="upload-banner">📂 Datei auswählen...</label>
-            <input type="file" id="upload-banner" accept="image/*" onchange="handleFileUpload(this, 'banner')">
-        </div>
-        <div class="input-group">
-            <label>Hintergrundmusik Hochladen (.mp3)</label>
-            <label class="file-upload-btn" for="upload-music">📂 Audio auswählen...</label>
-            <input type="file" id="upload-music" accept="audio/mp3, audio/*" onchange="handleFileUpload(this, 'music')">
-        </div>
-
-        <div class="input-group">
-            <label>Effekt-Partikel</label>
-            <select id="edit-particles" onchange="liveParticleRefresh()">
-                <option value="none">Keine</option>
-                <option value="snow">Schnee-Flocken</option>
-                <option value="matrix">Rote Matrix-Codes</option>
-            </select>
-        </div>
-
-        <!-- LINK BUILDER -->
-        <div class="input-group" style="margin-top: 25px;">
-            <label style="color: var(--neon-red); margin-bottom: 10px;">🔗 Custom Links & Buttons</label>
-            <div id="links-builder-area"></div>
-            <button class="action-btn btn-login" style="font-size: 10px; padding: 6px;" onclick="addNewLinkRow('', '')">+ Add Custom Link</button>
-        </div>
-
-        <div class="control-btns" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 30px;">
-            <button class="action-btn btn-login" onclick="closeEditorPanel()">Close Editor</button>
-            <button class="action-btn btn-claim" onclick="saveData()">Save Changes</button>
-        </div>
-    </div>
-
-    <!-- ---------------- ENGINE JAVASCRIPT ---------------- -->
-    <script>
-        const cursor = document.getElementById('main-cursor');
-        document.addEventListener('mousemove', (e) => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
-
-        let currentUsername = "";
-        let profileData = {};
-
-        // Beim ersten Laden der App direkt die Profil-Liste aktualisieren
-        window.onload = function() {
-            loadNetworkProfiles();
-        };
-
-        // LÄDT ALLE PROFILE AUS DEM LOCALSTORAGE UND ZEIGT SIE AN
-        function loadNetworkProfiles() {
-            const display = document.getElementById('network-profiles-display');
-            display.innerHTML = '';
-            
-            let database = JSON.parse(localStorage.getItem('loadspace_network')) || {};
-            let keys = Object.keys(database);
-
-            if(keys.length === 0) {
-                display.innerHTML = `<div class="no-profiles-text">Noch keine Profile im Netzwerk registriert.</div>`;
-                return;
-            }
-
-            keys.forEach(username => {
-                const data = database[username];
-                const avatarSrc = data.avatar || 'default-avatar.png';
-                
-                const card = document.createElement('div');
-                card.className = 'profile-item-card';
-                card.onclick = () => lookupOrCreateProfile(username); // Klick öffnet das Profil direkt
-                
-                card.innerHTML = `
-                    <img src="${avatarSrc}" class="profile-item-avatar" alt="pfp">
-                    <div class="profile-item-info">
-                        <span class="profile-item-name">${data.name || username}</span>
-                        <span class="profile-item-tag">load.space/${username}</span>
-                    </div>
-                `;
-                display.appendChild(card);
-            });
-        }
-
-        function goHome() {
-            document.getElementById('bio-audio').pause();
-            document.getElementById('editor-panel').style.display = 'none';
-            document.getElementById('bio-view-page').style.display = 'none';
-            document.getElementById('view-landing').style.display = 'flex';
-            
-            const editBtn = document.getElementById('nav-edit-btn');
-            editBtn.classList.add('disabled');
-            
-            document.getElementById('main-bio-card').style.marginLeft = '0px';
-            
-            // Liste aktualisieren, falls sich ein Name geändert hat
-            loadNetworkProfiles();
-        }
-
-        function triggerCreateMode() {
-            goHome();
-            document.getElementById('search-username').focus();
-            document.getElementById('search-username').placeholder = "neuer_wunschname";
-        }
-
-        function lookupOrCreateProfile(targetUser) {
-            let user = targetUser ? targetUser.trim().toLowerCase() : "";
-            if(!user) return alert("Bitte gib einen Namen ein!");
-
-            currentUsername = user;
-            let database = JSON.parse(localStorage.getItem('loadspace_network')) || {};
-
-            if(!database[user]) {
-                database[user] = {
-                    name: user.toUpperCase(),
-                    tagline: 'System Node active.',
-                    avatar: 'default-avatar.png', 
-                    banner: 'default-banner.jpg',
-                    music: 'default-music.mp3',
-                    particles: 'none',
-                    customLinks: [
-                        { name: 'Discord Connect', url: 'https://discord.com' },
-                        { name: 'GitHub Node', url: 'https://github.com' }
-                    ]
-                };
-                localStorage.setItem('loadspace_network', JSON.stringify(database));
-            }
-
-            profileData = database[user];
-            
-            document.getElementById('view-landing').style.display = 'none';
-            document.getElementById('bio-view-page').style.display = 'flex';
-            
-            document.getElementById('nav-edit-btn').classList.remove('disabled');
-            
-            // Wenn man ein Profil öffnet, zeigen wir erst wieder die "Click to Enter" Wall
-            document.getElementById('click-unmute-wall').style.display = 'flex';
-            
-            renderBioPage();
-        }
-
-        function renderBioPage() {
-            document.getElementById('view-name').innerText = profileData.name;
-            document.getElementById('view-tagline').innerText = profileData.tagline;
-            document.getElementById('view-avatar').src = profileData.avatar || 'default-avatar.png';
-            
-            const bgPage = document.getElementById('bio-view-page');
-            const bannerFile = profileData.banner || 'default-banner.jpg';
-            bgPage.style.backgroundImage = `url('${bannerFile}')`;
-
-            const holder = document.getElementById('view-links-holder');
-            holder.innerHTML = '';
-            profileData.customLinks.forEach(link => {
-                if(link.name && link.url) {
-                    const btn = document.createElement('a');
-                    btn.className = 'bio-link-button';
-                    btn.href = link.url;
-                    btn.target = '_blank';
-                    btn.innerText = link.name;
-                    holder.appendChild(btn);
-                }
-            });
-
-            liveParticleRefresh();
-        }
-
-        function handleFileUpload(inputElement, type) {
-            const file = inputElement.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const base64Data = e.target.result;
-                if (type === 'avatar') profileData.avatar = base64Data;
-                else if (type === 'banner') profileData.banner = base64Data;
-                else if (type === 'music') {
-                    profileData.music = base64Data;
-                    const audio = document.getElementById('bio-audio');
-                    audio.src = base64Data;
-                    audio.play().catch(() => {});
-                }
-                renderBioPage();
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function playBioMusic() {
-            document.getElementById('click-unmute-wall').style.display = 'none';
-            const audio = document.getElementById('bio-audio');
-            const musicFile = profileData.music || 'default-music.mp3';
-            audio.src = musicFile;
-            audio.volume = 0.3;
-            audio.play().catch(() => console.log("Audio blockiert"));
-        }
-
-        function openEditor() {
-            document.getElementById('edit-name').value = profileData.name;
-            document.getElementById('edit-tagline').value = profileData.tagline;
-            document.getElementById('edit-particles').value = profileData.particles;
-
-            const builder = document.getElementById('links-builder-area');
-            builder.innerHTML = '';
-            profileData.customLinks.forEach(link => {
-                addNewLinkRow(link.name, link.url);
-            });
-
-            document.getElementById('editor-panel').style.display = 'block';
-            document.getElementById('main-bio-card').style.marginLeft = '440px';
-        }
-
-        function closeEditorPanel() {
-            document.getElementById('editor-panel').style.display = 'none';
-            document.getElementById('main-bio-card').style.marginLeft = '0px';
-        }
-
-        function addNewLinkRow(name, url) {
-            const area = document.getElementById('links-builder-area');
-            const row = document.createElement('div');
-            row.className = 'link-builder-row';
-            row.innerHTML = `
-                <input type="text" class="link-name-input" placeholder="Button Name" value="${name}" oninput="liveRefresh()">
-                <input type="text" class="link-url-input" placeholder="https://..." value="${url}" oninput="liveRefresh()">
-            `;
-            area.appendChild(row);
-        }
-
-        function liveRefresh() {
-            profileData.name = document.getElementById('edit-name').value;
-            profileData.tagline = document.getElementById('edit-tagline').value;
-
-            const rows = document.querySelectorAll('.link-builder-row');
-            profileData.customLinks = [];
-            rows.forEach(row => {
-                const name = row.querySelector('.link-name-input').value;
-                const url = row.querySelector('.link-url-input').value;
-                profileData.customLinks.push({ name, url });
-            });
-
-            renderBioPage();
-        }
-
-        function saveData() {
-            let database = JSON.parse(localStorage.getItem('loadspace_network')) || {};
-            database[currentUsername] = profileData;
-            localStorage.setItem('loadspace_network', JSON.stringify(database));
-            alert("🔒 Änderungen erfolgreich in der Matrix gespeichert!");
-            loadNetworkProfiles(); // Aktualisiert die Home-Anzeige direkt nach dem Speichern
-        }
-        
-        // --- PARTIKEL SYSTEM ---
-        const canvas = document.getElementById('particle-canvas');
-        const ctx = canvas.getContext('2d');
-        let particlesArray = [];
-        let pInterval = null;
-
-        function liveParticleRefresh() {
-            clearInterval(pInterval);
-            particlesArray = [];
-            canvas.width = canvas.parentElement.offsetWidth;
-            canvas.height = canvas.parentElement.offsetHeight;
-            
-            const mode = document.getElementById('edit-particles') ? document.getElementById('edit-particles').value : profileData.particles;
-            if(!mode || mode === 'none') { ctx.clearRect(0,0,canvas.width,canvas.height); return; }
-
-            pInterval = setInterval(() => {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                if(particlesArray.length < 50) {
-                    particlesArray.push({ x: Math.random() * canvas.width, y: 0, speed: Math.random() * 2 + 1, size: mode === 'snow' ? Math.random() * 3 + 1 : Math.random() * 2 + 8 });
-                }
-                particlesArray.forEach((p, i) => {
-                    p.y += p.speed;
-                    if(p.y > canvas.height) particlesArray.splice(i, 1);
-                    ctx.beginPath();
-                    if(mode === 'snow') { ctx.fillStyle = '#fff'; ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill(); }
-                    else { ctx.fillStyle = '#ff3333'; ctx.font = p.size + 'px monospace'; ctx.fillText(Math.floor(Math.random()*2), p.x, p.y); }
-                });
-            }, 35);
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
