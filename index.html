@@ -3,107 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LoadTiers - Tiers & Rankings</title>
+    <title>LoadTiers Leaderboard</title>
     <style>
-        :root {
-            --bg-dark: #050811;
-            --panel-bg: rgba(11, 17, 30, 0.75);
-            --card-bg: #0e1726;
-            --border-color: #17253b;
-            --text-main: #f0f6fc;
-            --text-secondary: #62758d;
-            --accent-cyan: #00bfff;
-            --accent-purple: #a855f7;
-            --neon-orange: #ff7b1a;
+        /* ==========================================
+           1. CORE STYLES & THEME (Neon Blau/Dunkel)
+           ========================================== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            overflow-x: hidden;
-            position: relative;
-        }
-
-        /* Ambient Particle Background System */
-        .particles {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 0;
-            background: 
-                radial-gradient(circle at 20% 30%, rgba(0, 191, 255, 0.05) 0%, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.05) 0%, transparent 40%);
-        }
-        .particles::before, .particles::after {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: 
-                radial-gradient(rgba(0, 191, 255, 0.4) 1px, transparent 1px),
-                radial-gradient(rgba(255, 255, 255, 0.3) 1px, transparent 1px);
-            background-size: 550px 550px, 400px 400px;
-            background-position: 0 0, 150px 250px;
-            animation: particleDrive 120s linear infinite;
-        }
-        .particles::after {
-            background-size: 300px 300px;
-            background-position: 80px 120px;
-            animation: particleDrive 80s linear infinite reverse;
-            opacity: 0.7;
-        }
-
-        .app-wrapper {
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Navbar Layout mit Platz für Discord-Button */
-        .navbar {
-            background-color: rgba(11, 17, 30, 0.85);
-            border-bottom: 1px solid var(--border-color);
-            padding: 15px 40px;
+            background-color: #050b14;
+            color: #ffffff;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            padding: 40px 20px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            backdrop-filter: blur(12px);
+            justify-content: center;
         }
-        .nav-left { display: flex; align-items: center; gap: 30px; }
-        .brand-logo { font-size: 22px; font-weight: 900; letter-spacing: 1.5px; cursor: pointer; color: #ffffff; text-shadow: 0 0 10px rgba(0, 191, 255, 0.3); }
-        .brand-logo span { color: var(--accent-cyan); }
-        .nav-links { display: flex; gap: 20px; }
-        .nav-link { color: var(--text-secondary); text-decoration: none; font-weight: 700; font-size: 13px; cursor: pointer; letter-spacing: 0.5px; transition: color 0.3s ease, text-shadow 0.3s ease; }
-        .nav-link.active, .nav-link:hover { color: var(--accent-cyan); text-shadow: 0 0 8px rgba(0,191,255,0.5); }
-        .nav-right { display: flex; align-items: center; gap: 15px; }
+
+        /* Hauptcontainer mit relativer Position für den Discord-Button */
+        .leaderboard-container {
+            width: 100%;
+            max-width: 1100px;
+            background: rgba(10, 20, 38, 0.6);
+            border: 1px solid rgba(0, 191, 255, 0.15);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            position: relative; /* Wichtig für absolute Platzierung des Buttons */
+            backdrop-filter: blur(10px);
+        }
 
         /* ==========================================
-           JOIN DISCORD BUTTON (Exakt wie Bild 2)
+           2. JOIN DISCORD BUTTON (Exakt wie Bild 2)
            ========================================== */
         .discord-btn {
+            position: absolute;
+            top: 30px;
+            right: 30px;
             display: inline-flex;
             align-items: center;
             gap: 10px;
             background-color: #5865F2;
             color: #ffffff;
             font-weight: 700;
-            font-size: 13px;
-            padding: 8px 18px;
+            font-size: 14px;
+            padding: 10px 22px;
             border-radius: 8px;
             text-decoration: none;
             box-shadow: 0 4px 15px rgba(88, 101, 242, 0.2);
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            
+            /* Ultra-smoother Übergang */
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .discord-btn svg {
-            width: 16px;
-            height: 16px;
+            width: 18px;
+            height: 18px;
             fill: #ffffff;
-            transition: transform 0.2s ease;
+            transition: transform 0.25s ease;
         }
 
+        /* Knackiger Hover-Effekt */
         .discord-btn:hover {
             background-color: #4752c4;
             transform: translateY(-2px);
@@ -118,305 +81,201 @@
             transform: translateY(1px);
         }
 
-        /* Sub-Nav Tabs (Inklusive Cart & HugoKit) */
-        .sub-nav { 
-            display: flex; 
-            justify-content: center; 
-            gap: 25px; 
-            background-color: rgba(6, 11, 20, 0.7); 
-            padding: 16px; 
-            border-bottom: 1px solid var(--border-color); 
-            backdrop-filter: blur(10px); 
-            flex-wrap: wrap;
+        /* ==========================================
+           3. TABS (Inklusive Cart & HugoKit)
+           ========================================== */
+        .tabs-nav {
+            display: flex;
+            gap: 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            max-width: 70%; /* Damit die Tabs nicht in den Discord Button laufen */
         }
-        .mode-btn { background: none; border: none; color: var(--text-secondary); font-weight: 700; font-size: 13px; letter-spacing: 1px; cursor: pointer; text-transform: uppercase; padding: 4px 2px; position: relative; transition: color 0.2s; }
-        .mode-btn:hover { color: var(--text-main); }
-        .mode-btn.active { color: var(--accent-cyan); }
-        
-        /* Shomter, flüssiger Glow-Strich beim Tabwechsel */
-        .mode-btn::after { 
-            content: ''; 
-            position: absolute; 
-            bottom: -18px; 
-            left: 0; 
-            width: 100%; 
-            height: 3px; 
-            background-color: var(--accent-cyan); 
-            box-shadow: 0 0 12px var(--accent-cyan); 
-            border-radius: 2px; 
+
+        .tab-item {
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            position: relative;
+            padding: 5px 0;
+            user-select: none;
+            transition: color 0.2s ease;
+        }
+
+        .tab-item:hover {
+            color: #ffffff;
+        }
+
+        .tab-item.active {
+            color: #00bfff;
+            text-shadow: 0 0 10px rgba(0, 191, 255, 0.3);
+        }
+
+        /* Schneller, flüssiger Glow-Strich unter den Tabs */
+        .tab-item::after {
+            content: '';
+            position: absolute;
+            bottom: -16px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: #00bfff;
+            box-shadow: 0 0 12px #00bfff;
+            border-radius: 2px;
             transform: scaleX(0);
-            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1); 
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .mode-btn.active::after {
+
+        .tab-item.active::after {
             transform: scaleX(1);
         }
 
-        .main-container { max-width: 1300px; margin: 30px auto; padding: 0 20px; }
+        /* ==========================================
+           4. TABELLE & SHOMTERE ANIMATIONEN
+           ========================================== */
+        .ranking-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
 
-        /* Buttons & Search */
-        .btn { background-color: #0e1726; border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 12px; display: flex; align-items: center; gap: 6px; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
-        .btn:hover { transform: translateY(-2px); background: #132035; border-color: var(--text-secondary); }
-        .btn-cyan { border-color: var(--accent-cyan); color: var(--accent-cyan); }
-        .btn-cyan:hover { background: rgba(0, 191, 255, 0.15); box-shadow: 0 0 15px rgba(0, 191, 255, 0.3); border-color: var(--accent-cyan); }
-        .btn-purple { border-color: var(--accent-purple); color: var(--accent-purple); }
-        .btn-purple:hover { background: rgba(166, 85, 247, 0.15); box-shadow: 0 0 15px rgba(166, 85, 247, 0.3); }
-        .btn-danger { border-color: #ff2a74; color: #ff2a74; }
-        .search-bar { background-color: #060913; border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 14px; border-radius: 6px; width: 180px; font-size: 13px; transition: all 0.3s ease; }
-        .search-bar:focus { outline: none; border-color: var(--accent-cyan); box-shadow: 0 0 10px rgba(0,191,255,0.2); width: 220px; }
+        .ranking-table th {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
 
-        /* Leaderboard Table mit shomteren Zeilen-Animationen */
-        .leaderboard-table { width: 100%; border-collapse: collapse; background-color: rgba(8, 13, 26, 0.85); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; margin-top: 20px; backdrop-filter: blur(8px); }
-        .leaderboard-table th { background-color: rgba(23, 37, 59, 0.5); padding: 16px 20px; text-align: left; font-size: 11px; text-transform: uppercase; color: var(--text-secondary); border-bottom: 1px solid var(--border-color); letter-spacing: 0.5px; }
-        
-        .leaderboard-table td { padding: 14px 20px; border-bottom: 1px solid var(--border-color); font-size: 14px; cursor: pointer; }
-        .leaderboard-table tr { transition: transform 0.15s ease, background-color 0.15s ease; }
-        .leaderboard-table tr:hover { background-color: rgba(23, 37, 59, 0.4); transform: scale(1.002); }
-
-        /* Schneller Stagger-Effekt für Tabellenzeilen */
-        .leaderboard-table tbody tr {
+        /* Die Tabellenzeilen animieren sich blitzschnell rein */
+        .ranking-table tbody tr {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
             opacity: 0;
-            transform: translateY(10px);
+            transform: translateY(12px);
             animation: fastFadeInRow 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
-        .leaderboard-table tbody tr:nth-child(1) { animation-delay: 20ms; }
-        .leaderboard-table tbody tr:nth-child(2) { animation-delay: 40ms; }
-        .leaderboard-table tbody tr:nth-child(3) { animation-delay: 60ms; }
-        .leaderboard-table tbody tr:nth-child(4) { animation-delay: 80ms; }
-        .leaderboard-table tbody tr:nth-child(5) { animation-delay: 100ms; }
+
+        /* Hover-Effekt für die Reihen */
+        .ranking-table tbody tr:hover {
+            background: rgba(0, 191, 255, 0.03);
+            transition: background 0.15s ease;
+        }
+
+        .ranking-table td {
+            padding: 16px;
+            font-size: 15px;
+            vertical-align: middle;
+        }
+
+        /* Schneller Delay-Stagger, damit es flüssig nacheinander aufbaut */
+        .ranking-table tbody tr:nth-child(1) { animation-delay: 20ms; }
+        .ranking-table tbody tr:nth-child(2) { animation-delay: 40ms; }
+        .ranking-table tbody tr:nth-child(3) { animation-delay: 60ms; }
+        .ranking-table tbody tr:nth-child(4) { animation-delay: 80ms; }
+        .ranking-table tbody tr:nth-child(5) { animation-delay: 100ms; }
 
         @keyframes fastFadeInRow {
-            to { opacity: 1; transform: translateY(0); }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .rank-number { font-weight: 900; font-size: 16px; color: var(--text-secondary); }
-        .rank-1 { color: #ffaa00; text-shadow: 0 0 8px rgba(255,170,0,0.3); } 
-        .rank-2 { color: #cbd5e1; text-shadow: 0 0 8px rgba(203,213,225,0.3); } 
-        .rank-3 { color: #b45309; text-shadow: 0 0 8px rgba(180,83,9,0.3); }
-        .username { font-weight: 700; color: #ffffff; transition: color 0.15s; }
-        .leaderboard-table tr:hover .username { color: var(--accent-cyan); }
-
-        /* Badges & Rahmen */
-        .badge-list { display: flex; gap: 12px; }
-        .tier-badge-container { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 44px; transition: transform 0.2s; }
-        .tier-badge-container:hover { transform: translateY(-3px); }
-        .icon-wrapper { width: 36px; height: 36px; border-radius: 8px; background-color: #0e1726; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 8px rgba(0,0,0,0.6); transition: box-shadow 0.2s; }
-        .mode-logo-img { width: 24px; height: 24px; object-fit: contain; image-rendering: pixelated; }
-        
-        .border-ht { border: 1.5px solid #ff7b1a; box-shadow: 0 0 8px rgba(249, 115, 22, 0.25); }
-        .border-line-ht { color: #ff7b1a; font-weight: 800; font-size: 11px; }
-        .border-lt { border: 1.5px solid #38bdf8; box-shadow: 0 0 8px rgba(56, 189, 248, 0.25); }
-        .border-line-lt { color: #38bdf8; font-weight: 800; font-size: 11px; }
-
-        /* Tiers Grid Animation */
-        .tier-columns { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-top: 20px; animation: superEntrance 0.35s cubic-bezier(0.16, 1, 0.3, 1) both; }
-        .tier-column { background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 10px; overflow: hidden; backdrop-filter: blur(8px); }
-        .tier-header { padding: 15px; text-align: center; font-weight: 800; font-size: 13px; border-bottom: 1px solid var(--border-color); background: rgba(23, 37, 59, 0.4); }
-        .t1-h { color: #ffaa00; } .t2-h { color: #cbd5e1; } .t3-h { color: #ff7b1a; } .t4-h { color: #38bdf8; } .t5-h { color: #94a3b8; }
-        .tier-list-content { padding: 10px; min-height: 450px; display: flex; flex-direction: column; gap: 8px; }
-        
-        .tier-user-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; display: flex; align-items: center; justify-content: space-between; transition: all 0.2s ease; }
-        .tier-user-card:hover { transform: translateX(2px); border-color: var(--accent-cyan); background-color: #121d30; }
-        .avatar { width: 32px; height: 32px; border-radius: 6px; image-rendering: pixelated; transition: transform 0.2s; }
-        .tier-user-card:hover .avatar { transform: scale(1.1); }
-
-        /* Modals & Popups (Knackige Elastische Animationen) */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(3, 5, 10, 0.85); backdrop-filter: blur(8px); justify-content: center; align-items: center; z-index: 2000; animation: fadeInModal 0.2s linear; }
-        
-        .points-modal-box { background-color: #080d19; border: 1.5px solid #1a2a42; border-radius: 20px; padding: 30px; width: 460px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.6); animation: modalBounce 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
-        .points-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
-        .points-row-box { background-color: #0b1220; border: 1px solid #16243d; border-radius: 10px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; transition: border-color 0.2s; }
-        .points-row-box:hover { border-color: #243b61; }
-        .points-value-badge { background-color: #070b14; border: 1px solid #142036; border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: 700; color: #6c7f99; }
-
-        .profile-card {
-            background-color: #060b13; border: 1.5px solid #111e33; border-radius: 24px; width: 440px; padding: 35px; position: relative;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 30px rgba(0,191,255,0.05);
-            animation: modalBounce 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-            display: flex; flex-direction: column; align-items: center;
+        /* Platzhalter für Spielernamen und Punkte */
+        .player-name {
+            font-weight: 600;
+            color: #ffffff;
         }
-        .profile-avatar-wrapper { width: 84px; height: 84px; border-radius: 18px; border: 2px solid #1c2e4a; overflow: hidden; margin-bottom: 16px; background: #0b111e; box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
-        .profile-avatar { width: 100%; height: 100%; image-rendering: pixelated; }
-        .profile-name { font-size: 24px; font-weight: 800; color: #ffffff; margin: 0 0 15px 0; display: flex; align-items: center; gap: 6px; }
-        .profile-stats-box { background: #09101d; border: 1px solid #152640; border-radius: 14px; padding: 10px 35px; text-align: center; margin-bottom: 25px; }
-        .profile-stats-label { font-size: 10px; text-transform: uppercase; color: #435875; font-weight: 800; letter-spacing: 1px; margin-bottom: 2px; }
-        .profile-stats-value { font-size: 20px; font-weight: 800; color: var(--accent-cyan); text-shadow: 0 0 10px rgba(0,191,255,0.3); }
-        
-        .profile-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; border-top: 1px solid #13223a; padding-top: 25px; margin-bottom: 15px; }
-        .profile-mode-card { background: #09101d; border: 1px solid #132238; border-radius: 14px; padding: 12px; display: flex; flex-direction: column; align-items: center; gap: 6px; transition: transform 0.2s; }
-        .profile-mode-card:hover { transform: translateY(-2px); }
-        .profile-mode-img { width: 26px; height: 26px; image-rendering: pixelated; object-fit: contain; }
-        .profile-mode-name { font-size: 9px; text-transform: uppercase; color: #4b5f7a; font-weight: 700; }
-        .profile-mode-tier { font-size: 15px; font-weight: 800; }
-        .profile-rank-bottom { font-size: 36px; font-weight: 900; color: rgba(255,255,255,0.15); margin-top: 15px; letter-spacing: -1px; }
-
-        /* Staff Grid Layout */
-        .staff-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 20px; animation: superEntrance 0.35s cubic-bezier(0.16, 1, 0.3, 1) both; }
-        .staff-card { background-color: rgba(6, 11, 20, 0.85); border: 1.5px solid #121d30; border-radius: 16px; padding: 18px; display: flex; align-items: center; gap: 14px; backdrop-filter: blur(8px); transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1); }
-        .staff-card:hover { border-color: #243c61; transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.5); }
-        .staff-img { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; background: #162235; border: 2px solid #1f304a; transition: transform 0.3s ease; }
-        .staff-card:hover .staff-img { transform: rotate(6deg) scale(1.05); }
-        .staff-info { display: flex; flex-direction: column; gap: 4px; flex-grow: 1; }
-        .staff-name { font-weight: 800; color: #ffffff; font-size: 14px; }
-        .staff-particle-sub { font-size: 11px; font-weight: 600; color: var(--accent-cyan); opacity: 0.85; letter-spacing: 0.5px; }
-
-        .staff-badge { font-size: 9px; font-weight: 800; padding: 4px 8px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px; text-transform: uppercase; letter-spacing: 0.5px; width: fit-content; margin-top: 2px; }
-        .badge-owner { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
-        .badge-coowner { background: rgba(249, 115, 22, 0.15); color: #f97316; border: 1px solid rgba(249, 115, 22, 0.3); }
-        .badge-overseer { background: rgba(168, 85, 247, 0.15); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.3); }
-        .badge-manager { background: rgba(234, 179, 8, 0.15); color: #eab308; border: 1px solid rgba(234, 179, 8, 0.3); }
-        .badge-dev { background: rgba(6, 182, 212, 0.15); color: #06b6d4; border: 1px solid rgba(6, 182, 212, 0.3); }
-        .badge-admin { background: rgba(34, 197, 94, 0.15); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.3); }
-        .badge-tester { background: rgba(148, 163, 184, 0.15); color: #94a3b8; border: 1px solid rgba(148, 163, 184, 0.3); }
-
-        /* Admin Dashboard Layout */
-        .admin-panel { background-color: var(--panel-bg); border: 1px solid var(--accent-purple); border-radius: 12px; padding: 20px; margin-bottom: 25px; backdrop-filter: blur(10px); animation: superEntrance 0.35s ease; }
-        .admin-sections { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 15px; }
-        .admin-box-sub { background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); padding: 15px; border-radius: 10px; }
-        .admin-form { display: flex; flex-direction: column; gap: 12px; }
-        .admin-form input, .admin-form select { background-color: #060913; border: 1px solid var(--border-color); color: white; padding: 10px; border-radius: 6px; }
-        .admin-player-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 6px; font-size:12px; }
-
-        /* Keyframe Animations */
-        @keyframes particleDrive { from { background-position: 0 0, 150px 250px; } to { background-position: 550px 1100px, 950px 1050px; } }
-        @keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes modalBounce { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-        @keyframes superEntrance { from { opacity: 0; transform: translateY(12px); filter: blur(2px); } to { opacity: 1; transform: translateY(0); filter: blur(0); } }
+        .points {
+            color: #00bfff;
+            font-weight: 700;
+        }
     </style>
 </head>
 <body>
 
-    <div class="particles"></div>
+    <div class="leaderboard-container">
+        
+        <!-- EXAKTER DISCORD BUTTON AUS BILD 2 -->
+        <a href="https://discord.gg/DEIN_LINK" class="discord-btn" target="_blank">
+            <svg viewBox="0 0 127.14 96.36" xmlns="http://www.w3.org/2000/svg">
+                <path d="M107.7,8.07A105.15,105.15,0,0,0,77.26,0a77.19,77.19,0,0,0-3.3,6.83A96.67,96.67,0,0,0,53.22,6.83,77.19,77.19,0,0,0,49.88,0,105.15,105.15,0,0,0,19.44,8.07C3.66,31.58-1.86,54.65,1,77.53A105.73,105.73,0,0,0,32,96.36a74.37,74.37,0,0,0,6.67-10.85,68.43,68.43,0,0,1-10.5-5c.9-.65,1.76-1.34,2.58-2a75.58,75.58,0,0,0,73,0c.83.68,1.69,1.37,2.58,2a68.43,68.43,0,0,1-10.5,5,74.37,74.37,0,0,0,6.67,10.85,105.73,105.73,0,0,0,31.06-18.83C129.87,48.42,123.77,25.63,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53S36.18,40.36,42.45,40.36,53.83,46,53.83,53,48.72,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.24,60,73.24,53S78.41,40.36,84.69,40.36,96.07,46,96.07,53,91,65.69,84.69,65.69Z"/>
+            </svg>
+            Join Discord
+        </a>
 
-    <div class="app-wrapper">
-        <nav class="navbar">
-            <div class="nav-left">
-                <div class="brand-logo" onclick="changeMainView('rankings')">LOAD<span>TIERS</span></div>
-                <div class="nav-links">
-                    <div class="nav-link active" id="nav-rankings" onclick="changeMainView('rankings')">RANKINGS</div>
-                    <div class="nav-link" id="nav-staff" onclick="changeMainView('staff')">STAFF</div>
-                </div>
-            </div>
-            <div class="nav-right">
-                <div id="admin-status-text" style="font-size: 12px; color: var(--text-secondary)">Status: Guest</div>
-                <button class="btn btn-cyan" onclick="openModal('points-modal')">⚡ Rank Points</button>
-                <input type="text" class="search-bar" id="search-input" placeholder="Search player..." oninput="handleSearch()">
-                
-                <a href="https://discord.gg/DEIN_LINK" class="discord-btn" target="_blank">
-                    <svg viewBox="0 0 127.14 96.36" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M107.7,8.07A105.15,105.15,0,0,0,77.26,0a77.19,77.19,0,0,0-3.3,6.83A96.67,96.67,0,0,0,53.22,6.83,77.19,77.19,0,0,0,49.88,0,105.15,105.15,0,0,0,19.44,8.07C3.66,31.58-1.86,54.65,1,77.53A105.73,105.73,0,0,0,32,96.36a74.37,74.37,0,0,0,6.67-10.85,68.43,68.43,0,0,1-10.5-5c.9-.65,1.76-1.34,2.58-2a75.58,75.58,0,0,0,73,0c.83.68,1.69,1.37,2.58,2a68.43,68.43,0,0,1-10.5,5,74.37,74.37,0,0,0,6.67,10.85,105.73,105.73,0,0,0,31.06-18.83C129.87,48.42,123.77,25.63,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53S36.18,40.36,42.45,40.36,53.83,46,53.83,53,48.72,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.24,60,73.24,53S78.41,40.36,84.69,40.36,96.07,46,96.07,53,91,65.69,84.69,65.69Z"/>
-                    </svg>
-                    Join Discord
-                </a>
-            </div>
-        </nav>
-
-        <div class="sub-nav" id="modes-sub-nav">
-            <button class="mode-btn active" id="mode-overall" onclick="switchMode('overall')">Overall</button>
-            <button class="mode-btn" id="mode-sword" onclick="switchMode('sword')">Sword</button>
-            <button class="mode-btn" id="mode-cpvp" onclick="switchMode('cpvp')">CPvP</button>
-            <button class="mode-btn" id="mode-axe" onclick="switchMode('axe')">Axe</button>
-            <button class="mode-btn" id="mode-smp" onclick="switchMode('smp')">SMP</button>
-            <button class="mode-btn" id="mode-diapot" onclick="switchMode('diapot')">Diapot</button>
-            <button class="mode-btn" id="mode-mace" onclick="switchMode('mace')">Mace</button>
-            <button class="mode-btn" id="mode-uhc" onclick="switchMode('uhc')">UHC</button>
-            <button class="mode-btn" id="mode-nethpot" onclick="switchMode('nethpot')">Nethpot</button>
-            <button class="mode-btn" id="mode-cart" onclick="switchMode('cart')">Cart</button> <button class="mode-btn" id="mode-hugokit" onclick="switchMode('hugokit')">HugoKit</button> </div>
-
-        <div class="main-container">
-            <div id="admin-panel" class="admin-panel" style="display: none;">
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
-                    <h3 style="margin:0; color: var(--accent-purple);">Admin Dashboard</h3>
-                    <button class="btn btn-danger" onclick="logoutAdmin()" style="padding: 5px 12px;">Logout</button>
-                </div>
-                <div class="admin-sections">
-                    <div class="admin-box-sub">
-                        <h4 style="margin-top:0; color: var(--accent-cyan);">Spieler verwalten</h4>
-                        <div class="admin-form">
-                            <input type="text" id="new-player-name" placeholder="Minecraft Name">
-                            <select id="new-player-mode">
-                                <option value="sword">Sword</option><option value="cpvp">CPvP</option><option value="axe">Axe</option><option value="smp">SMP</option><option value="diapot">Diapot</option><option value="mace">Mace</option><option value="uhc">UHC</option><option value="nethpot">Nethpot</option><option value="cart">Cart</option><option value="hugokit">HugoKit</option>
-                            </select>
-                            <select id="new-player-tier">
-                                <option value="HT1">HT1</option><option value="LT1">LT1</option><option value="HT2">HT2</option><option value="LT2">LT2</option><option value="HT3">HT3</option><option value="LT3">LT3</option><option value="HT4">HT4</option><option value="LT4">LT4</option><option value="HT5">HT5</option><option value="LT5">LT5</option>
-                            </select>
-                            <button class="btn btn-cyan" onclick="addOrUpdatePlayer()">Speichern</button>
-                        </div>
-                        <div id="admin-delete-list" style="max-height: 110px; overflow-y: auto; margin-top:10px;"></div>
-                    </div>
-                    <div class="admin-box-sub">
-                        <h4 style="margin-top:0; color: #22c55e;">Staff verwalten</h4>
-                        <div class="admin-form">
-                            <input type="text" id="staff-name-in" placeholder="Anzeige-Name">
-                            <input type="text" id="staff-particle-in" placeholder="Untertitel (z.B. bold, fanc x)">
-                            <input type="text" id="staff-discord-in" placeholder="Discord ID für Avatar">
-                            <select id="staff-title-in">
-                                <option value="NETWORK OWNER">Network Owner</option>
-                                <option value="CO OWNER">Co Owner</option>
-                                <option value="NETWORK OVERSEER">Network Overseer</option>
-                                <option value="MANAGER">Manager</option>
-                                <option value="DEVELOPER">Developer</option>
-                                <option value="ADMINISTRATOR">Administrator</option>
-                                <option value="TESTER">Tester</option>
-                            </select>
-                            <button class="btn btn-cyan" style="border-color:#22c55e; color:#22c55e;" onclick="addStaff()">Staff Hinzufügen</button>
-                        </div>
-                        <div id="admin-staff-delete-list" style="max-height: 110px; overflow-y: auto; margin-top:10px;"></div>
-                    </div>
-                </div>
-            </div>
-
-            <table class="leaderboard-table" id="leaderboard-view">
-                <thead>
-                    <tr>
-                        <th style="width: 80px;"># Rank</th>
-                        <th>Player</th>
-                        <th style="text-align: right;">Points</th>
-                    </tr>
-                </thead>
-                <tbody id="leaderboard-body">
-                    <tr onclick="openPlayerProfile('octryx')">
-                        <td><span class="rank-number rank-1">1</span></td>
-                        <td><span class="username">octryx ★</span></td>
-                        <td style="text-align: right; color: var(--accent-cyan); font-weight:700;">206</td>
-                    </tr>
-                    <tr onclick="openPlayerProfile('zNiclas_')">
-                        <td><span class="rank-number rank-2">2</span></td>
-                        <td><span class="username">zNiclas_</span></td>
-                        <td style="text-align: right; color: var(--accent-cyan); font-weight:700;">116</td>
-                    </tr>
-                    <tr onclick="openPlayerProfile('Peentin')">
-                        <td><span class="rank-number rank-3">3</span></td>
-                        <td><span class="username">Peentin 爱</span></td>
-                        <td style="text-align: right; color: var(--accent-cyan); font-weight:700;">111</td>
-                    </tr>
-                </tbody>
-            </table>
+        <!-- NAVIGATION MIT DEN ZWEI NEUEN GAMODES -->
+        <div class="tabs-nav">
+            <div class="tab-item active" onclick="switchTab(this)">OVERALL</div>
+            <div class="tab-item" onclick="switchTab(this)">SWORD</div>
+            <div class="tab-item" onclick="switchTab(this)">CPVP</div>
+            <div class="tab-item" onclick="switchTab(this)">CART</div> <!-- Neu hinzugefügt! -->
+            <div class="tab-item" onclick="switchTab(this)">HUGOKIT</div> <!-- Neu hinzugefügt! -->
         </div>
+
+        <!-- LEADERBOARD TABELLE -->
+        <table class="ranking-table">
+            <thead>
+                <tr>
+                    <th style="width: 80px;">#</th>
+                    <th>Player</th>
+                    <th style="text-align: right;">Points</th>
+                </tr>
+            </thead>
+            <tbody id="leaderboard-body">
+                <!-- Die Zeilen laden beim Tab-Wechsel neu und triggern die CSS-Animation -->
+                <tr>
+                    <td><strong>1</strong></td>
+                    <td class="player-name">octryx ★</td>
+                    <td class="points" style="text-align: right;">206</td>
+                </tr>
+                <tr>
+                    <td><strong>2</strong></td>
+                    <td class="player-name">zNiclas_</td>
+                    <td class="points" style="text-align: right;">116</td>
+                </tr>
+                <tr>
+                    <td><strong>3</strong></td>
+                    <td class="player-name">Peentin 爱</td>
+                    <td class="points" style="text-align: right;">111</td>
+                </tr>
+                <tr>
+                    <td><strong>4</strong></td>
+                    <td class="player-name">why¿lxo?🍄</td>
+                    <td class="points" style="text-align: right;">74</td>
+                </tr>
+                <tr>
+                    <td><strong>5</strong></td>
+                    <td class="player-name">D2rx</td>
+                    <td class="points" style="text-align: right;">74</td>
+                </tr>
+            </tbody>
+        </table>
+
     </div>
 
+    <!-- SMALL SCRIPT FÜR DAS SCHNELLE SYSTEM BEIM KLICKEN -->
     <script>
-        function switchMode(mode) {
-            // Deaktiviert alle Knöpfe in der Sub-Nav
-            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
-            // Aktiviert aktuellen Button
-            document.getElementById('mode-' + mode).classList.add('active');
+        function switchTab(element) {
+            // Alle aktiven Klassen entfernen
+            document.querySelectorAll('.tab-item').forEach(tab => {
+                tab.classList.remove('active');
+            });
             
-            // Re-triggert die schnellen CSS-Animationen für das Leaderboard beim Klicken
+            // Geklicktes Tab aktivieren
+            element.classList.add('active');
+            
+            // Trick um die Animationen der Zeilen bei jedem Klick neu zu triggern (shomter!)
             const tbody = document.getElementById('leaderboard-body');
-            const cachedRows = tbody.innerHTML;
+            const rows = tbody.innerHTML;
             tbody.innerHTML = '';
-            setTimeout(() => { tbody.innerHTML = cachedRows; }, 10);
+            setTimeout(() => {
+                tbody.innerHTML = rows;
+            }, 10);
         }
-
-        function changeMainView(view) {
-            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
-            if(document.getElementById('nav-' + view)) {
-                document.getElementById('nav-' + view).classList.add('active');
-            }
-        }
-
-        function openModal(id) { /* Modal Logik hier */ }
-        function handleSearch() { /* Suchlogik hier */ }
     </script>
 </body>
 </html>
