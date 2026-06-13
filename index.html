@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LoadSpace | The Ultimate bio.link & guns.lol Clone</title>
+    <title>LoadSpace | Premium Custom Bio-Network</title>
     <style>
         /* --- DESIGN CONFIG & MATRIX RED THEME --- */
         :root {
@@ -25,7 +25,7 @@
         #main-cursor::after { content: ''; position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; background: #fff; border-radius: 50%; transform: translate(-50%, -50%); }
         #particle-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
 
-        /* --- VIEW 1: LANDING PAGE (STARTSEITE) --- */
+        /* --- LANDING PAGE (STARTSEITE) --- */
         .landing-container { position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; text-align: center; padding: 20px; }
         .hero-title { font-size: 48px; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 10px; }
         .hero-title span { color: var(--neon-red); text-shadow: 0 0 15px var(--neon-red); }
@@ -42,14 +42,14 @@
         .btn-claim:hover { transform: scale(1.02); box-shadow: 0 0 25px var(--neon-red); }
         .btn-login { background: #120505; border: 1px solid var(--panel-border); color: #fff; }
 
-        /* --- VIEW 2: ECHTE PROFIL-SEITE (THE BIO PAGE) --- */
+        /* --- ECHTE BIO SEITE --- */
         #bio-view-page { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; display: none; background-size: cover; background-position: center; justify-content: center; align-items: center; }
         .bio-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(4,2,2,0.5); backdrop-filter: blur(4px); z-index: 1; }
         
-        /* Audio Unmute Overlay */
+        /* Entrance Wall */
         .unmute-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5,2,2,0.98); z-index: 100; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(10px); }
 
-        .bio-card { position: relative; z-index: 10; width: 100%; max-width: 400px; background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 12px; padding: 35px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.9); }
+        .bio-card { position: relative; z-index: 10; width: 100%; max-width: 400px; background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 12px; padding: 35px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.9); transition: margin 0.3s ease; }
         .bio-avatar { width: 90px; height: 90px; border-radius: 50%; border: 2px solid var(--neon-red); box-shadow: 0 0 15px var(--neon-glow); object-fit: cover; margin-bottom: 15px; }
         .bio-name { font-size: 26px; font-weight: 900; text-transform: uppercase; text-shadow: 0 0 10px var(--neon-red); margin-bottom: 5px; }
         .bio-tagline { font-size: 12px; color: var(--text-muted); margin-bottom: 25px; font-weight: 600; }
@@ -60,7 +60,7 @@
         
         .edit-floating-btn { position: absolute; top: 20px; right: 20px; background: rgba(255,51,51,0.1); border: 1px solid var(--neon-red); color: #fff; padding: 8px 15px; font-size: 10px; font-weight: 800; text-transform: uppercase; border-radius: 4px; z-index: 80; }
 
-        /* --- VIEW 3: LIVE EDITOR PANEL --- */
+        /* --- LIVE EDITOR SIDEBAR --- */
         #editor-panel { position: fixed; top: 0; left: 0; width: 420px; height: 100%; background: #080202; border-right: 1px solid var(--panel-border); z-index: 200; display: none; padding: 30px; overflow-y: auto; }
         .editor-title { font-size: 20px; font-weight: 900; text-transform: uppercase; color: var(--neon-red); margin-bottom: 25px; }
         .input-group { margin-bottom: 16px; display: flex; flex-direction: column; gap: 5px; }
@@ -76,7 +76,7 @@
     <div class="grid-bg"></div>
     <div id="main-cursor"></div>
 
-    <!-- ---------------- VIEW 1: STARTSEITE ---------------- -->
+    <!-- ---------------- STARTSEITE ---------------- -->
     <div class="landing-container" id="view-landing">
         <div class="hero-title">Load<span>Space</span></div>
         <div class="hero-sub">The Ultimate Link-In-Bio Network</div>
@@ -90,29 +90,28 @@
         </div>
     </div>
 
-    <!-- ---------------- VIEW 2: ECHTE BIO SEITE (GUNS.LOL LOOK) ---------------- -->
+    <!-- ---------------- BIO SEITE (GUNS.LOL LOOK) ---------------- -->
     <div id="bio-view-page">
         <button class="edit-floating-btn" id="editor-trigger" onclick="openEditor()">⚙ Edit Profile</button>
         <div class="bio-overlay"></div>
         <canvas id="particle-canvas"></canvas>
         <audio id="bio-audio" loop></audio>
 
-        <!-- Unmute Click Wall -->
+        <!-- Click to Enter Wall -->
         <div class="unmute-overlay" id="click-unmute-wall" onclick="playBioMusic()">
             <button class="action-btn btn-claim" style="max-width: 200px;">Click to Enter</button>
         </div>
 
         <div class="bio-card">
-            <img src="https://via.placeholder.com/150" alt="Avatar" class="bio-avatar" id="view-avatar">
+            <img src="default-avatar.png" alt="Avatar" class="bio-avatar" id="view-avatar">
             <div class="bio-name" id="view-name">NAME</div>
             <div class="bio-tagline" id="view-tagline">TAGLINE</div>
             
-            <!-- Hier spawnen die Custom Links -->
             <div class="bio-links-container" id="view-links-holder"></div>
         </div>
     </div>
 
-    <!-- ---------------- VIEW 3: LIVE EDITOR SIDEBAR ---------------- -->
+    <!-- ---------------- LIVE EDITOR SIDEBAR ---------------- -->
     <div id="editor-panel">
         <div class="editor-title">⚡ Control Center</div>
         
@@ -125,16 +124,16 @@
             <input type="text" id="edit-tagline" oninput="liveRefresh()">
         </div>
         <div class="input-group">
-            <label>Avatar Bild-URL</label>
-            <input type="text" id="edit-avatar" oninput="liveRefresh()">
+            <label>Avatar Bild-Pfad (Leer lassen für Standard-Template)</label>
+            <input type="text" id="edit-avatar" oninput="liveRefresh()" placeholder="default-avatar.png">
         </div>
         <div class="input-group">
-            <label>Hintergrund-Banner-URL</label>
-            <input type="text" id="edit-banner" oninput="liveRefresh()">
+            <label>Hintergrund-Banner-Pfad (Leer lassen für Standard-Template)</label>
+            <input type="text" id="edit-banner" oninput="liveRefresh()" placeholder="default-banner.jpg">
         </div>
         <div class="input-group">
-            <label>Hintergrundmusik-URL (Direkt-Link .mp3)</label>
-            <input type="text" id="edit-music" oninput="liveMusicRefresh()">
+            <label>Musik-Datei (Leer lassen für Standard-Template)</label>
+            <input type="text" id="edit-music" oninput="liveMusicRefresh()" placeholder="default-music.mp3">
         </div>
         <div class="input-group">
             <label>Effekt-Partikel</label>
@@ -145,13 +144,10 @@
             </select>
         </div>
 
-        <!-- CUSTOM LINK BUILDER SECTION (Nr. 1) -->
+        <!-- LINK BUILDER -->
         <div class="input-group" style="margin-top: 25px;">
             <label style="color: var(--neon-red); margin-bottom: 10px;">🔗 Custom Links & Buttons</label>
-            
-            <div id="links-builder-area">
-                <!-- Spawnt Reihen für Link-Namen + Link-URLs -->
-            </div>
+            <div id="links-builder-area"></div>
             <button class="action-btn btn-login" style="font-size: 10px; padding: 6px;" onclick="addNewLinkRow('', '')">+ Add Custom Link</button>
         </div>
 
@@ -161,16 +157,14 @@
         </div>
     </div>
 
-    <!-- ---------------- APPLICATION JAVASCRIPT ENGINE ---------------- -->
+    <!-- ---------------- ENGINE JAVASCRIPT ---------------- -->
     <script>
-        // Fadenkreuz-Steuerung
         const cursor = document.getElementById('main-cursor');
         document.addEventListener('mousemove', (e) => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
 
         let currentUsername = "";
         let profileData = {};
 
-        // 1. LOGIN & LEITUNG ZUM SYSTEM
         function lookupOrCreateProfile() {
             const user = document.getElementById('search-username').value.trim().toLowerCase();
             if(!user) return alert("Bitte gib einen Namen ein!");
@@ -178,16 +172,18 @@
             currentUsername = user;
             let database = JSON.parse(localStorage.getItem('loadspace_network')) || {};
 
-            // Falls das Profil neu ist, legen wir ein echtes Guns.lol Template an
+            // Fallback auf die lokalen Ordner-Templates, wenn nichts eingetragen ist
             if(!database[user]) {
                 database[user] = {
                     name: user.toUpperCase(),
-                    tagline: 'Welcome to my space Node.',
-                    avatar: 'https://via.placeholder.com/150',
-                    banner: '', music: '', particles: 'none',
+                    tagline: 'System Node active.',
+                    avatar: 'default-avatar.png', 
+                    banner: 'default-banner.jpg',
+                    music: 'default-music.mp3',
+                    particles: 'none',
                     customLinks: [
-                        { name: 'My Discord', url: 'https://discord.com' },
-                        { name: 'My GitHub', url: 'https://github.com' }
+                        { name: 'Discord Connect', url: 'https://discord.com' },
+                        { name: 'GitHub Node', url: 'https://github.com' }
                     ]
                 };
                 localStorage.setItem('loadspace_network', JSON.stringify(database));
@@ -195,23 +191,23 @@
 
             profileData = database[user];
             
-            // Wechsel zur echten Profil-Ansicht
             document.getElementById('view-landing').style.display = 'none';
             document.getElementById('bio-view-page').style.display = 'flex';
             
             renderBioPage();
         }
 
-        // 2. RENDERN DER ISOLIERTEN BIO-SEITE
         function renderBioPage() {
             document.getElementById('view-name').innerText = profileData.name;
             document.getElementById('view-tagline').innerText = profileData.tagline;
-            document.getElementById('view-avatar').src = profileData.avatar;
+            
+            // Nutzt die lokale Datei, falls das Feld leer ist
+            document.getElementById('view-avatar').src = profileData.avatar || 'default-avatar.png';
             
             const bgPage = document.getElementById('bio-view-page');
-            bgPage.style.backgroundImage = profileData.banner ? `url('${profileData.banner}')` : 'none';
+            const bannerFile = profileData.banner || 'default-banner.jpg';
+            bgPage.style.backgroundImage = `url('${bannerFile}')`;
 
-            // Custom Links mit ihren Namen laden!
             const holder = document.getElementById('view-links-holder');
             holder.innerHTML = '';
             profileData.customLinks.forEach(link => {
@@ -220,7 +216,7 @@
                     btn.className = 'bio-link-button';
                     btn.href = link.url;
                     btn.target = '_blank';
-                    btn.innerText = link.name; // Hier wird der eigene Name gesetzt!
+                    btn.innerText = link.name;
                     holder.appendChild(btn);
                 }
             });
@@ -228,18 +224,16 @@
             liveParticleRefresh();
         }
 
-        // 3. SOUND AKTIVIEREN WIE BEI PREMIUM GUNS.LOL
         function playBioMusic() {
             document.getElementById('click-unmute-wall').style.display = 'none';
             const audio = document.getElementById('bio-audio');
-            if(profileData.music) {
-                audio.src = profileData.music;
-                audio.volume = 0.3;
-                audio.play().catch(() => console.log("Musik-Autoplay geblockt"));
-            }
+            const musicFile = profileData.music || 'default-music.mp3';
+            
+            audio.src = musicFile;
+            audio.volume = 0.3;
+            audio.play().catch(() => console.log("Audio blockiert"));
         }
 
-        // 4. EDITOR MODUS ÖFFNEN
         function openEditor() {
             document.getElementById('edit-name').value = profileData.name;
             document.getElementById('edit-tagline').value = profileData.tagline;
@@ -248,7 +242,6 @@
             document.getElementById('edit-music').value = profileData.music;
             document.getElementById('edit-particles').value = profileData.particles;
 
-            // Link-Builder Reihen füllen
             const builder = document.getElementById('links-builder-area');
             builder.innerHTML = '';
             profileData.customLinks.forEach(link => {
@@ -256,7 +249,6 @@
             });
 
             document.getElementById('editor-panel').style.display = 'block';
-            // Verschiebe die Karte nach rechts, damit das Menü Platz hat
             document.querySelector('.bio-card').style.marginLeft = '440px';
         }
 
@@ -271,14 +263,12 @@
             area.appendChild(row);
         }
 
-        // 5. ECHTZEIT-REFRESH BEIM TIPPEN
         function liveRefresh() {
             profileData.name = document.getElementById('edit-name').value;
             profileData.tagline = document.getElementById('edit-tagline').value;
             profileData.avatar = document.getElementById('edit-avatar').value;
             profileData.banner = document.getElementById('edit-banner').value;
 
-            // Links aus dem Grid auslesen
             const rows = document.querySelectorAll('.link-builder-row');
             profileData.customLinks = [];
             rows.forEach(row => {
@@ -293,20 +283,16 @@
         function liveMusicRefresh() {
             profileData.music = document.getElementById('edit-music').value;
             const audio = document.getElementById('bio-audio');
-            if(profileData.music) {
-                audio.src = profileData.music;
-                audio.play().catch(() => {});
-            } else {
-                audio.pause();
-            }
+            const track = profileData.music || 'default-music.mp3';
+            audio.src = track;
+            audio.play().catch(() => {});
         }
 
-        // 6. SPEICHERN & SCHLIESSEN
         function saveData() {
             let database = JSON.parse(localStorage.getItem('loadspace_network')) || {};
             database[currentUsername] = profileData;
             localStorage.setItem('loadspace_network', JSON.stringify(database));
-            alert("🔒 Profile Settings successfully deployed!");
+            alert("🔒 Profile saved using local assets!");
         }
 
         function closeEditorAndExit() {
@@ -314,7 +300,7 @@
             location.reload();
         }
 
-        // --- VISUAL DYNAMIC CANVAS ENGINE (PARTIKEL) ---
+        // --- PARTIKEL SYSTEM ---
         const canvas = document.getElementById('particle-canvas');
         const ctx = canvas.getContext('2d');
         let particlesArray = [];
