@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LoadSpace | Premium Custom Bio-Network</title>
+    <title>LoadSpace | Premium Bio-Link Network</title>
     <style>
         /* --- DESIGN CONFIG & MATRIX RED THEME --- */
         :root {
@@ -42,11 +42,10 @@
         .btn-claim:hover { transform: scale(1.02); box-shadow: 0 0 25px var(--neon-red); }
         .btn-login { background: #120505; border: 1px solid var(--panel-border); color: #fff; }
 
-        /* --- ECHTE BIO SEITE --- */
+        /* --- BIO PROFIL SEITE --- */
         #bio-view-page { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; display: none; background-size: cover; background-position: center; justify-content: center; align-items: center; }
         .bio-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(4,2,2,0.5); backdrop-filter: blur(4px); z-index: 1; }
         
-        /* Entrance Wall */
         .unmute-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5,2,2,0.98); z-index: 100; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(10px); }
 
         .bio-card { position: relative; z-index: 10; width: 100%; max-width: 400px; background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 12px; padding: 35px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.9); transition: margin 0.3s ease; }
@@ -65,7 +64,13 @@
         .editor-title { font-size: 20px; font-weight: 900; text-transform: uppercase; color: var(--neon-red); margin-bottom: 25px; }
         .input-group { margin-bottom: 16px; display: flex; flex-direction: column; gap: 5px; }
         .input-group label { font-size: 10px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; }
-        .input-group input, .input-group select { background: #000; border: 1px solid var(--panel-border); padding: 10px; color: #fff; border-radius: 4px; font-weight: 600; font-size: 13px; }
+        
+        /* Style für die coolen Upload-Buttons */
+        .file-upload-btn { background: #120505; border: 1px solid var(--panel-border); color: #fff; padding: 10px; border-radius: 4px; font-weight: 600; font-size: 11px; text-transform: uppercase; text-align: center; display: block; width: 100%; transition: all 0.2s; }
+        .file-upload-btn:hover { border-color: var(--neon-red); background: rgba(255,51,51,0.05); }
+        .input-group input[type="file"] { display: none; } /* Versteckt das hässliche Standard-Feld */
+
+        .input-group input[type="text"], .input-group select { background: #000; border: 1px solid var(--panel-border); padding: 10px; color: #fff; border-radius: 4px; font-weight: 600; font-size: 13px; }
         .input-group input:focus { outline: none; border-color: var(--neon-red); }
         
         .link-builder-row { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 5px; }
@@ -123,18 +128,24 @@
             <label>Beschreibung / Bio</label>
             <input type="text" id="edit-tagline" oninput="liveRefresh()">
         </div>
+
+        <!-- DATEI UPLOAD BUTTONS -->
         <div class="input-group">
-            <label>Avatar Bild-Pfad (Leer lassen für Standard-Template)</label>
-            <input type="text" id="edit-avatar" oninput="liveRefresh()" placeholder="default-avatar.png">
+            <label>Profilbild Hochladen</label>
+            <label class="file-upload-btn" for="upload-avatar">📂 Datei auswählen...</label>
+            <input type="file" id="upload-avatar" accept="image/*" onchange="handleFileUpload(this, 'avatar')">
         </div>
         <div class="input-group">
-            <label>Hintergrund-Banner-Pfad (Leer lassen für Standard-Template)</label>
-            <input type="text" id="edit-banner" oninput="liveRefresh()" placeholder="default-banner.jpg">
+            <label>Hintergrund-Banner Hochladen</label>
+            <label class="file-upload-btn" for="upload-banner">📂 Datei auswählen...</label>
+            <input type="file" id="upload-banner" accept="image/*" onchange="handleFileUpload(this, 'banner')">
         </div>
         <div class="input-group">
-            <label>Musik-Datei (Leer lassen für Standard-Template)</label>
-            <input type="text" id="edit-music" oninput="liveMusicRefresh()" placeholder="default-music.mp3">
+            <label>Hintergrundmusik Hochladen (.mp3)</label>
+            <label class="file-upload-btn" for="upload-music">📂 Audio auswählen...</label>
+            <input type="file" id="upload-music" accept="audio/mp3, audio/*" onchange="handleFileUpload(this, 'music')">
         </div>
+
         <div class="input-group">
             <label>Effekt-Partikel</label>
             <select id="edit-particles" onchange="liveParticleRefresh()">
@@ -172,7 +183,6 @@
             currentUsername = user;
             let database = JSON.parse(localStorage.getItem('loadspace_network')) || {};
 
-            // Fallback auf die lokalen Ordner-Templates, wenn nichts eingetragen ist
             if(!database[user]) {
                 database[user] = {
                     name: user.toUpperCase(),
@@ -201,13 +211,15 @@
             document.getElementById('view-name').innerText = profileData.name;
             document.getElementById('view-tagline').innerText = profileData.tagline;
             
-            // Nutzt die lokale Datei, falls das Feld leer ist
+            // Profilbild zuweisen
             document.getElementById('view-avatar').src = profileData.avatar || 'default-avatar.png';
             
+            // Banner zuweisen
             const bgPage = document.getElementById('bio-view-page');
             const bannerFile = profileData.banner || 'default-banner.jpg';
             bgPage.style.backgroundImage = `url('${bannerFile}')`;
 
+            // Links rendern
             const holder = document.getElementById('view-links-holder');
             holder.innerHTML = '';
             profileData.customLinks.forEach(link => {
@@ -224,6 +236,34 @@
             liveParticleRefresh();
         }
 
+        // VERARBEITET DEN DATEI-UPLOAD VOM LOKALEN PC
+        function handleFileUpload(inputElement, type) {
+            const file = inputElement.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Data = e.target.result;
+                
+                // Live in die Profildaten einspeisen
+                if (type === 'avatar') {
+                    profileData.avatar = base64Data;
+                } else if (type === 'banner') {
+                    profileData.banner = base64Data;
+                } else if (type === 'music') {
+                    profileData.music = base64Data;
+                    // Musik sofort live im Editor abspielen zum Testen
+                    const audio = document.getElementById('bio-audio');
+                    audio.src = base64Data;
+                    audio.play().catch(() => {});
+                }
+                
+                // Direkt die Seite aktualisieren, damit man die Änderung sieht!
+                renderBioPage();
+            };
+            reader.readAsDataURL(file);
+        }
+
         function playBioMusic() {
             document.getElementById('click-unmute-wall').style.display = 'none';
             const audio = document.getElementById('bio-audio');
@@ -237,9 +277,6 @@
         function openEditor() {
             document.getElementById('edit-name').value = profileData.name;
             document.getElementById('edit-tagline').value = profileData.tagline;
-            document.getElementById('edit-avatar').value = profileData.avatar;
-            document.getElementById('edit-banner').value = profileData.banner;
-            document.getElementById('edit-music').value = profileData.music;
             document.getElementById('edit-particles').value = profileData.particles;
 
             const builder = document.getElementById('links-builder-area');
@@ -266,8 +303,6 @@
         function liveRefresh() {
             profileData.name = document.getElementById('edit-name').value;
             profileData.tagline = document.getElementById('edit-tagline').value;
-            profileData.avatar = document.getElementById('edit-avatar').value;
-            profileData.banner = document.getElementById('edit-banner').value;
 
             const rows = document.querySelectorAll('.link-builder-row');
             profileData.customLinks = [];
@@ -280,19 +315,11 @@
             renderBioPage();
         }
 
-        function liveMusicRefresh() {
-            profileData.music = document.getElementById('edit-music').value;
-            const audio = document.getElementById('bio-audio');
-            const track = profileData.music || 'default-music.mp3';
-            audio.src = track;
-            audio.play().catch(() => {});
-        }
-
         function saveData() {
             let database = JSON.parse(localStorage.getItem('loadspace_network')) || {};
             database[currentUsername] = profileData;
             localStorage.setItem('loadspace_network', JSON.stringify(database));
-            alert("🔒 Profile saved using local assets!");
+            alert("🔒 Profile saved including uploaded files!");
         }
 
         function closeEditorAndExit() {
