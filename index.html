@@ -3,367 +3,430 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LoadSpace | Bio-Link Hosting Platform</title>
+    <title>LoadSpace | Ultimate Bio-Link Customizer</title>
     <style>
-        /* --- BRANDING & REON RED AESTHETIC --- */
+        /* --- CORE CONFIG & NEON THEME --- */
         :root {
-            --bg-dark: #040101;
-            --panel-bg: #0c0303;
-            --panel-border: rgba(255, 51, 51, 0.15);
+            --bg-dark: #050202;
+            --panel-bg: rgba(12, 3, 3, 0.85);
+            --panel-border: rgba(255, 51, 51, 0.2);
             --neon-red: #ff3333;
             --neon-glow: rgba(255, 51, 51, 0.5);
             --text-main: #ffffff;
-            --text-muted: #7d5353;
-            --green-glow: #00ff66;
+            --text-muted: #835252;
         }
 
         * {
             margin: 0; padding: 0; box-sizing: border-box;
             font-family: 'Segoe UI', Roboto, sans-serif;
-            cursor: none; /* Custom Fadenkreuz überall */
+            cursor: none;
         }
 
-        body {
+        body, html {
             background-color: var(--bg-dark);
             color: var(--text-main);
             min-height: 100vh;
             overflow-x: hidden;
         }
 
-        /* --- BACKGROUND NETWORK GRID --- */
+        /* --- NETZWERK HINTERGRUND --- */
         .grid-bg {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-image: 
                 linear-gradient(rgba(255, 51, 51, 0.02) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255, 51, 51, 0.02) 1px, transparent 1px);
             background-size: 50px 50px;
-            z-index: 1;
-            pointer-events: none;
+            z-index: 1; pointer-events: none;
         }
 
-        /* --- FADENKREUZ CURSOR --- */
+        /* --- CUSTOM CURSOR --- */
         #main-cursor {
-            width: 22px; height: 22px;
-            border: 2px solid var(--neon-red);
-            border-radius: 50%;
-            position: fixed;
-            transform: translate(-50%, -50%);
-            pointer-events: none;
-            z-index: 10000;
-            box-shadow: 0 0 10px var(--neon-glow);
+            width: 22px; height: 22px; border: 2px solid var(--neon-red); border-radius: 50%;
+            position: fixed; transform: translate(-50%, -50%); pointer-events: none;
+            z-index: 10000; box-shadow: 0 0 10px var(--neon-glow);
         }
         #main-cursor::after {
-            content: ''; position: absolute;
-            top: 50%; left: 50%; width: 4px; height: 4px;
-            background: #fff; border-radius: 50%;
-            transform: translate(-50%, -50%);
+            content: ''; position: absolute; top: 50%; left: 50%; width: 4px; height: 4px;
+            background: #fff; border-radius: 50%; transform: translate(-50%, -50%);
         }
 
-        /* --- NAV BAR --- */
+        /* --- PARTIKEL SYSTEM CANVAS --- */
+        #particle-canvas {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 2; pointer-events: none;
+        }
+
+        /* --- PLATFORM INTERFACE --- */
         header {
-            position: relative; z-index: 10;
-            height: 70px;
-            background: var(--panel-bg);
-            border-bottom: 1px solid var(--panel-border);
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0 40px;
+            position: relative; z-index: 10; height: 70px;
+            background: #0c0303; border-bottom: 1px solid var(--panel-border);
+            display: flex; justify-content: space-between; align-items: center; padding: 0 40px;
         }
         .logo { font-size: 22px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; }
         .logo span { color: var(--neon-red); text-shadow: 0 0 10px var(--neon-red); }
 
         .host-trigger-btn {
-            background: transparent;
-            border: 1px solid var(--neon-red);
-            color: #fff;
-            padding: 10px 22px;
-            font-size: 11px; font-weight: 800;
-            text-transform: uppercase; letter-spacing: 1.5px;
-            border-radius: 4px;
-            box-shadow: 0 0 15px rgba(255, 51, 51, 0.1);
+            background: transparent; border: 1px solid var(--neon-red); color: #fff;
+            padding: 10px 22px; font-size: 11px; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 1.5px; border-radius: 4px; box-shadow: 0 0 15px rgba(255, 51, 51, 0.1);
             transition: all 0.2s ease;
         }
-        .host-trigger-btn:hover {
-            background: var(--neon-red);
-            box-shadow: 0 0 25px var(--neon-glow);
-            transform: translateY(-2px);
-        }
+        .host-trigger-btn:hover { background: var(--neon-red); box-shadow: 0 0 25px var(--neon-glow); }
 
-        /* --- DASHBOARD PORTAL --- */
-        .container {
-            position: relative; z-index: 5;
-            max-width: 1200px; margin: 40px auto;
-            padding: 0 20px;
-        }
-        .section-title {
-            font-size: 12px; text-transform: uppercase;
-            color: var(--text-muted); letter-spacing: 2px;
-            margin-bottom: 25px; font-weight: 800;
-        }
+        .container { position: relative; z-index: 5; max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
 
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-        }
-
-        /* CARD DESIGN */
         .profile-card {
-            background: var(--panel-bg);
-            border: 1px solid var(--panel-border);
-            border-radius: 8px; padding: 25px;
-            text-align: center;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex; flex-direction: column; align-items: center;
+            background: #0c0303; border: 1px solid var(--panel-border); border-radius: 8px;
+            padding: 25px; text-align: center; transition: all 0.2s;
         }
-        .profile-card:hover {
-            border-color: var(--neon-red);
-            box-shadow: 0 8px 25px rgba(255, 51, 51, 0.15);
-            transform: translateY(-4px);
-        }
-        .card-avatar {
-            width: 65px; height: 65px; border-radius: 50%;
-            border: 2px solid var(--panel-border); margin-bottom: 15px;
-            background: #1a0a0a; display: flex; align-items: center; justify-content: center;
-            font-size: 24px;
-        }
-        .card-name { font-size: 16px; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; }
-        .card-sub { font-size: 11px; color: var(--text-muted); margin-bottom: 20px; font-weight: 600; }
-        
-        .visit-btn {
-            width: 100%; background: rgba(0,0,0,0.4);
-            border: 1px solid var(--panel-border); color: #fff;
-            padding: 10px; border-radius: 4px;
-            font-size: 11px; font-weight: 700; text-transform: uppercase;
-            letter-spacing: 1px; transition: all 0.2s;
-        }
-        .profile-card:hover .visit-btn {
-            border-color: var(--neon-red); background: rgba(255, 51, 51, 0.05);
-        }
+        .profile-card:hover { border-color: var(--neon-red); transform: translateY(-3px); }
+        .card-avatar { width: 65px; height: 65px; border-radius: 50%; border: 2px solid var(--neon-red); margin-bottom: 15px; object-fit: cover; }
+        .card-name { font-size: 16px; font-weight: 800; margin-bottom: 12px; text-transform: uppercase; }
 
-        /* --- HOSTING CREATION MODAL (POPUP) --- */
-        .modal-overlay {
+        /* --- FULLSCREEN LIVE CUSTOMIZER STATION --- */
+        #studio-panel {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(3, 1, 1, 0.9); backdrop-filter: blur(8px);
-            z-index: 1000; display: none; justify-content: center; align-items: center;
+            background: #030101; z-index: 5000; display: none;
         }
-        .modal-box {
-            background: var(--panel-bg); border: 1px solid var(--neon-red);
-            width: 100%; max-width: 450px; padding: 30px; border-radius: 10px;
-            box-shadow: 0 0 30px var(--neon-glow);
+
+        /* Split-Screen Layout wie bei Profi-Baukästen */
+        .studio-container { display: grid; grid-template-columns: 400px 1fr; height: 100vh; }
+
+        /* Linke Seite: Einstellungs-Menü */
+        .editor-sidebar {
+            background: #090202; border-right: 1px solid var(--panel-border);
+            padding: 30px; overflow-y: auto; position: relative; z-index: 5100;
         }
-        .modal-title { font-size: 18px; font-weight: 900; text-transform: uppercase; margin-bottom: 20px; letter-spacing: 1px; }
+        .sidebar-title { font-size: 18px; font-weight: 900; text-transform: uppercase; margin-bottom: 25px; letter-spacing: 1px; color: var(--neon-red); }
         
-        .input-grp { margin-bottom: 15px; display: flex; flex-direction: column; gap: 5px; }
-        .input-grp label { font-size: 10px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; }
-        .input-grp input {
-            background: #000; border: 1px solid var(--panel-border);
-            padding: 12px; color: #fff; border-radius: 4px; font-weight: 600;
+        .setting-box { margin-bottom: 18px; display: flex; flex-direction: column; gap: 6px; }
+        .setting-box label { font-size: 10px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 1px; }
+        .setting-box input, .setting-box select {
+            background: #000; border: 1px solid var(--panel-border); padding: 10px;
+            color: #fff; border-radius: 4px; font-weight: 600; font-size: 13px;
         }
-        .input-grp input:focus { outline: none; border-color: var(--neon-red); }
+        .setting-box input:focus, .setting-box select:focus { outline: none; border-color: var(--neon-red); }
 
-        .form-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
-        .form-btn { padding: 12px; border: none; border-radius: 4px; font-weight: 800; text-transform: uppercase; font-size: 11px; }
-        .btn-cancel { background: #1a0a0a; color: var(--text-muted); }
-        .btn-submit { background: var(--neon-red); color: #fff; box-shadow: 0 0 10px var(--neon-glow); }
+        .control-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 30px; }
+        .studio-btn { padding: 12px; border: none; border-radius: 4px; font-weight: 800; text-transform: uppercase; font-size: 11px; }
+        .btn-save { background: #00ff66; color: #000; box-shadow: 0 0 15px rgba(0,255,102,0.3); }
+        .btn-close { background: rgba(255,51,51,0.1); border: 1px solid var(--neon-red); color: #fff; }
 
-        /* --- FULLSCREEN BIO VIEWER SYSTEM --- */
-        #bio-viewer {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #050202; z-index: 5000; display: none;
-            justify-content: center; align-items: center;
+        /* Rechte Seite: Live-Vorschau (Exakter Guns.lol Look) */
+        .preview-zone {
+            position: relative; display: flex; justify-content: center; align-items: center;
+            background-size: cover; background-position: center; transition: background 0.3s;
         }
-        .close-bio-panel {
-            position: absolute; top: 20px; right: 20px;
-            background: rgba(255,51,51,0.1); border: 1px solid var(--neon-red);
-            color: #fff; padding: 8px 15px; font-size: 10px; font-weight: 800;
-            text-transform: uppercase; border-radius: 4px; z-index: 5100;
+        .preview-overlay-blur {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(4, 2, 2, 0.4); backdrop-filter: blur(3px); z-index: 1;
         }
 
-        /* Embedded Guns.lol Style Inner Wrapper */
-        .bio-inner-content {
-            background: rgba(18, 5, 5, 0.6); border: 1px solid rgba(255, 51, 51, 0.2);
-            width: 100%; max-width: 420px; padding: 35px; border-radius: 12px;
-            text-align: center; backdrop-filter: blur(10px); box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+        /* Die eigentliche Bio-Card im Zentrum */
+        .live-bio-card {
+            position: relative; z-index: 10; width: 100%; max-width: 380px;
+            background: var(--panel-bg); border: 1px solid var(--panel-border);
+            border-radius: 12px; padding: 35px; text-align: center;
+            backdrop-filter: blur(12px); box-shadow: 0 15px 40px rgba(0,0,0,0.8);
         }
-        .bio-avatar { width: 85px; height: 85px; border-radius: 50%; border: 2px solid var(--neon-red); margin-bottom: 15px; box-shadow: 0 0 15px var(--neon-glow); }
-        .bio-title { font-size: 24px; font-weight: 900; text-transform: uppercase; text-shadow: 0 0 10px var(--neon-red); margin-bottom: 5px; }
-        .bio-desc { font-size: 12px; color: var(--text-muted); margin-bottom: 25px; }
+        .live-avatar { width: 85px; height: 85px; border-radius: 50%; border: 2px solid var(--neon-red); margin-bottom: 15px; box-shadow: 0 0 15px var(--neon-glow); object-fit: cover; }
+        .live-name { font-size: 24px; font-weight: 900; text-transform: uppercase; text-shadow: 0 0 10px var(--neon-red); margin-bottom: 5px; }
+        .live-tagline { font-size: 12px; color: var(--text-muted); margin-bottom: 25px; font-weight: 600; }
         
-        .bio-links-holder { display: flex; flex-direction: column; gap: 10px; }
-        .bio-btn-link {
-            background: rgba(0,0,0,0.5); border: 1px solid rgba(255,51,51,0.15);
+        .live-links-container { display: flex; flex-direction: column; gap: 10px; }
+        .live-link-item {
+            background: rgba(0,0,0,0.6); border: 1px solid rgba(255,51,51,0.15);
             padding: 14px; color: #fff; text-decoration: none; border-radius: 6px;
             font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
-            display: block; transition: all 0.2s;
+            transition: all 0.2s;
         }
-        .bio-btn-link:hover { border-color: var(--neon-red); background: rgba(255,51,51,0.05); transform: scale(1.02); }
+        .live-link-item:hover { border-color: var(--neon-red); background: rgba(255,51,51,0.05); transform: scale(1.02); }
     </style>
 </head>
 <body>
 
-    <!-- CORE AMBIENT HINTERGRUND -->
     <div class="grid-bg"></div>
     <div id="main-cursor"></div>
 
-    <!-- MAIN PLATFORM HEADER -->
+    <!-- MAIN DASHBOARD HEADER -->
     <header>
         <div class="logo">Load<span>Space</span></div>
-        <button class="host-trigger-btn" onclick="toggleHostModal(true)">[ Host New Page ]</button>
+        <button class="host-trigger-btn" onclick="createNewBlankProfile()">[ + Create Bio Page ]</button>
     </header>
 
-    <!-- CONTENT PORTAL -->
+    <!-- NETWORK GRID -->
     <div class="container">
-        <div class="section-title">Hosted Bio Link Network</div>
-        <div class="cards-grid" id="platform-grid">
+        <div class="cards-grid" id="main-portal-grid">
+            <!-- Dynamisch generierte Profile landen hier -->
+        </div>
+    </div>
+
+    <!-- --- FULLSCREEN STUDIO PANELS --- -->
+    <div id="studio-panel">
+        <!-- Unsichtbarer Audio-Player für den Live-Test -->
+        <audio id="studio-audio" loop></audio>
+
+        <div class="studio-container">
             
-            <!-- CODE-BASIERTE PROFILE (Möglichkeit A: Trag hier deine Kumpels fest ein) -->
-            <div class="profile-card" onclick="openBio('Linus Löffel', 'Java Developer & SysAdmin', 'https://github.com', 'https://discord.com')">
-                <div class="card-avatar">💻</div>
-                <div class="card-name">Linus Löffel</div>
-                <div class="card-sub">Developer System</div>
-                <button class="visit-btn">Besuchen</button>
+            <!-- LINKS: DAS LIVE-STEURUNGSPANEL -->
+            <div class="editor-sidebar">
+                <div class="sidebar-title">⚡ Edit Bio Station</div>
+                
+                <div class="setting-box">
+                    <label>Profile Name</label>
+                    <input type="text" id="edit-name" oninput="updateLivePreview()" placeholder="Dein Name">
+                </div>
+                <div class="setting-box">
+                    <label>Title / Bio Text</label>
+                    <input type="text" id="edit-tagline" oninput="updateLivePreview()" placeholder="z.B. Python & Java Coder">
+                </div>
+                <div class="setting-box">
+                    <label>Avatar Bild (URL)</label>
+                    <input type="text" id="edit-avatar" oninput="updateLivePreview()" placeholder="https://link-zu-deinem-bild.png">
+                </div>
+                <div class="setting-box">
+                    <label>Banner / Hintergrund (URL)</label>
+                    <input type="text" id="edit-banner" oninput="updateLivePreview()" placeholder="https://link-zu-banner.jpg">
+                </div>
+                <div class="setting-box">
+                    <label>Hintergrundmusik (Direct URL)</label>
+                    <input type="text" id="edit-music" oninput="updateLiveMusic()" placeholder="https://server.com/musik.mp3">
+                </div>
+                <div class="setting-box">
+                    <label>Partikel-Effekt</label>
+                    <select id="edit-particles" onchange="changeParticleStyle()">
+                        <option value="none">Keine Partikel</option>
+                        <option value="snow">Klassischer Schnee</option>
+                        <option value="matrix">Matrix Pixel-Drop</option>
+                    </select>
+                </div>
+                <div class="setting-box">
+                    <label>Discord URL</label>
+                    <input type="text" id="edit-l1" oninput="updateLivePreview()" placeholder="https://discord.gg/...">
+                </div>
+                <div class="setting-box">
+                    <label>GitHub URL</label>
+                    <input type="text" id="edit-l2" oninput="updateLivePreview()" placeholder="https://github.com/...">
+                </div>
+
+                <div class="control-btns">
+                    <button class="studio-btn btn-close" onclick="closeStudio()">Exit</button>
+                    <button class="studio-btn btn-save" onclick="saveCurrentProfile()">Save & Deploy</button>
+                </div>
             </div>
 
-            <div class="profile-card" onclick="openBio('Dennis', 'Signal Contact & Trader', 'https://tradingview.com', 'https://signal.org')">
-                <div class="card-avatar">📈</div>
-                <div class="card-name">Dennis</div>
-                <div class="card-sub">Market Partner</div>
-                <button class="visit-btn">Besuchen</button>
-            </div>
+            <!-- RECHTS: DIE LIVE-VORSCHAU (GUNS.LOL DESIGN) -->
+            <div class="preview-zone" id="live-preview-bg">
+                <div class="preview-overlay-blur"></div>
+                <canvas id="particle-canvas"></canvas>
 
-            <div class="profile-card" onclick="openBio('Marie', 'Music Specialist', 'https://spotify.com', 'https://youtube.com')">
-                <div class="card-avatar">🎵</div>
-                <div class="card-name">Marie</div>
-                <div class="card-sub">Creative Matrix</div>
-                <button class="visit-btn">Besuchen</button>
+                <div class="live-bio-card">
+                    <img src="" alt="Avatar" class="live-avatar" id="live-view-avatar">
+                    <div class="live-name" id="live-view-name">USERNAME</div>
+                    <div class="live-tagline" id="live-view-tagline">BIO TAGLINE</div>
+                    
+                    <div class="live-links-container">
+                        <a href="#" target="_blank" class="live-link-item" id="live-view-l1">Connect Area 1</a>
+                        <a href="#" target="_blank" class="live-link-item" id="live-view-l2">Connect Area 2</a>
+                    </div>
+                </div>
             </div>
 
         </div>
     </div>
 
-    <!-- POPUP MODAL: HOST FORMULAR -->
-    <div class="modal-overlay" id="host-modal">
-        <div class="modal-box">
-            <div class="modal-title">Deploy Bio Site</div>
-            
-            <div class="input-grp">
-                <label>Profil Name</label>
-                <input type="text" id="form-name" placeholder="z.B. Keks">
-            </div>
-            <div class="input-grp">
-                <label>Beschreibung / Tagline</label>
-                <input type="text" id="form-desc" placeholder="z.B. Minecraft Modder">
-            </div>
-            <div class="input-grp">
-                <label>Social Link 1 (URL)</label>
-                <input type="text" id="form-link1" placeholder="https://discord.gg/...">
-            </div>
-            <div class="input-grp">
-                <label>Social Link 2 (URL)</label>
-                <input type="text" id="form-link2" placeholder="https://github.com/...">
-            </div>
-
-            <div class="form-btns">
-                <button class="form-btn btn-cancel" onclick="toggleHostModal(false)">Abbrechen</button>
-                <button class="form-btn btn-submit" onclick="submitNewHost()">Deploy Page</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- FULLSCREEN EMBEDDED GUNS.LOL BIO VIEW INTERFACE -->
-    <div id="bio-viewer">
-        <button class="close-bio-panel" onclick="closeBio()">✖ Close Station</button>
-        
-        <div class="bio-inner-content">
-            <!-- Platzhalter-Avatar, der im Guns-Style glüht -->
-            <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150" alt="Bio Head" class="bio-avatar">
-            <div class="bio-title" id="view-title">User</div>
-            <div class="bio-desc" id="view-desc">Description</div>
-            
-            <div class="bio-links-holder" id="view-links">
-                <!-- Links werden dynamisch reingeschrieben -->
-            </div>
-        </div>
-    </div>
-
-    <!-- --- WEB APPLICATION ENGINE --- -->
+    <!-- --- APP LOGIC ENGINE --- -->
     <script>
-        // 1. NEON CURSOR CONTROL
-        const mouseCrosshair = document.getElementById('main-cursor');
+        // Fadenkreuz-Mauszeiger
+        const cursor = document.getElementById('main-cursor');
         document.addEventListener('mousemove', (e) => {
-            mouseCrosshair.style.left = e.clientX + 'px';
-            mouseCrosshair.style.top = e.clientY + 'px';
+            cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px';
         });
 
-        // 2. MODAL INTERAFFECTION
-        function toggleHostModal(show) {
-            document.getElementById('host-modal').style.display = show ? 'flex' : 'none';
-        }
+        let profiles = [];
+        let activeProfileId = null;
 
-        // 3. STORAGE & GENERATION MECHANICS (Möglichkeit B)
-        function loadStorageProfiles() {
-            const platformGrid = document.getElementById('platform-grid');
-            let saved = JSON.parse(localStorage.getItem('loadspace_pages')) || [];
-            
-            saved.forEach(profile => {
-                const newCard = document.createElement('div');
-                newCard.className = 'profile-card';
-                // Escape Strings für Event-Handler
-                const nameEsc = profile.name.replace(/'/g, "\\'");
-                const descEsc = profile.desc.replace(/'/g, "\\'");
-                
-                newCard.setAttribute('onclick', `openBio('${nameEsc}', '${descEsc}', '${profile.l1}', '${profile.l2}')`);
-                newCard.innerHTML = `
-                    <div class="card-avatar" style="border-color: var(--neon-red);">🔥</div>
-                    <div class="card-name">${profile.name}</div>
-                    <div class="card-sub">Hosted User Space</div>
-                    <button class="visit-btn">Besuchen</button>
+        // Lädt alle Profile aus dem Browser-Speicher
+        function initPlatform() {
+            const grid = document.getElementById('main-portal-grid');
+            grid.innerHTML = '';
+            profiles = JSON.parse(localStorage.getItem('loadspace_premium_v2')) || [];
+
+            // Standard-Profile erstellen, falls leer (für dich und deine Freunde!)
+            if(profiles.length === 0) {
+                profiles = [
+                    { id: 0, name: 'Linus Löffel', tagline: 'Fedora User & Java Master', avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150', banner: '', music: '', particles: 'matrix', l1: 'https://discord.com', l2: 'https://github.com' },
+                    { id: 1, name: 'Keks', tagline: 'Minecraft Skript Specialist', avatar: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=150', banner: '', music: '', particles: 'none', l1: 'https://discord.com', l2: 'https://github.com' }
+                ];
+                localStorage.setItem('loadspace_premium_v2', JSON.stringify(profiles));
+            }
+
+            profiles.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'profile-card';
+                card.setAttribute('onclick', `openStudio(${p.id})`);
+                card.innerHTML = `
+                    <img src="${p.avatar || 'https://via.placeholder.com/150'}" class="card-avatar">
+                    <div class="card-name">${p.name}</div>
+                    <button class="visit-btn" style="border-color: var(--neon-red)">Edit Config</button>
                 `;
-                platformGrid.appendChild(newCard);
+                grid.appendChild(card);
             });
         }
 
-        function submitNewHost() {
-            const name = document.getElementById('form-name').value.trim();
-            const desc = document.getElementById('form-desc').value.trim();
-            const l1 = document.getElementById('form-link1').value.trim() || 'https://google.com';
-            const l2 = document.getElementById('form-link2').value.trim() || 'https://google.com';
+        function createNewBlankProfile() {
+            const newId = Date.now();
+            const newProfile = {
+                id: newId,
+                name: 'New Custom Link',
+                tagline: 'Custom bio description',
+                avatar: 'https://via.placeholder.com/150',
+                banner: '', music: '', particles: 'none',
+                l1: 'https://discord.com', l2: 'https://github.com'
+            };
+            profiles.push(newProfile);
+            localStorage.setItem('loadspace_premium_v2', JSON.stringify(profiles));
+            openStudio(newId);
+        }
 
-            if(!name || !desc) {
-                alert("Bitte mindestens Name und Beschreibung ausfüllen!");
+        // Öffnet das Studio und befüllt die Inputs
+        function openStudio(id) {
+            activeProfileId = id;
+            const p = profiles.find(x => x.id === id);
+
+            document.getElementById('edit-name').value = p.name;
+            document.getElementById('edit-tagline').value = p.tagline;
+            document.getElementById('edit-avatar').value = p.avatar;
+            document.getElementById('edit-banner').value = p.banner;
+            document.getElementById('edit-music').value = p.music;
+            document.getElementById('edit-particles').value = p.particles;
+            document.getElementById('edit-l1').value = p.l1;
+            document.getElementById('edit-l2').value = p.l2;
+
+            document.getElementById('studio-panel').style.display = 'block';
+            updateLivePreview();
+            updateLiveMusic();
+            changeParticleStyle();
+        }
+
+        // Live-Update während des Tippens
+        function updateLivePreview() {
+            const name = document.getElementById('edit-name').value || 'USERNAME';
+            const tagline = document.getElementById('edit-tagline').value || 'TAGLINE INFO';
+            const avatar = document.getElementById('edit-avatar').value || 'https://via.placeholder.com/150';
+            const banner = document.getElementById('edit-banner').value;
+            const l1 = document.getElementById('edit-l1').value || '#';
+            const l2 = document.getElementById('edit-l2').value || '#';
+
+            document.getElementById('live-view-name').innerText = name;
+            document.getElementById('live-view-tagline').innerText = tagline;
+            document.getElementById('live-view-avatar').src = avatar;
+
+            const bgZone = document.getElementById('live-preview-bg');
+            if(banner) {
+                bgZone.style.backgroundImage = `url('${banner}')`;
+            } else {
+                bgZone.style.background = '#050202';
+            }
+
+            document.getElementById('live-view-l1').href = l1;
+            document.getElementById('live-view-l2').href = l2;
+        }
+
+        function updateLiveMusic() {
+            const audioUrl = document.getElementById('edit-music').value;
+            const player = document.getElementById('studio-audio');
+            if(audioUrl) {
+                player.src = audioUrl;
+                player.volume = 0.3;
+                player.play().catch(() => console.log("Audio braucht Klick"));
+            } else {
+                player.pause();
+            }
+        }
+
+        function saveCurrentProfile() {
+            const idx = profiles.findIndex(x => x.id === activeProfileId);
+            if(idx !== -1) {
+                profiles[idx].name = document.getElementById('edit-name').value;
+                profiles[idx].tagline = document.getElementById('edit-tagline').value;
+                profiles[idx].avatar = document.getElementById('edit-avatar').value;
+                profiles[idx].banner = document.getElementById('edit-banner').value;
+                profiles[idx].music = document.getElementById('edit-music').value;
+                profiles[idx].particles = document.getElementById('edit-particles').value;
+                profiles[idx].l1 = document.getElementById('edit-l1').value;
+                profiles[idx].l2 = document.getElementById('edit-l2').value;
+
+                localStorage.setItem('loadspace_premium_v2', JSON.stringify(profiles));
+                alert("🚀 Configuration deployed to matrix!");
+                closeStudio();
+            }
+        }
+
+        function closeStudio() {
+            document.getElementById('studio-audio').pause();
+            document.getElementById('studio-panel').style.display = 'none';
+            clearInterval(particleInterval);
+            initPlatform();
+        }
+
+        // --- POWERFUL LIVE PARTICLE SYSTEM ---
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let particlesArray = [];
+        let particleInterval = null;
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.offsetWidth;
+            canvas.height = canvas.parentElement.offsetHeight;
+        }
+
+        function changeParticleStyle() {
+            clearInterval(particleInterval);
+            resizeCanvas();
+            particlesArray = [];
+            const type = document.getElementById('edit-particles').value;
+
+            if (type === 'none') {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
                 return;
             }
 
-            let currentSaved = JSON.parse(localStorage.getItem('loadspace_pages')) || [];
-            currentSaved.push({ name, desc, l1, l2 });
-            localStorage.setItem('loadspace_pages', JSON.stringify(currentSaved));
+            particleInterval = setInterval(() => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Neue Partikel erzeugen
+                if (particlesArray.length < 60) {
+                    particlesArray.push({
+                        x: Math.random() * canvas.width,
+                        y: 0,
+                        speed: Math.random() * 2 + 1,
+                        size: type === 'snow' ? Math.random() * 3 + 1 : Math.random() * 2 + 8
+                    });
+                }
 
-            // Formular säubern & neu laden
-            toggleHostModal(false);
-            location.reload();
+                // Partikel rendern & bewegen
+                particlesArray.forEach((p, idx) => {
+                    p.y += p.speed;
+                    if (p.y > canvas.height) particlesArray.splice(idx, 1);
+
+                    ctx.beginPath();
+                    if (type === 'snow') {
+                        ctx.fillStyle = '#ffffff';
+                        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    } else if (type === 'matrix') {
+                        ctx.fillStyle = '#ff3333';
+                        ctx.font = p.size + 'px monospace';
+                        ctx.fillText(Math.floor(Math.random() * 2), p.x, p.y);
+                    }
+                    ctx.fill();
+                });
+            }, 30);
         }
 
-        // 4. EMBED BIO VIEWER ENGINE (Öffnet das coole Guns.lol Profil)
-        function openBio(name, desc, link1, link2) {
-            document.getElementById('view-title').innerText = name;
-            document.getElementById('view-desc').innerText = desc;
-            
-            const linksBox = document.getElementById('view-links');
-            linksBox.innerHTML = `
-                <a href="${link1}" target="_blank" class="bio-btn-link">Primary Network Connect</a>
-                <a href="${link2}" target="_blank" class="bio-btn-link">Secondary Feed Node</a>
-            `;
-
-            document.getElementById('bio-viewer').style.display = 'flex';
-        }
-
-        function closeBio() {
-            document.getElementById('bio-viewer').style.display = 'none';
-        }
-
-        // Initialisierung beim Start
-        loadStorageProfiles();
+        window.addEventListener('resize', resizeCanvas);
+        initPlatform();
     </script>
 </body>
 </html>
