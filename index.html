@@ -491,7 +491,9 @@ const defaultPlayers = [
 function save() {
     localStorage.setItem('loadtiers_players', JSON.stringify(players));
     localStorage.setItem('loadtiers_staff', JSON.stringify(staffList));
-    localStorage.setItem('loadtiers_admins', JSON.stringify(adminAccounts));
+    let adminAccounts = JSON.parse(localStorage.getItem('loadtiers_admins')) || {
+    "L4lyx": "L4lyx12"
+};
 
     const s = document.getElementById('save-status');
     if (s) {
