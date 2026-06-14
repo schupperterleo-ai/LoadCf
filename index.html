@@ -353,7 +353,28 @@
     </div>
 </div>
  
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+    getFirestore,
+    doc,
+    setDoc,
+    getDoc,
+    onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBswyuV0HblMDvmrh6McmPRb26Hz99XhAY",
+    authDomain: "loadtiers.firebaseapp.com",
+    projectId: "loadtiers",
+    storageBucket: "loadtiers.firebasestorage.app",
+    messagingSenderId: "705641531162",
+    appId: "1:705641531162:web:7eaadc77f9037521b5cea3",
+    measurementId: "G-9WRJRFQ38H"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 // ═══════════════════════════════════════════════════════
 //  PARTIKEL HINTERGRUND
@@ -476,9 +497,11 @@ let currentMode  = 'overall';
 let loggedInUser = null;
  
 function save() {
-    localStorage.setItem('loadtiers_players', JSON.stringify(players));
-    localStorage.setItem('loadtiers_staff',   JSON.stringify(staffList));
-    localStorage.setItem('loadtiers_admins',  JSON.stringify(adminAccounts));
+let players = [];
+let staffList = [];
+adminAccounts = {
+    "L4lyx": "Tini2013!"
+};
     const s = document.getElementById('save-status');
     if (s) { s.textContent = '✓ Gespeichert'; setTimeout(() => s.textContent = '', 2000); }
 }
