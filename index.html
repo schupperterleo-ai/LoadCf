@@ -222,9 +222,9 @@
         <div class="nav-left">
             <div class="brand-logo" onclick="changeMainView('rankings')">LOAD<span>TIERS</span></div>
             <div class="nav-links">
-                <div class="nav-link active" id="nav-rankings" onclick="changeMainView('rankings')">RANKINGS</div>
-                <div class="nav-link" id="nav-staff" onclick="changeMainView('staff')">STAFF</div>
-                <div class="nav-link">DISCORD</div>
+                <div class="nav-link active" id="nav-rankings" onclick="changeMainView('rankings')">Rankings</div>
+                <div class="nav-link" id="nav-staff" onclick="changeMainView('staff')">Staff</div>
+                <div class="nav-link">Discord</div>
             </div>
         </div>
         <div class="nav-right">
@@ -488,22 +488,16 @@ const defaultPlayers = [
  
 // localStorage – auf GitHub Pages sehen alle Besucher des gleichen Browsers dieselben Daten.
 // Für echtes Multiplayer-Sharing bräuchtest du ein Backend (z.B. Firebase).
-let players      = JSON.parse(localStorage.getItem('loadtiers_players')) || defaultPlayers;
-let staffList    = JSON.parse(localStorage.getItem('loadtiers_staff'))   || defaultStaff;
-let adminAccounts= JSON.parse(localStorage.getItem('loadtiers_admins'))  || { 'L4lyx': 'Tini2013!' };
- 
-let currentView  = 'rankings';
-let currentMode  = 'overall';
-let loggedInUser = null;
- 
 function save() {
-let players = [];
-let staffList = [];
-adminAccounts = {
-    "L4lyx": "Tini2013!"
-};
+    localStorage.setItem('loadtiers_players', JSON.stringify(players));
+    localStorage.setItem('loadtiers_staff', JSON.stringify(staffList));
+    localStorage.setItem('loadtiers_admins', JSON.stringify(adminAccounts));
+
     const s = document.getElementById('save-status');
-    if (s) { s.textContent = '✓ Gespeichert'; setTimeout(() => s.textContent = '', 2000); }
+    if (s) {
+        s.textContent = '✓ Gespeichert';
+        setTimeout(() => s.textContent = '', 2000);
+    }
 }
  
 // ═══════════════════════════════════════════════════════
