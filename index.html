@@ -353,7 +353,28 @@
     </div>
 </div>
  
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+    getFirestore,
+    doc,
+    setDoc,
+    getDoc,
+    onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBswyuV0HblMDvmrh6McmPRb26Hz99XhAY",
+    authDomain: "loadtiers.firebaseapp.com",
+    projectId: "loadtiers",
+    storageBucket: "loadtiers.firebasestorage.app",
+    messagingSenderId: "705641531162",
+    appId: "1:705641531162:web:7eaadc77f9037521b5cea3",
+    measurementId: "G-9WRJRFQ38H"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 // ═══════════════════════════════════════════════════════
 //  PARTIKEL HINTERGRUND
 // ═══════════════════════════════════════════════════════
