@@ -340,12 +340,14 @@
     </div>
 </div>
  
-<div id="login-modal" class="modal-overlay" onclick="closeModal('login-modal')">
-    <div style="background-color:var(--panel-bg);border:1px solid var(--border-color);border-radius:12px;padding:25px;width:360px;" onclick="event.stopPropagation()">
-        <h3 style="text-align:center;margin-top:0;">🔑 Admin Login</h3>
-        <input type="text" id="login-user" placeholder="Username" style="width:100%;padding:10px;margin-bottom:10px;background:#060913;border:1px solid var(--border-color);color:white;border-radius:6px;">
-        <input type="password" id="login-pass" placeholder="Passwort" style="width:100%;padding:10px;margin-bottom:15px;background:#060913;border:1px solid var(--border-color);color:white;border-radius:6px;">
-        <button class="btn btn-purple" style="width:100%;justify-content:center;" onclick="submitLogin()">Login</button>
+<div id="login-modal" class="modal-overlay" style="display: none;" onclick="closeModal('login-modal')">
+    <div style="background-color: var(--panel-bg); border: 1.5px solid var(--border-color); border-radius: 16px; padding: 35px; width: 380px; box-shadow: 0 15px 50px rgba(0,0,0,.8); position: relative; animation: modalScaleUp .2s ease;" onclick="event.stopPropagation()">
+        <h3 style="text-align: center; margin-top: 0; margin-bottom: 25px; font-size: 20px; font-weight: 800; letter-spacing: 0.5px; color: #fff;">🔑 Admin Login</h3>
+        <div class="admin-form">
+            <input type="text" id="login-user" placeholder="Username" style="width: 100%; padding: 12px; margin-bottom: 12px; background: #060913; border: 1px solid var(--border-color); color: white; border-radius: 6px; font-size: 14px;">
+            <input type="password" id="login-pass" placeholder="Passwort" style="width: 100%; padding: 12px; margin-bottom: 20px; background: #060913; border: 1px solid var(--border-color); color: white; border-radius: 6px; font-size: 14px;">
+            <button class="btn btn-purple" style="width: 100%; justify-content: center; padding: 12px; font-size: 13px;" onclick="submitLogin()">Login</button>
+        </div>
     </div>
 </div>
  
@@ -421,7 +423,6 @@ const modeIcons = {
     uhc: 'https://i.imgur.com/X1OzkD3.png', nethpot: 'https://i.imgur.com/6uUitGf.png'
 };
 
-// Punkteverteilung basierend auf Tier 1-5
 const pointValues = { "Tier 1": 50, "Tier 2": 40, "Tier 3": 30, "Tier 4": 20, "Tier 5": 10 };
 
 let players = [];
@@ -435,16 +436,12 @@ let loggedInUser = null;
 // ═══════════════════════════════════════════════════════
 function getDisplayTier(rawTier, mode) {
     if (!rawTier) return '';
-    // Holt die nackte Zahl aus dem String (z.B. "Tier 4" -> "4")
     const num = rawTier.replace(/\D/g, '');
     
-    // Custom Logik für bestimmte Modi falls gewünscht (Beispiel CPvP Tier 4 -> HT4)
     if (mode === 'cpvp' && num === '4') {
         return 'HT4';
     }
     
-    // Standardmäßige Verteilung für alle anderen (Ungerade Zahlen = LT, Gerade Zahlen = HT)
-    // Kannst du hier beliebig anpassen!
     if (num === '1') return 'LT1';
     if (num === '2') return 'HT2';
     if (num === '3') return 'LT3';
@@ -476,7 +473,7 @@ db.collection("staff").onSnapshot((snapshot) => {
 function addOrUpdatePlayer() {
     const name = document.getElementById('new-player-name').value.trim();
     const mode = document.getElementById('new-player-mode').value;
-    const tier = document.getElementById('new-player-tier').value; // Gibt "Tier 1" bis "Tier 5" zurück
+    const tier = document.getElementById('new-player-tier').value;
     if(!name) return;
 
     let existing = players.find(p => p.name.toLowerCase() === name.toLowerCase());
@@ -492,6 +489,21 @@ function addOrUpdatePlayer() {
 
 function deletePlayer(name) {
     db.collection("players").doc(name).delete().then(() => showSaveStatus());
+}
+
+// Einzelnen Modus eines Spielers via Admin Dashboard entfernen
+function deletePlayerMode(name, mode) {
+    let existing = players.find(p => p.name.toLowerCase() === name.toLowerCase());
+    if (!existing) return;
+    
+    let updatedRanks = { ...existing.ranks };
+    delete updatedRanks[mode];
+    
+    if (Object.keys(updatedRanks).length === 0) {
+        db.collection("players").doc(name).delete().then(() => showSaveStatus());
+    } else {
+        db.collection("players").doc(name).set({ ranks: updatedRanks }).then(() => showSaveStatus());
+    }
 }
 
 function addStaff() {
@@ -531,7 +543,7 @@ function showSaveStatus() {
 }
 
 // ═══════════════════════════════════════════════════════
-//  INTERFACES & GEHEIMER LOGIN
+//  INTERFACES & LOGIN CONTROLS
 // ═══════════════════════════════════════════════════════
 function openModal(id) { document.getElementById(id).style.display = 'flex'; }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
@@ -565,6 +577,36 @@ function calcPts(p) {
     let t = 0;
     for (let m in p.ranks) t += pointValues[p.ranks[m]] || 0;
     return t;
+}
+
+function openProfileModal(playerName) {
+    const p = players.find(player => player.name === playerName);
+    if (!p) return;
+    
+    document.getElementById('p-modal-name').textContent = p.name;
+    document.getElementById('p-modal-avatar').src = `https://mc-heads.net/avatar/${p.name}/80`;
+    document.getElementById('p-modal-points').textContent = calcPts(p) + " PTS";
+    
+    const grid = document.getElementById('p-modal-grid');
+    grid.innerHTML = '';
+    
+    for (let m in modeIcons) {
+        if (p.ranks[m]) {
+            const rawTier = p.ranks[m];
+            const displayTier = getDisplayTier(rawTier, m);
+            const num = rawTier.replace(/\D/g, '');
+            
+            const card = document.createElement('div');
+            card.className = 'profile-mode-card';
+            card.innerHTML = `
+                <img class="profile-mode-img" src="${modeIcons[m]}">
+                <span class="profile-mode-name">${m}</span>
+                <span class="profile-mode-tier border-t${num}" style="font-weight:800;">${displayTier}</span>
+            `;
+            grid.appendChild(card);
+        }
+    }
+    openModal('profile-modal');
 }
 
 // ═══════════════════════════════════════════════════════
@@ -613,161 +655,170 @@ function render() {
 }
 
 // ═══════════════════════════════════════════════════════
-//  RENDER FUNKTIONEN (MIT LIVE CONVERSION)
+//  RENDER FUNKTIONEN (MIT LIVE CONVERSION & T1-T5 CODES)
 // ═══════════════════════════════════════════════════════
 function renderLeaderboard(filter = '') {
     let sorted = [...players]
         .map(p => ({ ...p, totalPts: calcPts(p) }))
         .sort((a, b) => b.totalPts - a.totalPts);
+        
     if (filter) sorted = sorted.filter(p => p.name.toLowerCase().includes(filter));
-
-    let html = `<table class="leaderboard-table">
-        <thead><tr><th>#</th><th>Player</th><th>Tiers</th><th style="text-align:right;">Pts</th></tr></thead><tbody>`;
-
-    sorted.forEach((p, i) => {
-        const rc = i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : '';
-        let badges = '';
-        for (let mode in p.ranks) {
-            const rawTier = p.ranks[mode]; if (!rawTier) continue;
-            
-            // Konvertiert z.B. "Tier 4" zu "HT4" für das Frontend
-            const displayTier = getDisplayTier(rawTier, mode);
-            
-            let borderClass = 'border-t5';
-            if(rawTier.includes('1')) borderClass = 'border-t1';
-            else if(rawTier.includes('2')) borderClass = 'border-t2';
-            else if(rawTier.includes('3')) borderClass = 'border-t3';
-            else if(rawTier.includes('4')) borderClass = 'border-t4';
-
-            badges += `
+    
+    const container = document.getElementById('content-area');
+    let html = `
+        <table class="leaderboard-table">
+            <thead>
+                <tr>
+                    <th style="width: 70px;">Rank</th>
+                    <th>Spieler</th>
+                    <th>Ränge & Tiers (Alle)</th>
+                    <th style="text-align: right;">Punkte</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+    
+    sorted.forEach((p, index) => {
+        const rank = index + 1;
+        let rankClass = `rank-number rank-${rank}`;
+        
+        let badgesHtml = '';
+        for (let m in p.ranks) {
+            const rawTier = p.ranks[m];
+            const displayTier = getDisplayTier(rawTier, m);
+            const num = rawTier.replace(/\D/g, '');
+            badgesHtml += `
                 <div class="tier-badge-container">
-                    <div class="icon-wrapper ${borderClass}">
-                        <img src="${modeIcons[mode]}" class="mode-logo-img" onerror="this.style.display='none'">
+                    <div class="icon-wrapper border-t${num}">
+                        <img class="mode-logo-img" src="${modeIcons[m]}" title="${m.toUpperCase()}">
                     </div>
-                    <span class="tier-text ${borderClass}">${displayTier}</span>
-                </div>`;
+                    <span class="tier-text border-t${num}">${displayTier}</span>
+                </div>
+            `;
         }
+        
         html += `
-            <tr onclick="openProfile('${p.name}', ${i + 1})">
-                <td class="rank-number ${rc}">#${i + 1}</td>
-                <td><div style="display:flex;align-items:center;gap:12px;">
-                    <img class="avatar" src="https://minotar.net/avatar/${p.name}/32" onerror="this.src='https://minotar.net/avatar/steve/32'">
-                    <span class="username">${p.name}</span>
-                </div></td>
-                <td><div class="badge-list">${badges}</div></td>
-                <td style="text-align:right;font-weight:900;color:var(--accent-cyan);font-size:16px;">${p.totalPts}</td>
-            </tr>`;
+            <tr onclick="openProfileModal('${p.name}')">
+                <td><span class="${rankClass}">#${rank}</span></td>
+                <td>
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <img class="avatar" src="https://mc-heads.net/avatar/${p.name}/32">
+                        <span class="username">${p.name}</span>
+                    </div>
+                </td>
+                <td><div class="badge-list">${badgesHtml}</div></td>
+                <td style="text-align:right;font-weight:800;color:var(--accent-cyan);">${p.totalPts} PTS</td>
+            </tr>
+        `;
     });
-    document.getElementById('content-area').innerHTML = html + '</tbody></table>';
+    
+    html += `</tbody></table>`;
+    container.innerHTML = html;
 }
 
 function renderColumns(filter = '') {
-    const tiers = ['Tier 1', 'Tier 2', 'Tier 3', 'Tier 4', 'Tier 5'];
-    let html = `<div class="tier-columns">`;
+    const container = document.getElementById('content-area');
     
-    tiers.forEach(t => {
-        let thClass = 't5-h';
-        if(t.includes('1')) thClass = 't1-h';
-        else if(t.includes('2')) thClass = 't2-h';
-        else if(t.includes('3')) thClass = 't3-h';
-        else if(t.includes('4')) thClass = 't4-h';
+    let t1_list = '', t2_list = '', t3_list = '', t4_list = '', t5_list = '';
+    
+    let filteredPlayers = players.filter(p => p.ranks[currentMode]);
+    if (filter) filteredPlayers = filteredPlayers.filter(p => p.name.toLowerCase().includes(filter));
+    
+    filteredPlayers.forEach(p => {
+        const rawTier = p.ranks[currentMode];
+        const displayTier = getDisplayTier(rawTier, currentMode);
+        const num = rawTier.replace(/\D/g, '');
         
-        // Header zeigt den konvertierten Namen (z.B. HT4 statt Tier 4)
-        const displayHeader = getDisplayTier(t, currentMode);
+        const cardHtml = `
+            <div class="tier-user-card" onclick="openProfileModal('${p.name}')" style="cursor:pointer;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <img class="avatar" src="https://mc-heads.net/avatar/${p.name}/32">
+                    <span style="font-weight:700;font-size:13px;color:#fff;">${p.name}</span>
+                </div>
+                <span class="tier-text border-t${num}">${displayTier}</span>
+            </div>
+        `;
         
-        html += `<div class="tier-column">
-            <div class="tier-header ${thClass}">${displayHeader}</div>
-            <div class="tier-list-content">`;
-            
-        let filtered = players.filter(p => p.ranks[currentMode] === t);
-        if(filter) filtered = filtered.filter(p => p.name.toLowerCase().includes(filter));
-        
-        filtered.forEach(p => {
-            html += `
-                <div class="tier-user-card" onclick="openProfile('${p.name}', '?')">
-                    <span style="font-weight:700;font-size:13px;">${p.name}</span>
-                    <img class="avatar" src="https://minotar.net/avatar/${p.name}/32" onerror="this.src='https://minotar.net/avatar/steve/32'">
-                </div>`;
-        });
-        html += `</div></div>`;
+        if (num === '1') t1_list += cardHtml;
+        else if (num === '2') t2_list += cardHtml;
+        else if (num === '3') t3_list += cardHtml;
+        else if (num === '4') t4_list += cardHtml;
+        else if (num === '5') t5_list += cardHtml;
     });
-    document.getElementById('content-area').innerHTML = html + `</div>`;
+    
+    container.innerHTML = `
+        <div class="tier-columns">
+            <div class="tier-column"><div class="tier-header t1-h">TIER 1 (LT1)</div><div class="tier-list-content">${t1_list || '<span style="color:var(--text-secondary);font-size:12px;text-align:center;margin-top:20px;">Keine</span>'}</div></div>
+            <div class="tier-column"><div class="tier-header t2-h">TIER 2 (HT2)</div><div class="tier-list-content">${t2_list || '<span style="color:var(--text-secondary);font-size:12px;text-align:center;margin-top:20px;">Keine</span>'}</div></div>
+            <div class="tier-column"><div class="tier-header t3-h">TIER 3 (LT3)</div><div class="tier-list-content">${t3_list || '<span style="color:var(--text-secondary);font-size:12px;text-align:center;margin-top:20px;">Keine</span>'}</div></div>
+            <div class="tier-column"><div class="tier-header t4-h">TIER 4 (HT4)</div><div class="tier-list-content">${t4_list || '<span style="color:var(--text-secondary);font-size:12px;text-align:center;margin-top:20px;">Keine</span>'}</div></div>
+            <div class="tier-column"><div class="tier-header t5-h">TIER 5 (LT5)</div><div class="tier-list-content">${t5_list || '<span style="color:var(--text-secondary);font-size:12px;text-align:center;margin-top:20px;">Keine</span>'}</div></div>
+        </div>
+    `;
 }
 
 function renderStaff(filter = '') {
+    const container = document.getElementById('content-area');
     let list = [...staffList];
-    if(filter) list = list.filter(s => s.name.toLowerCase().includes(filter));
+    if (filter) list = list.filter(s => s.name.toLowerCase().includes(filter));
     
     let html = `<div class="staff-grid">`;
+    
+    const badgeClasses = {
+        "NETWORK OWNER": "badge-owner", "CO OWNER": "badge-coowner", "NETWORK OVERSEER": "badge-overseer",
+        "MANAGER": "badge-manager", "DEVELOPER": "badge-dev", "ADMINISTRATOR": "badge-admin", "TESTER": "badge-tester"
+    };
+    
     list.forEach(s => {
-        let bCls = 'badge-admin';
-        const t = s.title.toUpperCase();
-        if(t.includes('OWNER')) bCls = 'badge-owner';
-        else if(t.includes('CO')) bCls = 'badge-coowner';
-        else if(t.includes('OVERSEER')) bCls = 'badge-overseer';
-        else if(t.includes('MANAGER')) bCls = 'badge-manager';
-        else if(t.includes('DEV')) bCls = 'badge-dev';
-        else if(t.includes('TESTER')) bCls = 'badge-tester';
-
+        const bClass = badgeClasses[s.title.toUpperCase()] || "badge-tester";
         html += `
             <div class="staff-card">
-                <img class="staff-img" src="https://minotar.net/avatar/${s.name}/44" onerror="this.src='https://minotar.net/avatar/steve/44'">
+                <img class="staff-img" src="https://mc-heads.net/avatar/${s.name}/44">
                 <div class="staff-info">
-                    <div class="staff-name">${s.name}</div>
-                    <div class="staff-badge ${bCls}">${s.title}</div>
+                    <span class="staff-name">${s.name}</span>
+                    <span class="staff-badge ${bClass}">${s.title}</span>
+                    <span style="font-size:11px;color:var(--text-secondary);margin-top:2px;">ID: ${s.discord || '@'}</span>
                 </div>
-            </div>`;
+            </div>
+        `;
     });
-    document.getElementById('content-area').innerHTML = html + `</div>`;
-}
-
-function openProfile(username, rankNumber) {
-    const p = players.find(x => x.name === username);
-    if (!p) return;
-
-    document.getElementById('p-modal-avatar').src = `https://minotar.net/avatar/${p.name}/80`;
-    document.getElementById('p-modal-name').textContent = p.name + ' ★';
-    document.getElementById('p-modal-points').textContent = calcPts(p) + ' points';
-    document.getElementById('p-modal-rank-num').textContent = '#' + rankNumber;
-
-    let g = '';
-    for (let mode in modeIcons) {
-        const rawTier = p.ranks[mode];
-        if(rawTier) {
-            const displayTier = getDisplayTier(rawTier, mode);
-            let color = '#94a3b8';
-            if(rawTier.includes('1')) color = '#ffaa00';
-            else if(rawTier.includes('2')) color = '#cbd5e1';
-            else if(rawTier.includes('3')) color = '#ff7b1a';
-            else if(rawTier.includes('4')) color = '#38bdf8';
-
-            g += `<div class="profile-mode-card">
-                <img src="${modeIcons[mode]}" class="profile-mode-img">
-                <div class="profile-mode-name">${mode}</div>
-                <div class="profile-mode-tier" style="color:${color}">${displayTier}</div>
-            </div>`;
-        }
-    }
-    document.getElementById('p-modal-grid').innerHTML = g;
-    openModal('profile-modal');
+    
+    html += `</div>`;
+    container.innerHTML = list.length ? html : `<div style="text-align:center;color:var(--text-secondary);margin-top:40px;">Keine Staff-Mitglieder gefunden.</div>`;
 }
 
 function renderAdminLists() {
-    let pDoc = '';
-    players.forEach(p => {
-        pDoc += `<div class="admin-player-row"><span>${p.name}</span><button class="btn btn-danger" style="padding:2px 6px;font-size:10px;" onclick="deletePlayer('${p.name}')">X</button></div>`;
-    });
-    document.getElementById('admin-delete-list').innerHTML = pDoc;
-
-    let sDoc = '';
-    staffList.forEach(s => {
-        sDoc += `<div class="admin-player-row"><span>${s.name} (${s.title})</span><button class="btn btn-danger" style="padding:2px 6px;font-size:10px;" onclick="deleteStaff('${s.id}')">X</button></div>`;
-    });
-    document.getElementById('admin-staff-delete-list').innerHTML = sDoc;
+    const playerDelList = document.getElementById('admin-delete-list');
+    const staffDelList = document.getElementById('admin-staff-delete-list');
+    
+    if(playerDelList) {
+        playerDelList.innerHTML = '';
+        players.forEach(p => {
+            for (let m in p.ranks) {
+                const div = document.createElement('div');
+                div.className = 'admin-player-row';
+                div.innerHTML = `
+                    <span><b>${p.name}</b> - ${m} (${p.ranks[m]})</span>
+                    <button onclick="deletePlayerMode('${p.name}', '${m}')" style="background:none;border:none;color:#ff2a74;cursor:pointer;font-weight:bold;">X</button>
+                `;
+                playerDelList.appendChild(div);
+            }
+        });
+    }
+    
+    if(staffDelList) {
+        staffDelList.innerHTML = '';
+        staffList.forEach(s => {
+            const div = document.createElement('div');
+            div.className = 'admin-player-row';
+            div.innerHTML = `
+                <span><b>${s.name}</b> (${s.title})</span>
+                <button onclick="deleteStaff('${s.id}')" style="background:none;border:none;color:#ff2a74;cursor:pointer;font-weight:bold;">X</button>
+            `;
+            staffDelList.appendChild(div);
+        });
+    }
 }
-
-// Initialer Aufruf
-changeMainView('rankings');
 </script>
 </body>
 </html>
