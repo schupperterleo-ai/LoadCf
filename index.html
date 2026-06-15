@@ -121,10 +121,12 @@
             box-shadow: inset 0 0 8px rgba(0,0,0,.6);
         }
         .mode-logo-img { width: 24px; height: 24px; object-fit: contain; image-rendering: pixelated; }
-        .border-ht { border: 1.5px solid #ff7b1a; box-shadow: 0 0 8px rgba(249,115,22,.25); }
-        .border-line-ht { color: #ff7b1a; font-weight: 800; font-size: 11px; }
-        .border-lt { border: 1.5px solid #38bdf8; box-shadow: 0 0 8px rgba(56,189,248,.25); }
-        .border-line-lt { color: #38bdf8; font-weight: 800; font-size: 11px; }
+        .border-t1 { border: 1.5px solid #ffaa00; box-shadow: 0 0 8px rgba(255,170,0,.25); color: #ffaa00; }
+        .border-t2 { border: 1.5px solid #cbd5e1; box-shadow: 0 0 8px rgba(203,213,225,.25); color: #cbd5e1; }
+        .border-t3 { border: 1.5px solid #ff7b1a; box-shadow: 0 0 8px rgba(249,115,22,.25); color: #ff7b1a; }
+        .border-t4 { border: 1.5px solid #38bdf8; box-shadow: 0 0 8px rgba(56,189,248,.25); color: #38bdf8; }
+        .border-t5 { border: 1.5px solid #94a3b8; box-shadow: 0 0 8px rgba(148,163,184,.25); color: #94a3b8; }
+        .tier-text { font-weight: 800; font-size: 11px; }
  
         /* Tier Spalten */
         .tier-columns { display: grid; grid-template-columns: repeat(5,1fr); gap: 15px; margin-top: 20px; animation: fadeIn .3s ease; }
@@ -147,7 +149,7 @@
             background-color: #080d19; border: 1.5px solid #1a2a42; border-radius: 16px;
             padding: 30px; width: 460px; position: relative; animation: modalScaleUp .2s ease;
         }
-        .points-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+        .points-grid { display: grid; grid-template-columns: 1fr; gap: 12px 16px; }
         .points-row-box {
             background-color: #0b1220; border: 1px solid #16243d; border-radius: 10px;
             padding: 10px 14px; display: flex; justify-content: space-between; align-items: center;
@@ -224,7 +226,7 @@
             <div class="nav-links">
                 <div class="nav-link active" id="nav-rankings" onclick="changeMainView('rankings')">Rankings</div>
                 <div class="nav-link" id="nav-staff" onclick="changeMainView('staff')">Staff</div>
-                <div class="nav-link" onclick="loginAdmin()">Discord</div>
+                <a class="nav-link" href="https://discord.gg/x7eV3amhFA" target="_blank" style="text-decoration: none;">Discord</a>
             </div>
         </div>
         <div class="nav-right">
@@ -248,6 +250,7 @@
  
     <div class="main-container">
  
+        <!-- Admin Dashboard -->
         <div id="admin-panel" class="admin-panel" style="display:none;">
             <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border-color);padding-bottom:10px;">
                 <h3 style="margin:0;color:var(--accent-purple);">Admin Dashboard</h3>
@@ -265,7 +268,11 @@
                             <option value="sword">Sword</option><option value="cpvp">CPvP</option><option value="axe">Axe</option><option value="smp">SMP</option><option value="diapot">Diapot</option><option value="mace">Mace</option><option value="uhc">UHC</option><option value="nethpot">Nethpot</option>
                         </select>
                         <select id="new-player-tier">
-                            <option value="HT1">HT1</option><option value="LT1">LT1</option><option value="HT2">HT2</option><option value="LT2">LT2</option><option value="HT3">HT3</option><option value="LT3">LT3</option><option value="HT4">HT4</option><option value="LT4">LT4</option><option value="HT5">HT5</option><option value="LT5">LT5</option>
+                            <option value="Tier 1">Tier 1</option>
+                            <option value="Tier 2">Tier 2</option>
+                            <option value="Tier 3">Tier 3</option>
+                            <option value="Tier 4">Tier 4</option>
+                            <option value="Tier 5">Tier 5</option>
                         </select>
                         <button class="btn btn-cyan" onclick="addOrUpdatePlayer()">Speichern</button>
                     </div>
@@ -304,6 +311,7 @@
     </div>
 </div>
  
+<!-- MINI PROFILE MODAL -->
 <div id="profile-modal" class="modal-overlay" onclick="closeModal('profile-modal')">
     <div class="profile-card" onclick="event.stopPropagation()">
         <div class="profile-avatar-wrapper">
@@ -319,6 +327,7 @@
     </div>
 </div>
  
+<!-- RANK POINTS MODAL -->
 <div id="points-modal" class="modal-overlay" onclick="closeModal('points-modal')">
     <div class="points-modal-box" onclick="event.stopPropagation()">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:25px;">
@@ -326,20 +335,16 @@
             <h2 style="margin:0;font-size:20px;font-weight:800;text-transform:uppercase;">Rank Points</h2>
         </div>
         <div class="points-grid">
-            <div class="points-row-box"><span style="color:#ff7b1a;font-weight:800;">HT1</span><div class="points-value-badge">60 PTS</div></div>
-            <div class="points-row-box"><span style="color:#708aff;font-weight:800;">LT1</span><div class="points-value-badge">45 PTS</div></div>
-            <div class="points-row-box"><span style="color:#ff7b1a;font-weight:800;">HT2</span><div class="points-value-badge">30 PTS</div></div>
-            <div class="points-row-box"><span style="color:#708aff;font-weight:800;">LT2</span><div class="points-value-badge">20 PTS</div></div>
-            <div class="points-row-box"><span style="color:#ff7b1a;font-weight:800;">HT3</span><div class="points-value-badge">10 PTS</div></div>
-            <div class="points-row-box"><span style="color:#708aff;font-weight:800;">LT3</span><div class="points-value-badge">6 PTS</div></div>
-            <div class="points-row-box"><span style="color:#ff7b1a;font-weight:800;">HT4</span><div class="points-value-badge">4 PTS</div></div>
-            <div class="points-row-box"><span style="color:#708aff;font-weight:800;">LT4</span><div class="points-value-badge">3 PTS</div></div>
-            <div class="points-row-box"><span style="color:#ff7b1a;font-weight:800;">HT5</span><div class="points-value-badge">2 PTS</div></div>
-            <div class="points-row-box"><span style="color:#708aff;font-weight:800;">LT5</span><div class="points-value-badge">1 PTS</div></div>
+            <div class="points-row-box"><span style="color:#ffaa00;font-weight:800;">Tier 1</span><div class="points-value-badge">50 PTS</div></div>
+            <div class="points-row-box"><span style="color:#cbd5e1;font-weight:800;">Tier 2</span><div class="points-value-badge">40 PTS</div></div>
+            <div class="points-row-box"><span style="color:#ff7b1a;font-weight:800;">Tier 3</span><div class="points-value-badge">30 PTS</div></div>
+            <div class="points-row-box"><span style="color:#38bdf8;font-weight:800;">Tier 4</span><div class="points-value-badge">20 PTS</div></div>
+            <div class="points-row-box"><span style="color:#94a3b8;font-weight:800;">Tier 5</span><div class="points-value-badge">10 PTS</div></div>
         </div>
     </div>
 </div>
  
+<!-- LOGIN MODAL -->
 <div id="login-modal" class="modal-overlay" onclick="closeModal('login-modal')">
     <div style="background-color:var(--panel-bg);border:1px solid var(--border-color);border-radius:12px;padding:25px;width:360px;" onclick="event.stopPropagation()">
         <h3 style="text-align:center;margin-top:0;">🔑 Admin Login</h3>
@@ -366,7 +371,6 @@ const firebaseConfig = {
     measurementId: "G-CQ8KT3ZQQ3"
 };
 
-// Firebase & Firestore initialisieren
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
@@ -421,7 +425,9 @@ const modeIcons = {
     diapot: 'https://i.imgur.com/1TgH0p8.png', mace: 'https://i.imgur.com/9oQz88r.png',
     uhc: 'https://i.imgur.com/X1OzkD3.png', nethpot: 'https://i.imgur.com/6uUitGf.png'
 };
-const pointValues = { HT1:60, LT1:45, HT2:30, LT2:20, HT3:10, LT3:6, HT4:4, LT4:3, HT5:2, LT5:1 };
+
+// Punkteverteilung angepasst auf Tier 1-5
+const pointValues = { "Tier 1": 50, "Tier 2": 40, "Tier 3": 30, "Tier 4": 20, "Tier 5": 10 };
 
 let players = [];
 let staffList = [];
@@ -430,9 +436,8 @@ let currentMode = 'overall';
 let loggedInUser = null;
 
 // ═══════════════════════════════════════════════════════
-//  REALTIME CLOUD INTERACTION (Echtzeit-Abfragen)
+//  REALTIME CLOUD INTERACTION
 // ═══════════════════════════════════════════════════════
-
 db.collection("players").onSnapshot((snapshot) => {
     players = [];
     snapshot.forEach((doc) => {
@@ -493,7 +498,7 @@ function createNewAdminAccount() {
     const pass = document.getElementById('new-admin-pass').value.trim();
     if(!user || !pass) return;
     
-    alert("Admin Account erstellt (Wird in Kürze voll funktionstüchtig sein!)");
+    alert("Admin Account erstellt!");
     document.getElementById('new-admin-user').value = '';
     document.getElementById('new-admin-pass').value = '';
 }
@@ -507,12 +512,11 @@ function showSaveStatus() {
 }
 
 // ═══════════════════════════════════════════════════════
-//  MODALS & INTERFACE LOGIC
+//  INTERFACES & GEHEIMER LOGIN PER SUCHE
 // ═══════════════════════════════════════════════════════
 function openModal(id) { document.getElementById(id).style.display = 'flex'; }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-function loginAdmin() { openModal('login-modal'); }
 function logoutAdmin() {
     loggedInUser = null;
     document.getElementById('admin-panel').style.display = 'none';
@@ -525,13 +529,13 @@ function submitLogin() {
     const u = document.getElementById('login-user').value;
     const p = document.getElementById('login-pass').value;
     
-    // Login für L4lyx
     if(u === "L4lyx" && p === "L4lyx12") {
         loggedInUser = u;
         document.getElementById('admin-panel').style.display = 'block';
         document.getElementById('l4lyx-only-section').style.display = 'block';
         document.getElementById('admin-status-text').textContent = "Status: Admin (" + u + ")";
         closeModal('login-modal');
+        document.getElementById('search-input').value = ''; // Suchfeld wieder leeren
         render();
     } else {
         alert("Falsche Login-Daten!");
@@ -565,10 +569,20 @@ function switchMode(mode) {
     render();
 }
 
-function handleSearch() { render(); }
+function handleSearch() {
+    const searchVal = document.getElementById('search-input').value.trim().toLowerCase();
+    
+    // Wenn exakt "login" eingegeben wurde, öffne das Login-Fenster!
+    if(searchVal === 'login') {
+        openModal('login-modal');
+    }
+    render();
+}
 
 function render() {
-    const f = document.getElementById('search-input').value.toLowerCase();
+    let f = document.getElementById('search-input').value.toLowerCase();
+    if(f === 'login') f = ''; // Ignoriere das Wort "login" beim Filtern der Listen
+    
     if (currentView === 'rankings') {
         if (currentMode === 'overall') renderLeaderboard(f);
         else renderColumns(f);
@@ -595,13 +609,20 @@ function renderLeaderboard(filter = '') {
         let badges = '';
         for (let mode in p.ranks) {
             const tier = p.ranks[mode]; if (!tier) continue;
-            const ht = tier.startsWith('HT');
+            
+            // CSS Klasse je nach Tier vergeben (T1, T2, T3 etc.)
+            let borderClass = 'border-t5';
+            if(tier.includes('1')) borderClass = 'border-t1';
+            else if(tier.includes('2')) borderClass = 'border-t2';
+            else if(tier.includes('3')) borderClass = 'border-t3';
+            else if(tier.includes('4')) borderClass = 'border-t4';
+
             badges += `
                 <div class="tier-badge-container">
-                    <div class="icon-wrapper ${ht ? 'border-ht' : 'border-lt'}">
+                    <div class="icon-wrapper ${borderClass}">
                         <img src="${modeIcons[mode]}" class="mode-logo-img" onerror="this.style.display='none'">
                     </div>
-                    <span class="${ht ? 'border-line-ht' : 'border-line-lt'}">${tier}</span>
+                    <span class="tier-text ${borderClass}">${tier}</span>
                 </div>`;
         }
         html += `
@@ -619,12 +640,15 @@ function renderLeaderboard(filter = '') {
 }
 
 function renderColumns(filter = '') {
-    const tiers = ['HT1','LT1','HT2','LT2','HT3','LT3','HT4','LT4','HT5','LT5'];
+    const tiers = ['Tier 1', 'Tier 2', 'Tier 3', 'Tier 4', 'Tier 5'];
     let html = `<div class="tier-columns">`;
     
     tiers.forEach(t => {
-        let thClass = t.startsWith('HT') ? 't3-h' : 't4-h';
-        if(t.includes('1')) thClass = t.startsWith('HT') ? 't1-h' : 't2-h';
+        let thClass = 't5-h';
+        if(t.includes('1')) thClass = 't1-h';
+        else if(t.includes('2')) thClass = 't2-h';
+        else if(t.includes('3')) thClass = 't3-h';
+        else if(t.includes('4')) thClass = 't4-h';
         
         html += `<div class="tier-column">
             <div class="tier-header ${thClass}">${t}</div>
@@ -685,10 +709,16 @@ function openProfile(username, rankNumber) {
     for (let mode in modeIcons) {
         const tier = p.ranks[mode];
         if(tier) {
+            let color = '#94a3b8';
+            if(tier.includes('1')) color = '#ffaa00';
+            else if(tier.includes('2')) color = '#cbd5e1';
+            else if(tier.includes('3')) color = '#ff7b1a';
+            else if(tier.includes('4')) color = '#38bdf8';
+
             g += `<div class="profile-mode-card">
                 <img src="${modeIcons[mode]}" class="profile-mode-img">
                 <div class="profile-mode-name">${mode}</div>
-                <div class="profile-mode-tier" style="color:${tier.startsWith('HT')?'#ff7b1a':'#38bdf8'}">${tier}</div>
+                <div class="profile-mode-tier" style="color:${color}">${tier}</div>
             </div>`;
         }
     }
