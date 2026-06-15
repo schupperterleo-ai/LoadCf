@@ -126,7 +126,7 @@
         .border-t3 { border: 1.5px solid #ff7b1a; box-shadow: 0 0 8px rgba(249,115,22,.25); color: #ff7b1a; }
         .border-t4 { border: 1.5px solid #38bdf8; box-shadow: 0 0 8px rgba(56,189,248,.25); color: #38bdf8; }
         .border-t5 { border: 1.5px solid #94a3b8; box-shadow: 0 0 8px rgba(148,163,184,.25); color: #94a3b8; }
-        .tier-text { font-weight: 800; font-size: 11px; }
+        .tier-text { font-weight: 800; font-size: 11px; text-transform: uppercase; }
  
         /* Tier Spalten */
         .tier-columns { display: grid; grid-template-columns: repeat(5,1fr); gap: 15px; margin-top: 20px; animation: fadeIn .3s ease; }
@@ -180,8 +180,7 @@
         .profile-mode-card { background: #09101d; border: 1px solid #132238; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
         .profile-mode-img { width: 26px; height: 26px; image-rendering: pixelated; object-fit: contain; }
         .profile-mode-name { font-size: 9px; text-transform: uppercase; color: #4b5f7a; font-weight: 700; }
-        .profile-mode-tier { font-size: 15px; font-weight: 800; }
-        .profile-rank-bottom { font-size: 32px; font-weight: 900; color: #fff; margin-top: 10px; letter-spacing: -1px; }
+        .profile-mode-tier { font-size: 15px; font-weight: 800; text-transform: uppercase; }
  
         /* Staff */
         .staff-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-top: 20px; animation: fadeIn .3s ease; }
@@ -250,7 +249,6 @@
  
     <div class="main-container">
  
-        <!-- Admin Dashboard -->
         <div id="admin-panel" class="admin-panel" style="display:none;">
             <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border-color);padding-bottom:10px;">
                 <h3 style="margin:0;color:var(--accent-purple);">Admin Dashboard</h3>
@@ -311,7 +309,6 @@
     </div>
 </div>
  
-<!-- MINI PROFILE MODAL -->
 <div id="profile-modal" class="modal-overlay" onclick="closeModal('profile-modal')">
     <div class="profile-card" onclick="event.stopPropagation()">
         <div class="profile-avatar-wrapper">
@@ -327,7 +324,6 @@
     </div>
 </div>
  
-<!-- RANK POINTS MODAL -->
 <div id="points-modal" class="modal-overlay" onclick="closeModal('points-modal')">
     <div class="points-modal-box" onclick="event.stopPropagation()">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:25px;">
@@ -344,7 +340,6 @@
     </div>
 </div>
  
-<!-- LOGIN MODAL -->
 <div id="login-modal" class="modal-overlay" onclick="closeModal('login-modal')">
     <div style="background-color:var(--panel-bg);border:1px solid var(--border-color);border-radius:12px;padding:25px;width:360px;" onclick="event.stopPropagation()">
         <h3 style="text-align:center;margin-top:0;">🔑 Admin Login</h3>
@@ -426,7 +421,7 @@ const modeIcons = {
     uhc: 'https://i.imgur.com/X1OzkD3.png', nethpot: 'https://i.imgur.com/6uUitGf.png'
 };
 
-// Punkteverteilung angepasst auf Tier 1-5
+// Punkteverteilung basierend auf Tier 1-5
 const pointValues = { "Tier 1": 50, "Tier 2": 40, "Tier 3": 30, "Tier 4": 20, "Tier 5": 10 };
 
 let players = [];
@@ -434,6 +429,30 @@ let staffList = [];
 let currentView = 'rankings';
 let currentMode = 'overall';
 let loggedInUser = null;
+
+// ═══════════════════════════════════════════════════════
+//  AUTOMATISCHE KONVERTIERUNG FÜR DIE ANZEIGE
+// ═══════════════════════════════════════════════════════
+function getDisplayTier(rawTier, mode) {
+    if (!rawTier) return '';
+    // Holt die nackte Zahl aus dem String (z.B. "Tier 4" -> "4")
+    const num = rawTier.replace(/\D/g, '');
+    
+    // Custom Logik für bestimmte Modi falls gewünscht (Beispiel CPvP Tier 4 -> HT4)
+    if (mode === 'cpvp' && num === '4') {
+        return 'HT4';
+    }
+    
+    // Standardmäßige Verteilung für alle anderen (Ungerade Zahlen = LT, Gerade Zahlen = HT)
+    // Kannst du hier beliebig anpassen!
+    if (num === '1') return 'LT1';
+    if (num === '2') return 'HT2';
+    if (num === '3') return 'LT3';
+    if (num === '4') return 'HT4';
+    if (num === '5') return 'LT5';
+    
+    return rawTier; 
+}
 
 // ═══════════════════════════════════════════════════════
 //  REALTIME CLOUD INTERACTION
@@ -457,7 +476,7 @@ db.collection("staff").onSnapshot((snapshot) => {
 function addOrUpdatePlayer() {
     const name = document.getElementById('new-player-name').value.trim();
     const mode = document.getElementById('new-player-mode').value;
-    const tier = document.getElementById('new-player-tier').value;
+    const tier = document.getElementById('new-player-tier').value; // Gibt "Tier 1" bis "Tier 5" zurück
     if(!name) return;
 
     let existing = players.find(p => p.name.toLowerCase() === name.toLowerCase());
@@ -512,7 +531,7 @@ function showSaveStatus() {
 }
 
 // ═══════════════════════════════════════════════════════
-//  INTERFACES & GEHEIMER LOGIN PER SUCHE
+//  INTERFACES & GEHEIMER LOGIN
 // ═══════════════════════════════════════════════════════
 function openModal(id) { document.getElementById(id).style.display = 'flex'; }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
@@ -535,7 +554,7 @@ function submitLogin() {
         document.getElementById('l4lyx-only-section').style.display = 'block';
         document.getElementById('admin-status-text').textContent = "Status: Admin (" + u + ")";
         closeModal('login-modal');
-        document.getElementById('search-input').value = ''; // Suchfeld wieder leeren
+        document.getElementById('search-input').value = '';
         render();
     } else {
         alert("Falsche Login-Daten!");
@@ -548,6 +567,9 @@ function calcPts(p) {
     return t;
 }
 
+// ═══════════════════════════════════════════════════════
+//  NAVIGATION & SEARCH CONTROLS
+// ═══════════════════════════════════════════════════════
 function changeMainView(view) {
     currentView = view;
     document.getElementById('nav-rankings').classList.remove('active');
@@ -571,8 +593,6 @@ function switchMode(mode) {
 
 function handleSearch() {
     const searchVal = document.getElementById('search-input').value.trim().toLowerCase();
-    
-    // Wenn exakt "login" eingegeben wurde, öffne das Login-Fenster!
     if(searchVal === 'login') {
         openModal('login-modal');
     }
@@ -581,7 +601,7 @@ function handleSearch() {
 
 function render() {
     let f = document.getElementById('search-input').value.toLowerCase();
-    if(f === 'login') f = ''; // Ignoriere das Wort "login" beim Filtern der Listen
+    if(f === 'login') f = '';
     
     if (currentView === 'rankings') {
         if (currentMode === 'overall') renderLeaderboard(f);
@@ -593,7 +613,7 @@ function render() {
 }
 
 // ═══════════════════════════════════════════════════════
-//  RENDER FUNKTIONEN
+//  RENDER FUNKTIONEN (MIT LIVE CONVERSION)
 // ═══════════════════════════════════════════════════════
 function renderLeaderboard(filter = '') {
     let sorted = [...players]
@@ -608,21 +628,23 @@ function renderLeaderboard(filter = '') {
         const rc = i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : '';
         let badges = '';
         for (let mode in p.ranks) {
-            const tier = p.ranks[mode]; if (!tier) continue;
+            const rawTier = p.ranks[mode]; if (!rawTier) continue;
             
-            // CSS Klasse je nach Tier vergeben (T1, T2, T3 etc.)
+            // Konvertiert z.B. "Tier 4" zu "HT4" für das Frontend
+            const displayTier = getDisplayTier(rawTier, mode);
+            
             let borderClass = 'border-t5';
-            if(tier.includes('1')) borderClass = 'border-t1';
-            else if(tier.includes('2')) borderClass = 'border-t2';
-            else if(tier.includes('3')) borderClass = 'border-t3';
-            else if(tier.includes('4')) borderClass = 'border-t4';
+            if(rawTier.includes('1')) borderClass = 'border-t1';
+            else if(rawTier.includes('2')) borderClass = 'border-t2';
+            else if(rawTier.includes('3')) borderClass = 'border-t3';
+            else if(rawTier.includes('4')) borderClass = 'border-t4';
 
             badges += `
                 <div class="tier-badge-container">
                     <div class="icon-wrapper ${borderClass}">
                         <img src="${modeIcons[mode]}" class="mode-logo-img" onerror="this.style.display='none'">
                     </div>
-                    <span class="tier-text ${borderClass}">${tier}</span>
+                    <span class="tier-text ${borderClass}">${displayTier}</span>
                 </div>`;
         }
         html += `
@@ -650,8 +672,11 @@ function renderColumns(filter = '') {
         else if(t.includes('3')) thClass = 't3-h';
         else if(t.includes('4')) thClass = 't4-h';
         
+        // Header zeigt den konvertierten Namen (z.B. HT4 statt Tier 4)
+        const displayHeader = getDisplayTier(t, currentMode);
+        
         html += `<div class="tier-column">
-            <div class="tier-header ${thClass}">${t}</div>
+            <div class="tier-header ${thClass}">${displayHeader}</div>
             <div class="tier-list-content">`;
             
         let filtered = players.filter(p => p.ranks[currentMode] === t);
@@ -707,18 +732,19 @@ function openProfile(username, rankNumber) {
 
     let g = '';
     for (let mode in modeIcons) {
-        const tier = p.ranks[mode];
-        if(tier) {
+        const rawTier = p.ranks[mode];
+        if(rawTier) {
+            const displayTier = getDisplayTier(rawTier, mode);
             let color = '#94a3b8';
-            if(tier.includes('1')) color = '#ffaa00';
-            else if(tier.includes('2')) color = '#cbd5e1';
-            else if(tier.includes('3')) color = '#ff7b1a';
-            else if(tier.includes('4')) color = '#38bdf8';
+            if(rawTier.includes('1')) color = '#ffaa00';
+            else if(rawTier.includes('2')) color = '#cbd5e1';
+            else if(rawTier.includes('3')) color = '#ff7b1a';
+            else if(rawTier.includes('4')) color = '#38bdf8';
 
             g += `<div class="profile-mode-card">
                 <img src="${modeIcons[mode]}" class="profile-mode-img">
                 <div class="profile-mode-name">${mode}</div>
-                <div class="profile-mode-tier" style="color:${color}">${tier}</div>
+                <div class="profile-mode-tier" style="color:${color}">${displayTier}</div>
             </div>`;
         }
     }
