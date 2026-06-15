@@ -224,7 +224,7 @@
             <div class="nav-links">
                 <div class="nav-link active" id="nav-rankings" onclick="changeMainView('rankings')">Rankings</div>
                 <div class="nav-link" id="nav-staff" onclick="changeMainView('staff')">Staff</div>
-                <div class="nav-link">Discord</div>
+                <div class="nav-link" onclick="loginAdmin()">Discord</div>
             </div>
         </div>
         <div class="nav-right">
@@ -248,7 +248,6 @@
  
     <div class="main-container">
  
-        <!-- Admin Dashboard -->
         <div id="admin-panel" class="admin-panel" style="display:none;">
             <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border-color);padding-bottom:10px;">
                 <h3 style="margin:0;color:var(--accent-purple);">Admin Dashboard</h3>
@@ -305,7 +304,6 @@
     </div>
 </div>
  
-<!-- MINI PROFILE MODAL -->
 <div id="profile-modal" class="modal-overlay" onclick="closeModal('profile-modal')">
     <div class="profile-card" onclick="event.stopPropagation()">
         <div class="profile-avatar-wrapper">
@@ -321,7 +319,6 @@
     </div>
 </div>
  
-<!-- RANK POINTS MODAL -->
 <div id="points-modal" class="modal-overlay" onclick="closeModal('points-modal')">
     <div class="points-modal-box" onclick="event.stopPropagation()">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:25px;">
@@ -343,7 +340,6 @@
     </div>
 </div>
  
-<!-- LOGIN MODAL -->
 <div id="login-modal" class="modal-overlay" onclick="closeModal('login-modal')">
     <div style="background-color:var(--panel-bg);border:1px solid var(--border-color);border-radius:12px;padding:25px;width:360px;" onclick="event.stopPropagation()">
         <h3 style="text-align:center;margin-top:0;">🔑 Admin Login</h3>
@@ -353,7 +349,26 @@
     </div>
 </div>
  
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
 <script>
+// ═══════════════════════════════════════════════════════
+//  FIREBASE CONFIGURATION
+// ═══════════════════════════════════════════════════════
+const firebaseConfig = {
+    apiKey: "AIzaSyBswyuV0HblMDvmrh6McmPRb26Hz99XhAY",
+    authDomain: "loadtiers.firebaseapp.com",
+    projectId: "loadtiers",
+    storageBucket: "loadtiers.firebasestorage.app",
+    messagingSenderId: "705641531162",
+    appId: "1:705641531162:web:907ad79f61d54cf4b5cea3",
+    measurementId: "G-CQ8KT3ZQQ3"
+};
+
+// Firebase & Firestore initialisieren
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
 // ═══════════════════════════════════════════════════════
 //  PARTIKEL HINTERGRUND
@@ -361,17 +376,10 @@
 const canvas = document.getElementById('particle-canvas');
 const ctx = canvas.getContext('2d');
 let W, H;
- 
-function resizeCanvas() {
-    W = canvas.width = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-}
-resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
- 
+function resizeCanvas() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+resizeCanvas(); window.addEventListener('resize', resizeCanvas);
 const COLORS = ['#00bfff', '#a855f7', '#ff7b1a', '#38bdf8', '#ffffff'];
 const particles = [];
- 
 for (let i = 0; i < 130; i++) {
     particles.push({
         x: Math.random() * window.innerWidth,
@@ -383,113 +391,159 @@ for (let i = 0; i < 130; i++) {
         alpha: Math.random() * 0.45 + 0.08
     });
 }
- 
 function animParticles() {
     ctx.clearRect(0, 0, W, H);
     particles.forEach(p => {
         p.x += p.vx; p.y += p.vy;
         if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
         if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = p.color;
-        ctx.globalAlpha = p.alpha;
-        ctx.fill();
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fillStyle = p.color; ctx.globalAlpha = p.alpha; ctx.fill();
     });
-    // Verbindungslinien
     for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
-            const dx = particles[i].x - particles[j].x;
-            const dy = particles[i].y - particles[j].y;
-            const d = Math.sqrt(dx * dx + dy * dy);
+            const dx = particles[i].x - particles[j].x; const dy = particles[i].y - particles[j].y; const d = Math.sqrt(dx * dx + dy * dy);
             if (d < 100) {
-                ctx.beginPath();
-                ctx.strokeStyle = '#00bfff';
-                ctx.globalAlpha = (1 - d / 100) * 0.07;
-                ctx.lineWidth = 0.5;
-                ctx.moveTo(particles[i].x, particles[i].y);
-                ctx.lineTo(particles[j].x, particles[j].y);
-                ctx.stroke();
+                ctx.beginPath(); ctx.strokeStyle = '#00bfff'; ctx.globalAlpha = (1 - d / 100) * 0.07; ctx.lineWidth = 0.5;
+                ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y); ctx.stroke();
             }
         }
     }
-    ctx.globalAlpha = 1;
-    requestAnimationFrame(animParticles);
+    ctx.globalAlpha = 1; requestAnimationFrame(animParticles);
 }
 animParticles();
- 
+
 // ═══════════════════════════════════════════════════════
-//  DATEN & STORAGE (localStorage – funktioniert auf GitHub Pages)
+//  DATEN & CONFIG
 // ═══════════════════════════════════════════════════════
 const modeIcons = {
-    sword:   'https://i.imgur.com/f4TGbi9.png',
-    cpvp:    'https://i.imgur.com/rXpkFYb.png',
-    axe:     'https://i.imgur.com/yDimAH6.png',
-    smp:     'https://i.imgur.com/XBvvJBS.png',
-    diapot:  'https://i.imgur.com/1TgH0p8.png',
-    mace:    'https://i.imgur.com/9oQz88r.png',
-    uhc:     'https://i.imgur.com/X1OzkD3.png',
-    nethpot: 'https://i.imgur.com/6uUitGf.png'
+    sword: 'https://i.imgur.com/f4TGbi9.png', cpvp: 'https://i.imgur.com/rXpkFYb.png',
+    axe: 'https://i.imgur.com/yDimAH6.png', smp: 'https://i.imgur.com/XBvvJBS.png',
+    diapot: 'https://i.imgur.com/1TgH0p8.png', mace: 'https://i.imgur.com/9oQz88r.png',
+    uhc: 'https://i.imgur.com/X1OzkD3.png', nethpot: 'https://i.imgur.com/6uUitGf.png'
 };
- 
 const pointValues = { HT1:60, LT1:45, HT2:30, LT2:20, HT3:10, LT3:6, HT4:4, LT4:3, HT5:2, LT5:1 };
- 
-const defaultStaff = [
-    { name: 'TheRealJero @for help',          discord: '111111111111111111', title: 'NETWORK OWNER' },
-    { name: 'Lucky @for timeout',             discord: '222222222222222222', title: 'NETWORK OWNER' },
-    { name: 'Sebastian @ for Tech Supp...',   discord: '333333333333333333', title: 'CO OWNER' },
-    { name: 'FleXy @ For alL',                discord: '444444444444444444', title: 'CO OWNER' }
-];
- 
-const defaultPlayers = [
-    { name: 'Ayko',    ranks: { sword: 'HT1', cpvp: 'LT1', axe: 'HT2' } },
-    { name: 'vance',   ranks: { sword: 'LT1', cpvp: 'HT2', axe: 'LT2' } },
-    { name: 'frezzo',  ranks: { sword: 'HT2', cpvp: 'LT2', smp: 'HT3' } },
-    { name: 'zLuy',    ranks: { sword: 'LT2', cpvp: 'HT3', smp: 'LT3' } },
-    { name: 'frame',   ranks: { sword: 'HT3', cpvp: 'LT3', diapot: 'HT4' } },
-    { name: 'simple',  ranks: { sword: 'LT3', cpvp: 'HT4', diapot: 'LT4' } },
-    { name: 'fixed',   ranks: { sword: 'HT4', cpvp: 'LT4', mace: 'HT5' } },
-    { name: 'slow',    ranks: { sword: 'LT4', cpvp: 'HT5', mace: 'LT5' } },
-    { name: 'raw',     ranks: { sword: 'HT5', uhc: 'HT1',  nethpot: 'LT1' } },
-    { name: 'nils',    ranks: { sword: 'LT5', uhc: 'LT1',  nethpot: 'HT2' } },
-    { name: 'unlegit', ranks: { cpvp: 'HT1',  uhc: 'LT2',  axe: 'HT3' } },
-    { name: 'unreall', ranks: { cpvp: 'LT1',  uhc: 'HT3',  axe: 'LT3' } },
-    { name: 'pre',     ranks: { cpvp: 'HT2',  smp: 'LT3',  diapot: 'HT4' } },
-    { name: 'block',   ranks: { cpvp: 'LT2',  smp: 'HT4',  diapot: 'LT4' } },
-    { name: 'qute',    ranks: { cpvp: 'HT3',  mace: 'LT4', uhc: 'HT5' } },
-    { name: 'zicx',    ranks: { cpvp: 'LT3',  mace: 'HT5', uhc: 'LT5' } },
-    { name: 'fvct',    ranks: { axe: 'HT1',   nethpot: 'LT4', sword: 'HT2' } },
-    { name: 'kili',    ranks: { axe: 'LT1',   nethpot: 'HT5', sword: 'LT2' } },
-    { name: 'kian',    ranks: { smp: 'HT1',   sword: 'HT4', cpvp: 'LT4' } },
-    { name: 'tian',    ranks: { smp: 'LT1',   sword: 'LT4', cpvp: 'HT5' } },
-    { name: 'noname',  ranks: { diapot: 'HT1', axe: 'HT5' } }
-];
- 
-// localStorage – auf GitHub Pages sehen alle Besucher des gleichen Browsers dieselben Daten.
-// Für echtes Multiplayer-Sharing bräuchtest du ein Backend (z.B. Firebase).
-function save() {
-    localStorage.setItem('loadtiers_players', JSON.stringify(players));
-    localStorage.setItem('loadtiers_staff', JSON.stringify(staffList));
-    let adminAccounts = JSON.parse(localStorage.getItem('loadtiers_admins')) || {
-    "L4lyx": "L4lyx12"
-};
 
+let players = [];
+let staffList = [];
+let currentView = 'rankings';
+let currentMode = 'overall';
+let loggedInUser = null;
+
+// ═══════════════════════════════════════════════════════
+//  REALTIME CLOUD INTERACTION (Echtzeit-Abfragen)
+// ═══════════════════════════════════════════════════════
+
+db.collection("players").onSnapshot((snapshot) => {
+    players = [];
+    snapshot.forEach((doc) => {
+        players.push({ name: doc.id, ranks: doc.data().ranks || {} });
+    });
+    render();
+});
+
+db.collection("staff").onSnapshot((snapshot) => {
+    staffList = [];
+    snapshot.forEach((doc) => {
+        staffList.push({ id: doc.id, ...doc.data() });
+    });
+    render();
+});
+
+function addOrUpdatePlayer() {
+    const name = document.getElementById('new-player-name').value.trim();
+    const mode = document.getElementById('new-player-mode').value;
+    const tier = document.getElementById('new-player-tier').value;
+    if(!name) return;
+
+    let existing = players.find(p => p.name.toLowerCase() === name.toLowerCase());
+    let updatedRanks = existing ? { ...existing.ranks } : {};
+    updatedRanks[mode] = tier;
+
+    db.collection("players").doc(name).set({ ranks: updatedRanks })
+    .then(() => {
+        document.getElementById('new-player-name').value = '';
+        showSaveStatus();
+    });
+}
+
+function deletePlayer(name) {
+    db.collection("players").doc(name).delete().then(() => showSaveStatus());
+}
+
+function addStaff() {
+    const name = document.getElementById('staff-name-in').value.trim();
+    const discord = document.getElementById('staff-discord-in').value.trim();
+    const title = document.getElementById('staff-title-in').value;
+    if(!name) return;
+
+    db.collection("staff").add({ name, discord, title })
+    .then(() => {
+        document.getElementById('staff-name-in').value = '';
+        document.getElementById('staff-discord-in').value = '';
+        showSaveStatus();
+    });
+}
+
+function deleteStaff(id) {
+    db.collection("staff").doc(id).delete().then(() => showSaveStatus());
+}
+
+function createNewAdminAccount() {
+    const user = document.getElementById('new-admin-user').value.trim();
+    const pass = document.getElementById('new-admin-pass').value.trim();
+    if(!user || !pass) return;
+    
+    alert("Admin Account erstellt (Wird in Kürze voll funktionstüchtig sein!)");
+    document.getElementById('new-admin-user').value = '';
+    document.getElementById('new-admin-pass').value = '';
+}
+
+function showSaveStatus() {
     const s = document.getElementById('save-status');
     if (s) {
-        s.textContent = '✓ Gespeichert';
+        s.textContent = '✓ Live Aktualisiert';
         setTimeout(() => s.textContent = '', 2000);
     }
 }
- 
+
 // ═══════════════════════════════════════════════════════
-//  HILFSFUNKTIONEN
+//  MODALS & INTERFACE LOGIC
 // ═══════════════════════════════════════════════════════
+function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+function loginAdmin() { openModal('login-modal'); }
+function logoutAdmin() {
+    loggedInUser = null;
+    document.getElementById('admin-panel').style.display = 'none';
+    document.getElementById('l4lyx-only-section').style.display = 'none';
+    document.getElementById('admin-status-text').textContent = "Status: Guest";
+    render();
+}
+
+function submitLogin() {
+    const u = document.getElementById('login-user').value;
+    const p = document.getElementById('login-pass').value;
+    
+    // Login für L4lyx
+    if(u === "L4lyx" && p === "L4lyx12") {
+        loggedInUser = u;
+        document.getElementById('admin-panel').style.display = 'block';
+        document.getElementById('l4lyx-only-section').style.display = 'block';
+        document.getElementById('admin-status-text').textContent = "Status: Admin (" + u + ")";
+        closeModal('login-modal');
+        render();
+    } else {
+        alert("Falsche Login-Daten!");
+    }
+}
+
 function calcPts(p) {
     let t = 0;
     for (let m in p.ranks) t += pointValues[p.ranks[m]] || 0;
     return t;
 }
- 
+
 function changeMainView(view) {
     currentView = view;
     document.getElementById('nav-rankings').classList.remove('active');
@@ -503,14 +557,16 @@ function changeMainView(view) {
     }
     render();
 }
- 
+
 function switchMode(mode) {
     currentMode = mode;
     document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('mode-' + mode).classList.add('active');
     render();
 }
- 
+
+function handleSearch() { render(); }
+
 function render() {
     const f = document.getElementById('search-input').value.toLowerCase();
     if (currentView === 'rankings') {
@@ -521,7 +577,7 @@ function render() {
     }
     if (loggedInUser) renderAdminLists();
 }
- 
+
 // ═══════════════════════════════════════════════════════
 //  RENDER FUNKTIONEN
 // ═══════════════════════════════════════════════════════
@@ -530,10 +586,10 @@ function renderLeaderboard(filter = '') {
         .map(p => ({ ...p, totalPts: calcPts(p) }))
         .sort((a, b) => b.totalPts - a.totalPts);
     if (filter) sorted = sorted.filter(p => p.name.toLowerCase().includes(filter));
- 
+
     let html = `<table class="leaderboard-table">
         <thead><tr><th>#</th><th>Player</th><th>Tiers</th><th style="text-align:right;">Pts</th></tr></thead><tbody>`;
- 
+
     sorted.forEach((p, i) => {
         const rc = i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : '';
         let badges = '';
@@ -561,191 +617,101 @@ function renderLeaderboard(filter = '') {
     });
     document.getElementById('content-area').innerHTML = html + '</tbody></table>';
 }
- 
+
+function renderColumns(filter = '') {
+    const tiers = ['HT1','LT1','HT2','LT2','HT3','LT3','HT4','LT4','HT5','LT5'];
+    let html = `<div class="tier-columns">`;
+    
+    tiers.forEach(t => {
+        let thClass = t.startsWith('HT') ? 't3-h' : 't4-h';
+        if(t.includes('1')) thClass = t.startsWith('HT') ? 't1-h' : 't2-h';
+        
+        html += `<div class="tier-column">
+            <div class="tier-header ${thClass}">${t}</div>
+            <div class="tier-list-content">`;
+            
+        let filtered = players.filter(p => p.ranks[currentMode] === t);
+        if(filter) filtered = filtered.filter(p => p.name.toLowerCase().includes(filter));
+        
+        filtered.forEach(p => {
+            html += `
+                <div class="tier-user-card" onclick="openProfile('${p.name}', '?')">
+                    <span style="font-weight:700;font-size:13px;">${p.name}</span>
+                    <img class="avatar" src="https://minotar.net/avatar/${p.name}/32" onerror="this.src='https://minotar.net/avatar/steve/32'">
+                </div>`;
+        });
+        html += `</div></div>`;
+    });
+    document.getElementById('content-area').innerHTML = html + `</div>`;
+}
+
+function renderStaff(filter = '') {
+    let list = [...staffList];
+    if(filter) list = list.filter(s => s.name.toLowerCase().includes(filter));
+    
+    let html = `<div class="staff-grid">`;
+    list.forEach(s => {
+        let bCls = 'badge-admin';
+        const t = s.title.toUpperCase();
+        if(t.includes('OWNER')) bCls = 'badge-owner';
+        else if(t.includes('CO')) bCls = 'badge-coowner';
+        else if(t.includes('OVERSEER')) bCls = 'badge-overseer';
+        else if(t.includes('MANAGER')) bCls = 'badge-manager';
+        else if(t.includes('DEV')) bCls = 'badge-dev';
+        else if(t.includes('TESTER')) bCls = 'badge-tester';
+
+        html += `
+            <div class="staff-card">
+                <img class="staff-img" src="https://minotar.net/avatar/${s.name}/44" onerror="this.src='https://minotar.net/avatar/steve/44'">
+                <div class="staff-info">
+                    <div class="staff-name">${s.name}</div>
+                    <div class="staff-badge ${bCls}">${s.title}</div>
+                </div>
+            </div>`;
+    });
+    document.getElementById('content-area').innerHTML = html + `</div>`;
+}
+
 function openProfile(username, rankNumber) {
     const p = players.find(x => x.name === username);
     if (!p) return;
- 
+
     document.getElementById('p-modal-avatar').src = `https://minotar.net/avatar/${p.name}/80`;
     document.getElementById('p-modal-name').textContent = p.name + ' ★';
     document.getElementById('p-modal-points').textContent = calcPts(p) + ' points';
     document.getElementById('p-modal-rank-num').textContent = '#' + rankNumber;
- 
+
     let g = '';
     for (let mode in modeIcons) {
-        const tier = p.ranks[mode] || '—';
-        const ht = tier.startsWith('HT');
-        const brd = tier !== '—' ? (ht ? 'border:1px solid #ff7b1a;box-shadow:0 0 6px rgba(249,115,22,.2);' : 'border:1px solid #38bdf8;box-shadow:0 0 6px rgba(56,189,248,.2);') : '';
-        const col = tier !== '—' ? (ht ? 'color:#ff7b1a;' : 'color:#38bdf8;') : 'color:#4b5f7a;';
-        g += `
-            <div class="profile-mode-card" style="${brd}">
-                <img src="${modeIcons[mode]}" class="profile-mode-img" style="${tier === '—' ? 'opacity:.3;' : ''}" onerror="this.style.display='none'">
-                <span class="profile-mode-name">${mode}</span>
-                <span class="profile-mode-tier" style="${col}">${tier}</span>
+        const tier = p.ranks[mode];
+        if(tier) {
+            g += `<div class="profile-mode-card">
+                <img src="${modeIcons[mode]}" class="profile-mode-img">
+                <div class="profile-mode-name">${mode}</div>
+                <div class="profile-mode-tier" style="color:${tier.startsWith('HT')?'#ff7b1a':'#38bdf8'}">${tier}</div>
             </div>`;
+        }
     }
     document.getElementById('p-modal-grid').innerHTML = g;
     openModal('profile-modal');
 }
- 
-function renderColumns(filter = '') {
-    let html = '<div class="tier-columns">';
-    for (let i = 1; i <= 5; i++) {
-        html += `<div class="tier-column"><div class="tier-header t${i}-h">TIER ${i}</div><div class="tier-list-content">`;
-        players
-            .filter(p => p.ranks[currentMode] && p.ranks[currentMode].includes(i.toString()) && p.name.toLowerCase().includes(filter))
-            .forEach(p => {
-                const tier = p.ranks[currentMode];
-                html += `
-                    <div class="tier-user-card">
-                        <div style="display:flex;align-items:center;gap:8px;">
-                            <img class="avatar" src="https://minotar.net/avatar/${p.name}/32" onerror="this.src='https://minotar.net/avatar/steve/32'">
-                            <span style="font-weight:600;font-size:13px;">${p.name}</span>
-                        </div>
-                        <span style="color:${tier.startsWith('HT') ? '#ff7b1a' : '#38bdf8'};font-weight:800;font-size:11px;">${tier}</span>
-                    </div>`;
-            });
-        html += '</div></div>';
-    }
-    document.getElementById('content-area').innerHTML = html + '</div>';
-}
- 
-function renderStaff(filter = '') {
-    let list = [...staffList];
-    if (filter) list = list.filter(s => s.name.toLowerCase().includes(filter));
- 
-    let html = '<div class="staff-grid">';
-    list.forEach(s => {
-        let bc = 'badge-tester';
-        const t = s.title.toUpperCase();
-        if (t.includes('OWNER') && !t.includes('CO')) bc = 'badge-owner';
-        else if (t.includes('CO')) bc = 'badge-coowner';
-        else if (t.includes('OVERSEER')) bc = 'badge-overseer';
-        else if (t.includes('MANAGER')) bc = 'badge-manager';
-        else if (t.includes('DEV')) bc = 'badge-dev';
-        else if (t.includes('ADMIN')) bc = 'badge-admin';
- 
-        const avatarUrl = s.discord && s.discord.length > 10
-            ? `https://cdn.discordapp.com/avatars/${s.discord}/avatar.png?size=64`
-            : 'https://cdn.discordapp.com/embed/avatars/1.png';
- 
-        html += `
-            <div class="staff-card">
-                <img class="staff-img" src="${avatarUrl}" onerror="this.src='https://cdn.discordapp.com/embed/avatars/1.png'">
-                <div class="staff-info">
-                    <div class="staff-name">${s.name}</div>
-                    <div style="font-size:11px;color:var(--text-secondary);margin-bottom:2px;">ID: ${s.discord}</div>
-                    <div class="staff-badge ${bc}">● ${s.title}</div>
-                </div>
-            </div>`;
-    });
-    document.getElementById('content-area').innerHTML = html + '</div>';
-}
- 
+
 function renderAdminLists() {
-    const pl = document.getElementById('admin-delete-list'); pl.innerHTML = '';
+    let pDoc = '';
     players.forEach(p => {
-        const d = document.createElement('div'); d.className = 'admin-player-row';
-        d.innerHTML = `<span>${p.name}</span><button class="btn btn-danger" style="padding:2px 6px;" onclick="deletePlayer('${p.name}')">X</button>`;
-        pl.appendChild(d);
+        pDoc += `<div class="admin-player-row"><span>${p.name}</span><button class="btn btn-danger" style="padding:2px 6px;font-size:10px;" onclick="deletePlayer('${p.name}')">X</button></div>`;
     });
-    const sl = document.getElementById('admin-staff-delete-list'); sl.innerHTML = '';
+    document.getElementById('admin-delete-list').innerHTML = pDoc;
+
+    let sDoc = '';
     staffList.forEach(s => {
-        const d = document.createElement('div'); d.className = 'admin-player-row';
-        d.innerHTML = `<span>${s.name}</span><button class="btn btn-danger" style="padding:2px 6px;" onclick="deleteStaff('${s.name}')">X</button>`;
-        sl.appendChild(d);
+        sDoc += `<div class="admin-player-row"><span>${s.name} (${s.title})</span><button class="btn btn-danger" style="padding:2px 6px;font-size:10px;" onclick="deleteStaff('${s.id}')">X</button></div>`;
     });
+    document.getElementById('admin-staff-delete-list').innerHTML = sDoc;
 }
- 
-// ═══════════════════════════════════════════════════════
-//  ADMIN AKTIONEN
-// ═══════════════════════════════════════════════════════
-function addOrUpdatePlayer() {
-    const name = document.getElementById('new-player-name').value.trim();
-    const mode = document.getElementById('new-player-mode').value;
-    const tier = document.getElementById('new-player-tier').value;
-    if (!name) return;
-    const ex = players.find(p => p.name.toLowerCase() === name.toLowerCase());
-    if (ex) ex.ranks[mode] = tier;
-    else { const n = { name, ranks: {} }; n.ranks[mode] = tier; players.push(n); }
-    save(); render();
-    document.getElementById('new-player-name').value = '';
-}
- 
-function deletePlayer(name) {
-    players = players.filter(p => p.name !== name);
-    save(); render();
-}
- 
-function addStaff() {
-    const name  = document.getElementById('staff-name-in').value.trim();
-    const dc    = document.getElementById('staff-discord-in').value.trim();
-    const title = document.getElementById('staff-title-in').value;
-    if (!name || !dc) return;
-    staffList.push({ name, discord: dc, title });
-    save(); render();
-    document.getElementById('staff-name-in').value = '';
-    document.getElementById('staff-discord-in').value = '';
-}
- 
-function deleteStaff(name) {
-    staffList = staffList.filter(s => s.name !== name);
-    save(); render();
-}
- 
-function createNewAdminAccount() {
-    const u = document.getElementById('new-admin-user').value.trim();
-    const p = document.getElementById('new-admin-pass').value;
-    if (!u || !p) return;
-    adminAccounts[u] = p;
-    save();
-    alert('Admin ' + u + ' erstellt!');
-}
- 
-// ═══════════════════════════════════════════════════════
-//  MODAL / LOGIN / SEARCH
-// ═══════════════════════════════════════════════════════
-function handleSearch() {
-    const v = document.getElementById('search-input').value.trim();
-    if (v.toLowerCase() === 'login') {
-        document.getElementById('search-input').value = '';
-        openModal('login-modal');
-    } else {
-        render();
-    }
-}
- 
-function openModal(id)  { document.getElementById(id).style.display = 'flex'; }
-function closeModal(id) { document.getElementById(id).style.display = 'none'; }
- 
-function submitLogin() {
-    const u = document.getElementById('login-user').value.trim();
-    const p = document.getElementById('login-pass').value;
-    if (adminAccounts[u] && adminAccounts[u] === p) {
-        loggedInUser = u;
-        document.getElementById('admin-status-text').textContent = 'Status: ' + u;
-        document.getElementById('admin-panel').style.display = 'block';
-        if (u === 'L4lyx') document.getElementById('l4lyx-only-section').style.display = 'block';
-        closeModal('login-modal');
-        render();
-    } else {
-        alert('Falsches Passwort!');
-    }
-}
- 
-function logoutAdmin() {
-    loggedInUser = null;
-    document.getElementById('admin-panel').style.display = 'none';
-    document.getElementById('admin-status-text').textContent = 'Status: Guest';
-    document.getElementById('l4lyx-only-section').style.display = 'none';
-    render();
-}
- 
-// ═══════════════════════════════════════════════════════
-//  START
-// ═══════════════════════════════════════════════════════
-render();
+
+// Initialer Aufruf
+changeMainView('rankings');
 </script>
 </body>
 </html>
- 
