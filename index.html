@@ -456,7 +456,6 @@ let currentView = 'rankings';
 let currentMode = 'overall';
 let loggedInUser = null;
 
-// Vereinheitlichte Rückgabe für die Anzeige
 function getDisplayTier(rawTier, mode) {
     if (!rawTier) return '';
     return rawTier.toUpperCase();
@@ -496,10 +495,6 @@ function addOrUpdatePlayer() {
         document.getElementById('new-player-name').value = '';
         showSaveStatus();
     });
-}
-
-function deletePlayer(name) {
-    db.collection("players").doc(name).delete().then(() => showSaveStatus());
 }
 
 function deletePlayerMode(name, mode) {
@@ -589,6 +584,14 @@ function calcPts(p) {
     return t;
 }
 
+function changeMainView(view) {
+    currentView = view;
+    document.getElementById('nav-rankings').classList.toggle('active', view === 'rankings');
+    document.getElementById('nav-staff').classList.toggle('active', view === 'staff');
+    document.getElementById('modes-sub-nav').style.display = view === 'rankings' ? 'flex' : 'none';
+    render();
+}
+
 function switchMode(mode) {
     currentMode = mode;
     document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
@@ -596,30 +599,61 @@ function switchMode(mode) {
     render();
 }
 
-// ═══════════════════════════════════════════════════════
-//  SEARCH INTERACTION (REPARIERT)
-// ═══════════════════════════════════════════════════════
 function handleSearch() {
     const query = document.getElementById('search-input').value.trim();
-    
-    // Geheimes Login-Kürzel abfangen
     if (query.toLowerCase() === 'player login') {
         openModal('login-modal');
         return;
     }
-    
-    // Normale Suchfunktion triggert das Render-Update
     render();
 }
 
+function openProfileModal(playerName) {
+    const p = players.find(pl => pl.name === playerName);
+    if(!p) return;
+    document.getElementById('p-modal-avatar').src = `https://mc-heads.net/avatar/${p.name}/80`;
+    document.getElementById('p-modal-name').textContent = p.name;
+    document.getElementById('p-modal-points').textContent = calcPts(p) + " PTS";
+    
+    let gridHtml = '';
+    for(let m in modeIcons) {
+        let t = p.ranks[m] || 'NONE';
+        let cls = t !== 'NONE' ? 'border-m' : '';
+        gridHtml += `
+            <div class="profile-mode-card ${cls}">
+                <img class="profile-mode-img" src="${modeIcons[m]}">
+                <span class="profile-mode-name">${m}</span>
+                <span class="profile-mode-tier" style="color:${getTierColor(t)}">${t}</span>
+            </div>
+        `;
+    }
+    document.getElementById('p-modal-grid').innerHTML = gridHtml;
+    openModal('profile-modal');
+}
+
+function getTierColor(t) {
+    if(!t) return varColor('--text-secondary');
+    t = t.toUpperCase();
+    if(t.includes('1')) return '#ffaa00';
+    if(t.includes('2')) return '#cbd5e1';
+    if(t.includes('3')) return '#ff7b1a';
+    if(t.includes('4')) return '#38bdf8';
+    if(t.includes('5')) return '#94a3b8';
+    return '#62758d';
+}
+
+function varColor(v) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+
 // ═══════════════════════════════════════════════════════
-//  RENDER ENGINE (Beispiel-Struktur für deine Listen)
+//  RENDER ENGINE (VOLLSTÄNDIG)
 // ═══════════════════════════════════════════════════════
 function render() {
     const contentArea = document.getElementById('content-area');
     if (!contentArea) return;
 
-    // Admin Listen im Dashboard füllen, wenn eingeloggt
+    const query = document.getElementById('search-input').value.toLowerCase().trim();
+
+    // Admin-Listen updaten falls eingeloggt
     const deleteList = document.getElementById('admin-delete-list');
     if (deleteList && loggedInUser) {
         let html = '';
@@ -646,12 +680,145 @@ function render() {
         staffDeleteList.innerHTML = html;
     }
 
-    // Hauptansicht rendern
+    // SEITEN-ANSICHTEN RENDERN
     if (currentView === 'rankings') {
-        // Hier kommt dein bestehender Code hin, um die Tabellen/Spalten zu zeichnen
-        contentArea.innerHTML = `<h2 style="text-align:center; color:var(--text-secondary);">Rankings geladen (${players.length} Spieler)</h2>`;
+        // Filtere Spieler nach der Suche
+        let filteredPlayers = players.filter(p => p.name.toLowerCase().includes(query));
+
+        if (currentMode === 'overall') {
+            // OVERALL VIEW: Sortiert nach Punkten
+            filteredPlayers.sort((a, b) => calcPts(b) - calcPts(a));
+
+            let html = `
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th style="width:70px;">Rank</th>
+                            <th>Spieler</th>
+                            <th>Tiers</th>
+                            <th style="text-align:right;">Points</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            filteredPlayers.forEach((p, index) => {
+                let badgeHtml = '';
+                for (let m in p.ranks) {
+                    let rawT = p.ranks[m];
+                    if(rawT) {
+                        let tNum = rawT.replace(/\D/g,'');
+                        badgeHtml += `
+                            <div class="tier-badge-container">
+                                <div class="icon-wrapper border-t${tNum}"><img class="mode-logo-img" src="${modeIcons[m]}"></div>
+                                <span class="tier-text border-t${tNum}">${rawT}</span>
+                            </div>
+                        `;
+                    }
+                }
+
+                let rCls = (index === 0) ? 'rank-1' : (index === 1) ? 'rank-2' : (index === 2) ? 'rank-3' : '';
+
+                html += `
+                    <tr onclick="openProfileModal('${p.name}')">
+                        <td><span class="rank-number ${rCls}">#${index + 1}</span></td>
+                        <td>
+                            <div style="display:flex;align-items:center;gap:12px;">
+                                <img class="avatar" src="https://mc-heads.net/avatar/${p.name}/32">
+                                <span class="username">${p.name}</span>
+                            </div>
+                        </td>
+                        <td><div class="badge-list">${badgeHtml}</div></td>
+                        <td style="text-align:right;font-weight:800;color:var(--accent-cyan);">${calcPts(p)} PTS</td>
+                    </tr>
+                `;
+            });
+
+            html += `</tbody></table>`;
+            contentArea.innerHTML = html;
+
+        } else {
+            // EINZELNER GAMEMODE VIEW: 5 Spalten (Tier 1 bis Tier 5)
+            let tierLists = { T1: [], T2: [], T3: [], T4: [], T5: [] };
+
+            filteredPlayers.forEach(p => {
+                let r = p.ranks[currentMode];
+                if (r) {
+                    let num = r.replace(/\D/g,'');
+                    if (tierLists['T' + num]) {
+                        tierLists['T' + num].push({ name: p.name, exactTier: r });
+                    }
+                }
+            });
+
+            // Sortierung innerhalb der Tiers (HT vor LT)
+            for(let k in tierLists) {
+                tierLists[k].sort((a,b) => b.exactTier.localeCompare(a.exactTier));
+            }
+
+            let html = `
+                <div class="gamemode-headers-row">
+                    <div class="gamemode-header-tab gh-t1">Tier 1</div>
+                    <div class="gamemode-header-tab gh-t2">Tier 2</div>
+                    <div class="gamemode-header-tab gh-t3">Tier 3</div>
+                    <div class="gamemode-header-tab gh-t4">Tier 4</div>
+                    <div class="gamemode-header-tab gh-t5">Tier 5</div>
+                </div>
+                <div class="tier-columns">
+            `;
+
+            for (let i = 1; i <= 5; i++) {
+                let list = tierLists['T' + i];
+                html += `
+                    <div class="tier-column">
+                        <div class="tier-header t${i}-h">TIER ${i}</div>
+                        <div class="tier-list-content">
+                `;
+
+                list.forEach(item => {
+                    html += `
+                        <div class="tier-user-card" onclick="openProfileModal('${item.name}')" style="cursor:pointer;">
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <img class="avatar" src="https://mc-heads.net/avatar/${item.name}/32">
+                                <span class="username" style="font-size:13px;">${item.name}</span>
+                            </div>
+                            <span class="tier-text border-t${i}">${item.exactTier}</span>
+                        </div>
+                    `;
+                });
+
+                html += `</div></div>`;
+            }
+
+            html += `</div>`;
+            contentArea.innerHTML = html;
+        }
+
     } else if (currentView === 'staff') {
-        contentArea.innerHTML = `<h2 style="text-align:center; color:var(--text-secondary);">Staff geladen (${staffList.length} Mitglieder)</h2>`;
+        // STAFF VIEW
+        let html = `<div class="staff-grid">`;
+        staffList.forEach(s => {
+            let bCls = 'badge-tester';
+            let titleUpper = s.title.toUpperCase();
+            if(titleUpper.includes('OWNER')) bCls = 'badge-owner';
+            else if(titleUpper.includes('CO')) bCls = 'badge-coowner';
+            else if(titleUpper.includes('OVERSEER')) bCls = 'badge-overseer';
+            else if(titleUpper.includes('MANAGER')) bCls = 'badge-manager';
+            else if(titleUpper.includes('DEV')) bCls = 'badge-dev';
+            else if(titleUpper.includes('ADMIN')) bCls = 'badge-admin';
+
+            html += `
+                <div class="staff-card">
+                    <img class="staff-img" src="https://mc-heads.net/avatar/${s.discord || s.name}/44">
+                    <div class="staff-info">
+                        <div class="staff-name">${s.name}</div>
+                        <div class="staff-badge ${bCls}">${s.title}</div>
+                    </div>
+                </div>
+            `;
+        });
+        html += `</div>`;
+        contentArea.innerHTML = html;
     }
 }
 </script>
