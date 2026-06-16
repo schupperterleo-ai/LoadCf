@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Load12 - Tiers & Rankings</title>
+    <title>LoadTiers - Tiers & Rankings</title>
+    
+    <link rel="icon" type="image/png" href="https://i.imgur.com/f4TGbi9.png">
+
     <style>
         :root {
             --bg-dark: #050811;
@@ -450,7 +453,6 @@ const pointValues = {
     "HT5": 15, "LT5": 10 
 };
 
-// Exakte Definition der Tiers für die Spalten-Reihenfolge (LT5 bis HT1)
 const tierOrder = ["LT5", "HT5", "LT4", "HT4", "LT3", "HT3", "LT2", "HT2", "LT1", "HT1"];
 
 let players = [];
@@ -542,6 +544,7 @@ function createNewAdminAccount() {
     document.getElementById('new-admin-pass').value = '';
 }
 
+// Hier wird das schließende Element für die abgebrochene Funktion ergänzt
 function showSaveStatus() {
     const s = document.getElementById('save-status');
     if (s) {
@@ -602,7 +605,6 @@ function switchMode(mode) {
     render();
 }
 
-// HIER GEÄNDERT: Reagiert jetzt sofort auf "login"
 function handleSearch() {
     const query = document.getElementById('search-input').value.trim();
     if (query.toLowerCase() === 'login') {
@@ -657,7 +659,6 @@ function render() {
 
     const query = document.getElementById('search-input').value.toLowerCase().trim();
 
-    // Admin-Listen updaten falls eingeloggt
     const deleteList = document.getElementById('admin-delete-list');
     if (deleteList && loggedInUser) {
         let html = '';
@@ -739,8 +740,7 @@ function render() {
             contentArea.innerHTML = html;
 
         } else {
-            // HIER GEÄNDERT: Dynamisches Grid basierend auf deiner exakten Vorgabe (LT5 bis HT1)
-            // Wir erstellen ein Objekt, das die Listen für jedes der 10 Tiers hält
+            // Dynamisches Grid basierend auf der Spalten-Reihenfolge (LT5 bis HT1)
             let tierLists = {};
             tierOrder.forEach(t => { tierLists[t] = []; });
 
@@ -754,15 +754,18 @@ function render() {
                 }
             });
 
-            // Erstelle die Tabellen-Überschriften
-            let html = `<div class="gamemode-headers-row" style="grid-template-columns: repeat(10, 1fr); display: grid;">`;
-            tierOrder.forEach(t => {
-                let tNum = t.replace(/\D/g,'');
-                html += `<div class="gamemode-header-tab gh-t${tNum}" style="font-size: 11px; padding: 8px 4px;">${t}</div>`;
-            });
-            html += `</div>`;
+            // NEUE FIX-ÜBERSCHRIFTEN (Tier 5 bis Tier 1 über das 10er Grid gelegt)
+            let html = `
+                <div class="gamemode-headers-row" style="grid-template-columns: repeat(5, 1fr); display: grid; margin-bottom: 5px;">
+                    <div class="gamemode-header-tab gh-t5" style="font-size: 13px; padding: 8px 4px;">Tier 5</div>
+                    <div class="gamemode-header-tab gh-t4" style="font-size: 13px; padding: 8px 4px;">Tier 4</div>
+                    <div class="gamemode-header-tab gh-t3" style="font-size: 13px; padding: 8px 4px;">Tier 3</div>
+                    <div class="gamemode-header-tab gh-t2" style="font-size: 13px; padding: 8px 4px;">Tier 2</div>
+                    <div class="gamemode-header-tab gh-t1" style="font-size: 13px; padding: 8px 4px;">Tier 1</div>
+                </div>
+            `;
 
-            // Erstelle das Spalten-Layout
+            // Spalten-Layout mit 10 Spalten (LT5 bis HT1)
             html += `<div class="tier-columns" style="grid-template-columns: repeat(10, 1fr); display: grid; gap: 8px;">`;
             tierOrder.forEach(t => {
                 let tNum = t.replace(/\D/g,'');
