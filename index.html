@@ -450,6 +450,9 @@ const pointValues = {
     "HT5": 15, "LT5": 10 
 };
 
+// Exakte Definition der Tiers für die Spalten-Reihenfolge (LT5 bis HT1)
+const tierOrder = ["LT5", "HT5", "LT4", "HT4", "LT3", "HT3", "LT2", "HT2", "LT1", "HT1"];
+
 let players = [];
 let staffList = [];
 let currentView = 'rankings';
@@ -599,9 +602,10 @@ function switchMode(mode) {
     render();
 }
 
+// HIER GEÄNDERT: Reagiert jetzt sofort auf "login"
 function handleSearch() {
     const query = document.getElementById('search-input').value.trim();
-    if (query.toLowerCase() === 'player login') {
+    if (query.toLowerCase() === 'login') {
         openModal('login-modal');
         return;
     }
@@ -645,7 +649,7 @@ function getTierColor(t) {
 function varColor(v) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
 
 // ═══════════════════════════════════════════════════════
-//  RENDER ENGINE (VOLLSTÄNDIG)
+//  RENDER ENGINE
 // ═══════════════════════════════════════════════════════
 function render() {
     const contentArea = document.getElementById('content-area');
@@ -680,13 +684,10 @@ function render() {
         staffDeleteList.innerHTML = html;
     }
 
-    // SEITEN-ANSICHTEN RENDERN
     if (currentView === 'rankings') {
-        // Filtere Spieler nach der Suche
         let filteredPlayers = players.filter(p => p.name.toLowerCase().includes(query));
 
         if (currentMode === 'overall') {
-            // OVERALL VIEW: Sortiert nach Punkten
             filteredPlayers.sort((a, b) => calcPts(b) - calcPts(a));
 
             let html = `
@@ -738,64 +739,58 @@ function render() {
             contentArea.innerHTML = html;
 
         } else {
-            // EINZELNER GAMEMODE VIEW: 5 Spalten (Tier 1 bis Tier 5)
-            let tierLists = { T1: [], T2: [], T3: [], T4: [], T5: [] };
+            // HIER GEÄNDERT: Dynamisches Grid basierend auf deiner exakten Vorgabe (LT5 bis HT1)
+            // Wir erstellen ein Objekt, das die Listen für jedes der 10 Tiers hält
+            let tierLists = {};
+            tierOrder.forEach(t => { tierLists[t] = []; });
 
             filteredPlayers.forEach(p => {
                 let r = p.ranks[currentMode];
                 if (r) {
-                    let num = r.replace(/\D/g,'');
-                    if (tierLists['T' + num]) {
-                        tierLists['T' + num].push({ name: p.name, exactTier: r });
+                    let uR = r.toUpperCase();
+                    if (tierLists[uR]) {
+                        tierLists[uR].push(p.name);
                     }
                 }
             });
 
-            // Sortierung innerhalb der Tiers (HT vor LT)
-            for(let k in tierLists) {
-                tierLists[k].sort((a,b) => b.exactTier.localeCompare(a.exactTier));
-            }
+            // Erstelle die Tabellen-Überschriften
+            let html = `<div class="gamemode-headers-row" style="grid-template-columns: repeat(10, 1fr); display: grid;">`;
+            tierOrder.forEach(t => {
+                let tNum = t.replace(/\D/g,'');
+                html += `<div class="gamemode-header-tab gh-t${tNum}" style="font-size: 11px; padding: 8px 4px;">${t}</div>`;
+            });
+            html += `</div>`;
 
-            let html = `
-                <div class="gamemode-headers-row">
-                    <div class="gamemode-header-tab gh-t1">Tier 1</div>
-                    <div class="gamemode-header-tab gh-t2">Tier 2</div>
-                    <div class="gamemode-header-tab gh-t3">Tier 3</div>
-                    <div class="gamemode-header-tab gh-t4">Tier 4</div>
-                    <div class="gamemode-header-tab gh-t5">Tier 5</div>
-                </div>
-                <div class="tier-columns">
-            `;
-
-            for (let i = 1; i <= 5; i++) {
-                let list = tierLists['T' + i];
+            // Erstelle das Spalten-Layout
+            html += `<div class="tier-columns" style="grid-template-columns: repeat(10, 1fr); display: grid; gap: 8px;">`;
+            tierOrder.forEach(t => {
+                let tNum = t.replace(/\D/g,'');
+                let list = tierLists[t];
+                
                 html += `
-                    <div class="tier-column">
-                        <div class="tier-header t${i}-h">TIER ${i}</div>
-                        <div class="tier-list-content">
+                    <div class="tier-column" style="min-width: 0;">
+                        <div class="tier-header t${tNum}-h" style="padding: 10px 4px; font-size: 11px;">${t}</div>
+                        <div class="tier-list-content" style="padding: 6px; gap: 6px;">
                 `;
 
-                list.forEach(item => {
+                list.forEach(name => {
                     html += `
-                        <div class="tier-user-card" onclick="openProfileModal('${item.name}')" style="cursor:pointer;">
-                            <div style="display:flex;align-items:center;gap:8px;">
-                                <img class="avatar" src="https://mc-heads.net/avatar/${item.name}/32">
-                                <span class="username" style="font-size:13px;">${item.name}</span>
-                            </div>
-                            <span class="tier-text border-t${i}">${item.exactTier}</span>
+                        <div class="tier-user-card" onclick="openProfileModal('${name}')" style="cursor:pointer; padding: 6px; flex-direction: column; align-items: center; text-align: center; gap: 4px;">
+                            <img class="avatar" src="https://mc-heads.net/avatar/${name}/24" style="width:24px; height:24px;">
+                            <span class="username" style="font-size:11px; word-break: break-all;">${name}</span>
                         </div>
                     `;
                 });
 
                 html += `</div></div>`;
-            }
+            });
 
             html += `</div>`;
             contentArea.innerHTML = html;
         }
 
     } else if (currentView === 'staff') {
-        // STAFF VIEW
         let html = `<div class="staff-grid">`;
         staffList.forEach(s => {
             let bCls = 'badge-tester';
