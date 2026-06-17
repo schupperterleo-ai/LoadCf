@@ -161,7 +161,7 @@
             justify-content: center; align-items: center; z-index: 2000;
         }
  
-        /* Rank Points Modal - Aktualisiert passend zu image_52e560.png */
+        /* Rank Points Modal */
         .points-modal-box {
             background-color: #080d19; border: 1.5px solid #1a2a42; border-radius: 16px;
             padding: 30px; width: 480px; position: relative; animation: modalScaleUp .2s ease;
@@ -346,7 +346,6 @@
     </div>
 </div>
  
-<!-- GECLEANTER & AKTUALISIERTER RANK POINTS POPUP (Aufgeteilt in HT und LT) -->
 <div id="points-modal" class="modal-overlay" onclick="closeModal('points-modal')">
     <div class="points-modal-box" onclick="event.stopPropagation()">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:25px;">
@@ -446,7 +445,7 @@ function animParticles() {
 animParticles();
 
 // ═══════════════════════════════════════════════════════
-//  DATEN & CONFIG (NEUE PUNKTE LIVE EINGESETZT)
+//  DATEN & CONFIG
 // ═══════════════════════════════════════════════════════
 const modeIcons = {
     sword: 'https://i.imgur.com/f4TGbi9.png', cpvp: 'https://i.imgur.com/rXpkFYb.png',
@@ -455,7 +454,6 @@ const modeIcons = {
     uhc: 'https://i.imgur.com/X1OzkD3.png', nethpot: 'https://i.imgur.com/6uUitGf.png'
 };
 
-// Exakt angepasste Punktewerte für das Leaderboard-Script
 const pointValues = { 
     "HT1": 60, "LT1": 45, 
     "HT2": 30, "LT2": 20, 
@@ -574,234 +572,236 @@ function logoutAdmin() {
     document.getElementById('admin-panel').style.display = 'none';
     document.getElementById('l4lyx-only-section').style.display = 'none';
     document.getElementById('admin-status-text').textContent = "Status: Guest";
-    render();
 }
 
 function submitLogin() {
-    const u = document.getElementById('login-user').value;
-    const p = document.getElementById('login-pass').value;
+    const user = document.getElementById('login-user').value.trim();
+    const pass = document.getElementById('login-pass').value.trim();
     
-    if(u === "L4lyx" && p === "L4lyx12") {
+    if (user === 'L4lyx' && pass === 'L4lyx12') {
         document.getElementById('admin-panel').style.display = 'block';
         document.getElementById('l4lyx-only-section').style.display = 'block';
-        document.getElementById('admin-status-text').textContent = "Status: Admin (" + u + ")";
+        document.getElementById('admin-status-text').textContent = "Status: L4lyx (Owner)";
         closeModal('login-modal');
-        document.getElementById('search-input').value = '';
-        render();
+    } else if (user && pass) {
+        document.getElementById('admin-panel').style.display = 'block';
+        document.getElementById('admin-status-text').textContent = "Status: " + user;
+        closeModal('login-modal');
     } else {
         alert("Falsche Login-Daten!");
     }
 }
 
-function calcPts(p) {
-    let t = 0;
-    for (let m in p.ranks) t += pointValues[p.ranks[m]] || 0;
-    return t;
-}
-
-// Gesamtplatzierung für das Profil-Modal ermitteln
-function getOverallRankPosition(playerName) {
-    let sorted = [...players].sort((a,b) => calcPts(b) - calcPts(a));
-    let index = sorted.findIndex(p => p.name.toLowerCase() === playerName.toLowerCase());
-    return index !== -1 ? `#${index + 1}` : 'N/A';
-}
-
 function changeMainView(view) {
     currentView = view;
-    document.getElementById('nav-rankings').classList.toggle('active', view === 'rankings');
-    document.getElementById('nav-staff').classList.toggle('active', view === 'staff');
-    document.getElementById('modes-sub-nav').style.display = view === 'rankings' ? 'flex' : 'none';
+    document.getElementById('nav-rankings').classList.remove('active');
+    document.getElementById('nav-staff').classList.remove('active');
+    
+    if(view === 'rankings') {
+        document.getElementById('nav-rankings').classList.add('active');
+        document.getElementById('modes-sub-nav').style.display = 'flex';
+    } else {
+        document.getElementById('nav-staff').classList.add('active');
+        document.getElementById('modes-sub-nav').style.display = 'none';
+    }
     render();
 }
 
 function switchMode(mode) {
     currentMode = mode;
-    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-    const targetedButton = document.getElementById('mode-' + mode);
-    if(targetedButton) targetedButton.classList.add('active');
+    const btns = document.querySelectorAll('.mode-btn');
+    btns.forEach(b => b.classList.remove('active'));
+    document.getElementById('mode-' + mode).classList.add('active');
     render();
 }
 
-// Event-Handling für Live-Suche
 function handleSearch() {
     searchQuery = document.getElementById('search-input').value.toLowerCase().trim();
     render();
 }
 
-function openPlayerProfile(playerName) {
-    const p = players.find(player => player.name.toLowerCase() === playerName.toLowerCase());
-    if(!p) return;
+function calculatePoints(ranks) {
+    let pts = 0;
+    Object.values(ranks).forEach(tier => {
+        if(pointValues[tier]) pts += pointValues[tier];
+    });
+    return pts;
+}
 
+// Open detail overview modal for player profile card
+function openProfileCard(name) {
+    const p = players.find(player => player.name === name);
+    if (!p) return;
+    
     document.getElementById('p-modal-name').textContent = p.name;
-    document.getElementById('p-modal-avatar').src = `https://mc-heads.net/avatar/${p.name}/80`;
-    document.getElementById('p-modal-points').textContent = calcPts(p) + " PTS";
-    document.getElementById('p-modal-rank-num').textContent = "Global Placement: " + getOverallRankPosition(p.name);
-
-    let gridHtml = '';
-    for(let m in modeIcons) {
-        let t = p.ranks[m] ? p.ranks[m].toUpperCase() : '-';
-        gridHtml += `
+    document.getElementById('p-modal-avatar').src = `https://minotar.net/armor/bust/${p.name}/100.png`;
+    
+    const overallPoints = calculatePoints(p.ranks);
+    document.getElementById('p-modal-points').textContent = overallPoints + " PTS";
+    
+    const grid = document.getElementById('p-modal-grid');
+    grid.innerHTML = '';
+    
+    Object.keys(modeIcons).forEach(m => {
+        const t = p.ranks[m] || "-";
+        const styleClass = tierStyleMapping[t] || "";
+        grid.innerHTML += `
             <div class="profile-mode-card">
                 <img class="profile-mode-img" src="${modeIcons[m]}">
                 <div class="profile-mode-name">${m}</div>
-                <div class="profile-mode-tier" style="color:${t !== '-' ? getTierColor(t) : '#4b5f7a'}">${t}</div>
+                <div class="profile-mode-tier ${styleClass}">${t}</div>
             </div>
         `;
-    }
-    document.getElementById('p-modal-grid').innerHTML = gridHtml;
+    });
+    
     openModal('profile-modal');
 }
 
-function getTierColor(tier) {
-    if(tier.includes('1')) return '#ffaa00';
-    if(tier.includes('2')) return '#cbd5e1';
-    if(tier.includes('3')) return '#ff7b1a';
-    if(tier.includes('4')) return '#38bdf8';
-    return '#94a3b8';
-}
-
-function getStaffBadgeClass(title) {
-    if(title.includes("OWNER")) return "badge-owner";
-    if(title.includes("CO")) return "badge-coowner";
-    if(title.includes("OVERSEER")) return "badge-overseer";
-    if(title.includes("MANAGER")) return "badge-manager";
-    if(title.includes("DEV")) return "badge-dev";
-    if(title.includes("ADMIN")) return "badge-admin";
-    return "badge-tester";
-}
-
 // ═══════════════════════════════════════════════════════
-//  RENDER ENGINE
+//  RENDER FUNCTIONS
 // ═══════════════════════════════════════════════════════
 function render() {
-    const container = document.getElementById('content-area');
-    if(!container) return;
-
-    // Filter Spieler nach Suchbegriff
-    let filteredPlayers = players.filter(p => p.name.toLowerCase().includes(searchQuery));
-
-    // ADMIN MANAGER SECTIONS AKTUALISIEREN
-    const isPanelVisible = document.getElementById('admin-panel').style.display === 'block';
-    if(isPanelVisible) {
-        let delHtml = '';
+    const area = document.getElementById('content-area');
+    if (!area) return;
+    
+    // Admin Dashboard Listen rendern
+    const adminDelList = document.getElementById('admin-delete-list');
+    if(adminDelList) {
+        adminDelList.innerHTML = '';
         players.forEach(p => {
-            for(let m in p.ranks) {
-                delHtml += `
+            Object.keys(p.ranks).forEach(m => {
+                adminDelList.innerHTML += `
                     <div class="admin-player-row">
-                        <span><strong>${p.name}</strong> - ${m.toUpperCase()} (${p.ranks[m]})</span>
-                        <button class="btn btn-danger" style="padding:2px 8px; font-size:10px;" onclick="deletePlayerMode('${p.name}', '${m}')">X</button>
+                        <span>${p.name} (${m.toUpperCase()}: ${p.ranks[m]})</span>
+                        <span style="color:#ff2a74;cursor:pointer;font-weight:bold;" onclick="deletePlayerMode('${p.name}', '${m}')">X</span>
                     </div>
                 `;
-            }
+            });
         });
-        document.getElementById('admin-delete-list').innerHTML = delHtml || '<div style="font-size:11px;color:var(--text-secondary)">Keine Spieler vorhanden.</div>';
-
-        let staffDelHtml = '';
+    }
+    
+    const adminStaffDelList = document.getElementById('admin-staff-delete-list');
+    if(adminStaffDelList) {
+        adminStaffDelList.innerHTML = '';
         staffList.forEach(s => {
-            staffDelHtml += `
+            adminStaffDelList.innerHTML += `
                 <div class="admin-player-row">
-                    <span><strong>${s.name}</strong> - ${s.title}</span>
-                    <button class="btn btn-danger" style="padding:2px 8px; font-size:10px;" onclick="deleteStaff('${s.id}')">X</button>
+                    <span>${s.name} [${s.title}]</span>
+                    <span style="color:#ff2a74;cursor:pointer;font-weight:bold;" onclick="deleteStaff('${s.id}')">X</span>
                 </div>
             `;
         });
-        document.getElementById('admin-staff-delete-list').innerHTML = staffDelHtml || '<div style="font-size:11px;color:var(--text-secondary)">Kein Staff vorhanden.</div>';
     }
 
-    // REGULÄRE SEITENANSICHTEN
+    // Main View Logic
     if(currentView === 'staff') {
         let html = `<div class="staff-grid">`;
         staffList.forEach(s => {
+            let bClass = 'badge-tester';
+            if(s.title === 'NETWORK OWNER') bClass = 'badge-owner';
+            if(s.title === 'CO OWNER') bClass = 'badge-coowner';
+            if(s.title === 'NETWORK OVERSEER') bClass = 'badge-overseer';
+            if(s.title === 'MANAGER') bClass = 'badge-manager';
+            if(s.title === 'DEVELOPER') bClass = 'badge-dev';
+            if(s.title === 'ADMINISTRATOR') bClass = 'badge-admin';
+            
             html += `
                 <div class="staff-card">
-                    <img class="staff-img" src="https://mc-heads.net/avatar/${s.name}/44" onerror="this.src='https://minotar.net/avatar/MHF_Chicken/44'">
+                    <img class="staff-img" src="https://minotar.net/helm/${s.name}/44.png" onerror="this.src='https://minotar.net/helm/MHF_Question/44.png'">
                     <div class="staff-info">
                         <div class="staff-name">${s.name}</div>
-                        <div class="staff-badge ${getStaffBadgeClass(s.title.toUpperCase())}">${s.title}</div>
-                        <div style="font-size:10px;color:var(--text-secondary)">ID: ${s.discord || 'N/A'}</div>
+                        <div class="staff-badge ${bClass}">${s.title}</div>
+                        <div style="font-size:11px;color:var(--text-secondary);margin-top:2px;">@${s.discord || 'Kein Discord'}</div>
                     </div>
                 </div>
             `;
         });
         html += `</div>`;
-        container.innerHTML = staffList.length ? html : '<div style="text-align:center;color:var(--text-secondary);margin-top:40px;">Keine Staff-Mitglieder eingetragen.</div>';
+        area.innerHTML = html;
         return;
     }
-
-    // RANKINGS VIEW
-    if(currentMode === 'overall') {
-        // OVERALL BESTENLISTE (Punkte-basiert)
-        filteredPlayers.sort((a,b) => calcPts(b) - calcPts(a));
+    
+    // Filter & Search Players
+    let filtered = players.filter(p => p.name.toLowerCase().includes(searchQuery));
+    
+    if (currentMode === 'overall') {
+        // Sort by Points
+        filtered.sort((a,b) => calculatePoints(b.ranks) - calculatePoints(a.ranks));
         
         let html = `
             <table class="leaderboard-table">
                 <thead>
                     <tr>
-                        <th style="width: 80px;">Rank</th>
-                        <th>Spieler</th>
-                        <th>Points</th>
-                        <th>Badges / Tiers per Mode</th>
+                        <th style="width: 70px; text-align: center;">Rank</th>
+                        <th>Player</th>
+                        <th style="width: 150px;">Points</th>
+                        <th>Active Tiers</th>
                     </tr>
                 </thead>
                 <tbody>
         `;
         
-        filteredPlayers.forEach((p, index) => {
-            let pts = calcPts(p);
-            let rankClass = (index === 0) ? 'rank-1' : (index === 1) ? 'rank-2' : (index === 2) ? 'rank-3' : '';
+        filtered.forEach((p, index) => {
+            let rClass = "";
+            if(index === 0) rClass = "rank-1";
+            if(index === 1) rClass = "rank-2";
+            if(index === 2) rClass = "rank-3";
             
             let badgesHtml = '<div class="badge-list">';
-            for(let m in p.ranks) {
-                let rTier = p.ranks[m].toUpperCase();
-                let borderClass = tierStyleMapping[rTier] || 'border-t5';
-                badgesHtml += `
-                    <div class="tier-badge-container">
-                        <div class="icon-wrapper ${borderClass}" title="${m.toUpperCase()}: ${rTier}">
-                            <img class="mode-logo-img" src="${modeIcons[m]}">
+            Object.keys(modeIcons).forEach(m => {
+                if(p.ranks[m]) {
+                    const t = p.ranks[m];
+                    const styleClass = tierStyleMapping[t] || "";
+                    badgesHtml += `
+                        <div class="tier-badge-container">
+                            <div class="icon-wrapper ${styleClass}">
+                                <img class="mode-logo-img" src="${modeIcons[m]}">
+                            </div>
+                            <span class="tier-text" style="font-size:9px;">${t}</span>
                         </div>
-                        <span class="tier-text">${rTier}</span>
-                    </div>
-                `;
-            }
+                    `;
+                }
+            });
             badgesHtml += '</div>';
-
+            
             html += `
-                <tr onclick="openPlayerProfile('${p.name}')">
-                    <td class="rank-number ${rankClass}">#${index + 1}</td>
+                <tr onclick="openProfileCard('${p.name}')">
+                    <td style="text-align: center;" class="rank-number ${rClass}">#${index + 1}</td>
                     <td>
                         <div style="display:flex;align-items:center;gap:12px;">
-                            <img class="avatar" src="https://mc-heads.net/avatar/${p.name}/32">
+                            <img class="avatar" src="https://minotar.net/helm/${p.name}/32.png">
                             <span class="username">${p.name}</span>
                         </div>
                     </td>
-                    <td style="font-weight:800;color:var(--accent-cyan);">${pts} PTS</td>
+                    <td style="font-weight: 800; color: var(--accent-cyan);">${calculatePoints(p.ranks)} PTS</td>
                     <td>${badgesHtml}</td>
                 </tr>
             `;
         });
         
         html += `</tbody></table>`;
-        container.innerHTML = filteredPlayers.length ? html : '<div style="text-align:center;color:var(--text-secondary);margin-top:40px;">Keine Spieler gefunden.</div>';
-    } else {
-        // EINZELNER MODUS (5-Spalten Layout: Tier 1 bis Tier 5)
-        let tierGroups = { "T1": [], "T2": [], "T3": [], "T4": [], "T5": [] };
+        area.innerHTML = html;
         
-        filteredPlayers.forEach(p => {
-            if(p.ranks[currentMode]) {
-                let rawT = p.ranks[currentMode].toUpperCase(); // z.B. HT4 oder LT2
-                if(rawT.includes('1')) tierGroups["T1"].push({ name: p.name, specific: rawT });
-                else if(rawT.includes('2')) tierGroups["T2"].push({ name: p.name, specific: rawT });
-                else if(rawT.includes('3')) tierGroups["T3"].push({ name: p.name, specific: rawT });
-                else if(rawT.includes('4')) tierGroups["T4"].push({ name: p.name, specific: rawT });
-                else if(rawT.includes('5')) tierGroups["T5"].push({ name: p.name, specific: rawT });
+    } else {
+        // Render 5 Tier Columns
+        const columnsData = { "T1": [], "T2": [], "T3": [], "T4": [], "T5": [] };
+        
+        filtered.forEach(p => {
+            const t = p.ranks[currentMode];
+            if(t) {
+                if(t.includes("1")) columnsData["T1"].push({ name: p.name, type: t });
+                if(t.includes("2")) columnsData["T2"].push({ name: p.name, type: t });
+                if(t.includes("3")) columnsData["T3"].push({ name: p.name, type: t });
+                if(t.includes("4")) columnsData["T4"].push({ name: p.name, type: t });
+                if(t.includes("5")) columnsData["T5"].push({ name: p.name, type: t });
             }
         });
-
-        // Sortierung innerhalb der Spalten, sodass HT vor LT steht
-        for(let tg in tierGroups) {
-            tierGroups[tg].sort((a,b) => b.specific.localeCompare(a.specific));
-        }
-
+        
+        // Sort Columns HT -> LT
+        Object.keys(columnsData).forEach(k => {
+            columnsData[k].sort((a,b) => b.type.localeCompare(a.type));
+        });
+        
         let html = `
             <div class="gamemode-headers-row">
                 <div class="gamemode-header-tab gh-t1">Tier 1</div>
@@ -812,31 +812,36 @@ function render() {
             </div>
             <div class="tier-columns">
         `;
-
-        for(let i=1; i<=5; i++) {
-            let key = "T" + i;
+        
+        ["T1","T2","T3","T4","T5"].forEach(k => {
+            let hClass = k.toLowerCase() + "-h";
             html += `
                 <div class="tier-column">
-                    <div class="tier-header t${i}-h">TIER ${i} LIST</div>
                     <div class="tier-list-content">
             `;
             
-            tierGroups[key].forEach(item => {
+            columnsData[k].forEach(item => {
+                let badgeSub = item.type.startsWith("HT") ? "border-t1" : "border-t5";
+                if(k === "T2") badgeSub = item.type.startsWith("HT") ? "border-t2" : "border-t5";
+                if(k === "T3") badgeSub = item.type.startsWith("HT") ? "border-t3" : "border-t5";
+                if(k === "T4") badgeSub = item.type.startsWith("HT") ? "border-t4" : "border-t5";
+                
                 html += `
-                    <div class="tier-user-card" onclick="openPlayerProfile('${item.name}')">
+                    <div class="tier-user-card" onclick="openProfileCard('${item.name}')">
                         <div style="display:flex;align-items:center;gap:8px;">
-                            <img class="avatar" src="https://mc-heads.net/avatar/${item.name}/32">
-                            <span style="font-size:12px;font-weight:700;word-break:break-all;">${item.name}</span>
+                            <img class="avatar" src="https://minotar.net/helm/${item.name}/32.png">
+                            <span style="font-size:12px;font-weight:700;color:#fff;">${item.name}</span>
                         </div>
-                        <span style="font-size:10px;font-weight:900;padding:2px 4px;background:rgba(0,0,0,0.3);border-radius:4px;" class="t${i}-h">${item.specific}</span>
+                        <span class="tier-text ${badgeSub}" style="padding:2px 6px;border-radius:4px;font-size:10px;">${item.type}</span>
                     </div>
                 `;
             });
-
+            
             html += `</div></div>`;
-        }
+        });
+        
         html += `</div>`;
-        container.innerHTML = html;
+        area.innerHTML = html;
     }
 }
 </script>
