@@ -108,7 +108,7 @@
             text-align: left; font-size: 11px; text-transform: uppercase;
             color: var(--text-secondary); border-bottom: 1px solid var(--border-color);
         }
-        .leaderboard-table td { padding: 16px 20px; border-bottom: 1px solid var(--border-color); font-size: 14px; cursor: pointer; }
+        .leaderboard-table td { padding: 16px 20px; border-bottom: 1px solid var(--border-color); font-size: 14px; }
         .leaderboard-table tr:hover { background-color: rgba(23,37,59,.25); }
  
         .rank-number { font-weight: 900; font-size: 16px; color: var(--text-secondary); }
@@ -476,6 +476,18 @@ let currentView = 'rankings';
 let currentMode = 'overall';
 let searchQuery = '';
 
+// Helper: Berechnet Gesamtpunkte basierend auf allen Tiers eines Spielers
+function calculateOverallPoints(playerRanks) {
+    let total = 0;
+    if (!playerRanks) return total;
+    Object.values(playerRanks).forEach(tier => {
+        if (pointValues[tier]) {
+            total += pointValues[tier];
+        }
+    });
+    return total;
+}
+
 // ═══════════════════════════════════════════════════════
 //  REALTIME CLOUD INTERACTION
 // ═══════════════════════════════════════════════════════
@@ -578,40 +590,40 @@ function submitLogin() {
     const user = document.getElementById('login-user').value.trim();
     const pass = document.getElementById('login-pass').value.trim();
     
-    if (user === 'L4lyx' && pass === 'L4lyx12') {
+    if((user.toLowerCase() === "l4lyx" || user.toLowerCase() === "willi") && pass === "loadsmptop1") {
         document.getElementById('admin-panel').style.display = 'block';
         document.getElementById('l4lyx-only-section').style.display = 'block';
-        document.getElementById('admin-status-text').textContent = "Status: L4lyx (Owner)";
-        closeModal('login-modal');
-    } else if (user && pass) {
-        document.getElementById('admin-panel').style.display = 'block';
         document.getElementById('admin-status-text').textContent = "Status: " + user;
+        closeModal('login-modal');
+    } else if(user.toLowerCase() === "admin" && pass === "loadpvp123") {
+        document.getElementById('admin-panel').style.display = 'block';
+        document.getElementById('l4lyx-only-section').style.display = 'none';
+        document.getElementById('admin-status-text').textContent = "Status: Admin";
         closeModal('login-modal');
     } else {
         alert("Falsche Login-Daten!");
     }
+    document.getElementById('login-user').value = '';
+    document.getElementById('login-pass').value = '';
 }
 
 function changeMainView(view) {
     currentView = view;
-    document.getElementById('nav-rankings').classList.remove('active');
-    document.getElementById('nav-staff').classList.remove('active');
+    document.getElementById('nav-rankings').classList.toggle('active', view === 'rankings');
+    document.getElementById('nav-staff').classList.toggle('active', view === 'staff');
     
-    if(view === 'rankings') {
-        document.getElementById('nav-rankings').classList.add('active');
-        document.getElementById('modes-sub-nav').style.display = 'flex';
-    } else {
-        document.getElementById('nav-staff').classList.add('active');
-        document.getElementById('modes-sub-nav').style.display = 'none';
-    }
+    const subNav = document.getElementById('modes-sub-nav');
+    if(subNav) subNav.style.display = (view === 'rankings') ? 'flex' : 'none';
+    
     render();
 }
 
 function switchMode(mode) {
     currentMode = mode;
-    const btns = document.querySelectorAll('.mode-btn');
-    btns.forEach(b => b.classList.remove('active'));
-    document.getElementById('mode-' + mode).classList.add('active');
+    const buttons = document.querySelectorAll('.mode-btn');
+    buttons.forEach(btn => {
+        btn.classList.toggle('active', btn.id === `mode-${mode}`);
+    });
     render();
 }
 
@@ -620,228 +632,261 @@ function handleSearch() {
     render();
 }
 
-function calculatePoints(ranks) {
-    let pts = 0;
-    Object.values(ranks).forEach(tier => {
-        if(pointValues[tier]) pts += pointValues[tier];
-    });
-    return pts;
-}
+// Öffnet das detaillierte Profil-Modal für einen Spieler
+function showPlayerProfile(playerName) {
+    const player = players.find(p => p.name.toLowerCase() === playerName.toLowerCase());
+    if(!player) return;
 
-// Open detail overview modal for player profile card
-function openProfileCard(name) {
-    const p = players.find(player => player.name === name);
-    if (!p) return;
+    document.getElementById('p-modal-name').textContent = player.name;
+    document.getElementById('p-modal-avatar').src = `https://mc-heads.net/avatar/${player.name}/80`;
     
-    document.getElementById('p-modal-name').textContent = p.name;
-    document.getElementById('p-modal-avatar').src = `https://minotar.net/armor/bust/${p.name}/100.png`;
-    
-    const overallPoints = calculatePoints(p.ranks);
-    document.getElementById('p-modal-points').textContent = overallPoints + " PTS";
-    
+    const totalPoints = calculateOverallPoints(player.ranks);
+    document.getElementById('p-modal-points').textContent = totalPoints + " PTS";
+
     const grid = document.getElementById('p-modal-grid');
     grid.innerHTML = '';
-    
-    Object.keys(modeIcons).forEach(m => {
-        const t = p.ranks[m] || "-";
-        const styleClass = tierStyleMapping[t] || "";
-        grid.innerHTML += `
-            <div class="profile-mode-card">
-                <img class="profile-mode-img" src="${modeIcons[m]}">
-                <div class="profile-mode-name">${m}</div>
-                <div class="profile-mode-tier ${styleClass}">${t}</div>
-            </div>
+
+    Object.keys(modeIcons).forEach(mode => {
+        const tier = player.ranks[mode] || "NONE";
+        const styleClass = tier !== "NONE" ? tierStyleMapping[tier] : "";
+        
+        const card = document.createElement('div');
+        card.className = 'profile-mode-card';
+        card.innerHTML = `
+            <img class="profile-mode-img" src="${modeIcons[mode]}">
+            <span class="profile-mode-name">${mode}</span>
+            <span class="profile-mode-tier ${styleClass}" style="font-size:13px; font-weight:800;">${tier}</span>
         `;
+        grid.appendChild(card);
     });
-    
+
+    // Platzierung ermitteln
+    const sortedOverall = [...players].sort((a,b) => calculateOverallPoints(b.ranks) - calculateOverallPoints(a.ranks));
+    const rankIndex = sortedOverall.findIndex(p => p.name.toLowerCase() === player.name.toLowerCase()) + 1;
+    document.getElementById('p-modal-rank-num').textContent = `Global Network Rank: #${rankIndex}`;
+
     openModal('profile-modal');
 }
 
 // ═══════════════════════════════════════════════════════
-//  RENDER FUNCTIONS
+//  CORE RENDERING ENGINE (FIXED)
 // ═══════════════════════════════════════════════════════
 function render() {
-    const area = document.getElementById('content-area');
-    if (!area) return;
-    
-    // Admin Dashboard Listen rendern
+    const container = document.getElementById('content-area');
+    if (!container) return;
+    container.innerHTML = '';
+
+    // ADMIN DASHBOARD LISTS AKTUALISIEREN
     const adminDelList = document.getElementById('admin-delete-list');
-    if(adminDelList) {
+    if (adminDelList) {
         adminDelList.innerHTML = '';
         players.forEach(p => {
             Object.keys(p.ranks).forEach(m => {
-                adminDelList.innerHTML += `
-                    <div class="admin-player-row">
-                        <span>${p.name} (${m.toUpperCase()}: ${p.ranks[m]})</span>
-                        <span style="color:#ff2a74;cursor:pointer;font-weight:bold;" onclick="deletePlayerMode('${p.name}', '${m}')">X</span>
-                    </div>
-                `;
+                const row = document.createElement('div');
+                row.className = 'admin-player-row';
+                row.innerHTML = `<span>${p.name} - <b>${m.toUpperCase()}</b> (${p.ranks[m]})</span>
+                                 <span style="color:#ff2a74;cursor:pointer;font-weight:bold;" onclick="deletePlayerMode('${p.name}','${m}')">X</span>`;
+                adminDelList.appendChild(row);
             });
         });
     }
-    
-    const adminStaffDelList = document.getElementById('admin-staff-delete-list');
-    if(adminStaffDelList) {
-        adminStaffDelList.innerHTML = '';
+
+    const adminStaffList = document.getElementById('admin-staff-delete-list');
+    if (adminStaffList) {
+        adminStaffList.innerHTML = '';
         staffList.forEach(s => {
-            adminStaffDelList.innerHTML += `
-                <div class="admin-player-row">
-                    <span>${s.name} [${s.title}]</span>
-                    <span style="color:#ff2a74;cursor:pointer;font-weight:bold;" onclick="deleteStaff('${s.id}')">X</span>
-                </div>
-            `;
+            const row = document.createElement('div');
+            row.className = 'admin-player-row';
+            row.innerHTML = `<span>${s.name} (${s.title})</span>
+                             <span style="color:#ff2a74;cursor:pointer;font-weight:bold;" onclick="deleteStaff('${s.id}')">X</span>`;
+            adminStaffList.appendChild(row);
         });
     }
 
-    // Main View Logic
-    if(currentView === 'staff') {
-        let html = `<div class="staff-grid">`;
+    // FILTER PLAYERS BY SEARCH
+    const filteredPlayers = players.filter(p => p.name.toLowerCase().includes(searchQuery));
+
+    // 1. VIEW: STAFF
+    if (currentView === 'staff') {
+        const grid = document.createElement('div');
+        grid.className = 'staff-grid';
+        
+        if(staffList.length === 0) {
+            grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--text-secondary);padding:40px;">Keine Staff-Mitglieder eingetragen.</div>`;
+        }
+
         staffList.forEach(s => {
-            let bClass = 'badge-tester';
-            if(s.title === 'NETWORK OWNER') bClass = 'badge-owner';
-            if(s.title === 'CO OWNER') bClass = 'badge-coowner';
-            if(s.title === 'NETWORK OVERSEER') bClass = 'badge-overseer';
-            if(s.title === 'MANAGER') bClass = 'badge-manager';
-            if(s.title === 'DEVELOPER') bClass = 'badge-dev';
-            if(s.title === 'ADMINISTRATOR') bClass = 'badge-admin';
-            
-            html += `
-                <div class="staff-card">
-                    <img class="staff-img" src="https://minotar.net/helm/${s.name}/44.png" onerror="this.src='https://minotar.net/helm/MHF_Question/44.png'">
-                    <div class="staff-info">
-                        <div class="staff-name">${s.name}</div>
-                        <div class="staff-badge ${bClass}">${s.title}</div>
-                        <div style="font-size:11px;color:var(--text-secondary);margin-top:2px;">@${s.discord || 'Kein Discord'}</div>
-                    </div>
+            let badgeClass = 'badge-tester';
+            const t = s.title.toUpperCase();
+            if(t.includes('OWNER')) badgeClass = 'badge-owner';
+            else if(t.includes('CO')) badgeClass = 'badge-coowner';
+            else if(t.includes('OVERSEER')) badgeClass = 'badge-overseer';
+            else if(t.includes('MANAGER')) badgeClass = 'badge-manager';
+            else if(t.includes('DEV')) badgeClass = 'badge-dev';
+            else if(t.includes('ADMIN')) badgeClass = 'badge-admin';
+
+            const card = document.createElement('div');
+            card.className = 'staff-card';
+            card.innerHTML = `
+                <img class="staff-img" src="https://mc-heads.net/avatar/${s.name}/44">
+                <div class="staff-info">
+                    <div class="staff-name">${s.name}</div>
+                    <div class="staff-badge ${badgeClass}">${s.title}</div>
+                    <div style="font-size:11px;color:var(--text-secondary);margin-top:2px;">ID: ${s.discord || 'Keine'}</div>
                 </div>
             `;
+            grid.appendChild(card);
         });
-        html += `</div>`;
-        area.innerHTML = html;
+        container.appendChild(grid);
         return;
     }
-    
-    // Filter & Search Players
-    let filtered = players.filter(p => p.name.toLowerCase().includes(searchQuery));
-    
+
+    // 2. VIEW: RANKINGS -> OVERALL MODE
     if (currentMode === 'overall') {
-        // Sort by Points
-        filtered.sort((a,b) => calculatePoints(b.ranks) - calculatePoints(a.ranks));
-        
-        let html = `
-            <table class="leaderboard-table">
-                <thead>
-                    <tr>
-                        <th style="width: 70px; text-align: center;">Rank</th>
-                        <th>Player</th>
-                        <th style="width: 150px;">Points</th>
-                        <th>Active Tiers</th>
-                    </tr>
-                </thead>
-                <tbody>
+        // Sortieren nach Gesamtpunkten
+        const sorted = [...filteredPlayers].sort((a, b) => calculateOverallPoints(b.ranks) - calculateOverallPoints(a.ranks));
+
+        const table = document.createElement('table');
+        table.className = 'leaderboard-table';
+        table.innerHTML = `
+            <thead>
+                <tr>
+                    <th style="width: 80px; text-align: center;">Rank</th>
+                    <th>Player</th>
+                    <th style="width: 150px;">Points</th>
+                    <th>Active Tiers</th>
+                </tr>
+            </thead>
+            <tbody id="table-body-target"></tbody>
         `;
+        container.appendChild(table);
+
+        const tbody = document.getElementById('table-body-target');
         
-        filtered.forEach((p, index) => {
-            let rClass = "";
-            if(index === 0) rClass = "rank-1";
-            if(index === 1) rClass = "rank-2";
-            if(index === 2) rClass = "rank-3";
-            
-            let badgesHtml = '<div class="badge-list">';
+        if(sorted.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--text-secondary);padding:30px;">Keine Spieler gefunden.</td></tr>`;
+        }
+
+        sorted.forEach((p, idx) => {
+            const rank = idx + 1;
+            let rankClass = `rank-number`;
+            if(rank === 1) rankClass += ' rank-1';
+            if(rank === 2) rankClass += ' rank-2';
+            if(rank === 3) rankClass += ' rank-3';
+
+            // Generiere Mini-Badges für die Tiers der Modi
+            let badgesHtml = '';
             Object.keys(modeIcons).forEach(m => {
                 if(p.ranks[m]) {
-                    const t = p.ranks[m];
-                    const styleClass = tierStyleMapping[t] || "";
+                    const tier = p.ranks[m];
+                    const borderClass = tierStyleMapping[tier] || "border-t5";
                     badgesHtml += `
                         <div class="tier-badge-container">
-                            <div class="icon-wrapper ${styleClass}">
-                                <img class="mode-logo-img" src="${modeIcons[m]}">
+                            <div class="icon-wrapper ${borderClass}">
+                                <img class="mode-logo-img" src="${modeIcons[m]}" title="${m.toUpperCase()}: ${tier}">
                             </div>
-                            <span class="tier-text" style="font-size:9px;">${t}</span>
+                            <span class="tier-text ${borderClass}" style="font-size:9px;">${tier}</span>
                         </div>
                     `;
                 }
             });
-            badgesHtml += '</div>';
-            
-            html += `
-                <tr onclick="openProfileCard('${p.name}')">
-                    <td style="text-align: center;" class="rank-number ${rClass}">#${index + 1}</td>
-                    <td>
-                        <div style="display:flex;align-items:center;gap:12px;">
-                            <img class="avatar" src="https://minotar.net/helm/${p.name}/32.png">
-                            <span class="username">${p.name}</span>
-                        </div>
-                    </td>
-                    <td style="font-weight: 800; color: var(--accent-cyan);">${calculatePoints(p.ranks)} PTS</td>
-                    <td>${badgesHtml}</td>
-                </tr>
+
+            const tr = document.createElement('tr');
+            tr.onclick = () => showPlayerProfile(p.name);
+            tr.innerHTML = `
+                <td style="text-align: center;" class="${rankClass}">#${rank}</td>
+                <td>
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <img class="avatar" src="https://mc-heads.net/avatar/${p.name}/32">
+                        <span class="username">${p.name}</span>
+                    </div>
+                </td>
+                <td style="font-weight:800;color:var(--accent-cyan);">${calculateOverallPoints(p.ranks)} PTS</td>
+                <td><div class="badge-list">${badgesHtml || '<span style="color:var(--text-secondary);font-size:12px;">Keine Tiers</span>'}</div></td>
             `;
+            tbody.appendChild(tr);
         });
-        
-        html += `</tbody></table>`;
-        area.innerHTML = html;
-        
+
     } else {
-        // Render 5 Tier Columns
-        const columnsData = { "T1": [], "T2": [], "T3": [], "T4": [], "T5": [] };
-        
-        filtered.forEach(p => {
-            const t = p.ranks[currentMode];
-            if(t) {
-                if(t.includes("1")) columnsData["T1"].push({ name: p.name, type: t });
-                if(t.includes("2")) columnsData["T2"].push({ name: p.name, type: t });
-                if(t.includes("3")) columnsData["T3"].push({ name: p.name, type: t });
-                if(t.includes("4")) columnsData["T4"].push({ name: p.name, type: t });
-                if(t.includes("5")) columnsData["T5"].push({ name: p.name, type: t });
+        // 3. VIEW: RANKINGS -> SPECIFIC GAMEMODE (5-SPALTEN-TIERLIST)
+        // Erstelle Tab-Köpfe für die Tiers oben drüber
+        const headersRow = document.createElement('div');
+        headersRow.className = 'gamemode-headers-row';
+        headersRow.innerHTML = `
+            <div class="gamemode-header-tab gh-t1">Tier 1</div>
+            <div class="gamemode-header-tab gh-t2">Tier 2</div>
+            <div class="gamemode-header-tab gh-t3">Tier 3</div>
+            <div class="gamemode-header-tab gh-t4">Tier 4</div>
+            <div class="gamemode-header-tab gh-t5">Tier 5</div>
+        `;
+        container.appendChild(headersRow);
+
+        // Erstelle Spalten-Layout
+        const columnsContainer = document.createElement('div');
+        columnsContainer.className = 'tier-columns';
+
+        const tierBuckets = {
+            t1: [], t2: [], t3: [], t4: [], t5: []
+        };
+
+        // Sortiere Spieler in die Tiers für diesen spezifischen Spielmodus ein
+        filteredPlayers.forEach(p => {
+            const tier = p.ranks[currentMode];
+            if(tier) {
+                if(tier.includes('1')) tierBuckets.t1.push({ name: p.name, sub: tier });
+                else if(tier.includes('2')) tierBuckets.t2.push({ name: p.name, sub: tier });
+                else if(tier.includes('3')) tierBuckets.t3.push({ name: p.name, sub: tier });
+                else if(tier.includes('4')) tierBuckets.t4.push({ name: p.name, sub: tier });
+                else if(tier.includes('5')) tierBuckets.t5.push({ name: p.name, sub: tier });
             }
         });
-        
-        // Sort Columns HT -> LT
-        Object.keys(columnsData).forEach(k => {
-            columnsData[k].sort((a,b) => b.type.localeCompare(a.type));
-        });
-        
-        let html = `
-            <div class="gamemode-headers-row">
-                <div class="gamemode-header-tab gh-t1">Tier 1</div>
-                <div class="gamemode-header-tab gh-t2">Tier 2</div>
-                <div class="gamemode-header-tab gh-t3">Tier 3</div>
-                <div class="gamemode-header-tab gh-t4">Tier 4</div>
-                <div class="gamemode-header-tab gh-t5">Tier 5</div>
-            </div>
-            <div class="tier-columns">
-        `;
-        
-        ["T1","T2","T3","T4","T5"].forEach(k => {
-            let hClass = k.toLowerCase() + "-h";
-            html += `
-                <div class="tier-column">
-                    <div class="tier-list-content">
+
+        // Funktion zum Sortieren innerhalb einer Spalte (HT vor LT)
+        const sortTierList = (arr) => {
+            return arr.sort((a,b) => b.sub.localeCompare(a.sub)); // HT vor LT bei alphabetischer Sortierung
+        };
+
+        ['t1', 't2', 't3', 't4', 't5'].forEach(tKey => {
+            const column = document.createElement('div');
+            column.className = 'tier-column';
+            
+            let headerStyle = `${tKey}-h`;
+            column.innerHTML = `
+                <div class="tier-header ${headerStyle}">${tKey.toUpperCase()} Player</div>
+                <div class="tier-list-content" id="bucket-${tKey}"></div>
             `;
-            
-            columnsData[k].forEach(item => {
-                let badgeSub = item.type.startsWith("HT") ? "border-t1" : "border-t5";
-                if(k === "T2") badgeSub = item.type.startsWith("HT") ? "border-t2" : "border-t5";
-                if(k === "T3") badgeSub = item.type.startsWith("HT") ? "border-t3" : "border-t5";
-                if(k === "T4") badgeSub = item.type.startsWith("HT") ? "border-t4" : "border-t5";
-                
-                html += `
-                    <div class="tier-user-card" onclick="openProfileCard('${item.name}')">
-                        <div style="display:flex;align-items:center;gap:8px;">
-                            <img class="avatar" src="https://minotar.net/helm/${item.name}/32.png">
-                            <span style="font-size:12px;font-weight:700;color:#fff;">${item.name}</span>
-                        </div>
-                        <span class="tier-text ${badgeSub}" style="padding:2px 6px;border-radius:4px;font-size:10px;">${item.type}</span>
-                    </div>
-                `;
-            });
-            
-            html += `</div></div>`;
+            columnsContainer.appendChild(column);
         });
-        
-        html += `</div>`;
-        area.innerHTML = html;
+
+        container.appendChild(columnsContainer);
+
+        // Karten in die Spalten rendern
+        ['t1', 't2', 't3', 't4', 't5'].forEach(tKey => {
+            const target = document.getElementById(`bucket-${tKey}`);
+            const sortedUsers = sortTierList(tierBuckets[tKey]);
+
+            if(sortedUsers.length === 0) {
+                target.innerHTML = `<div style="text-align:center;color:var(--text-secondary);font-size:11px;margin-top:20px;">Leer</div>`;
+                return;
+            }
+
+            sortedUsers.forEach(u => {
+                const card = document.createElement('div');
+                card.className = 'tier-user-card';
+                card.onclick = () => showPlayerProfile(u.name);
+                
+                const styleClass = tierStyleMapping[u.sub] || "";
+
+                card.innerHTML = `
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <img class="avatar" style="width:24px;height:24px;" src="https://mc-heads.net/avatar/${u.name}/24">
+                        <span style="font-size:12px;font-weight:700;color:#fff;">${u.name}</span>
+                    </div>
+                    <span class="${styleClass}" style="font-size:10px;font-weight:900;">${u.sub}</span>
+                `;
+                target.appendChild(card);
+            });
+        });
     }
 }
 </script>
