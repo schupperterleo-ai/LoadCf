@@ -578,42 +578,10 @@ function showSaveStatus() {
 }
 
 // ═══════════════════════════════════════════════════════
-//  INTERFACES & NAVIGATION
+//  MODALS & VIEWS
 // ═══════════════════════════════════════════════════════
 function openModal(id) { document.getElementById(id).style.display = 'flex'; }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
-function submitLogin() {
-    const u = document.getElementById('login-user').value.trim();
-    const p = document.getElementById('login-pass').value.trim();
-    
-    if((u === "L4lyx" && p === "loadpvp123") || (u === "Willi" && p === "willi123")) {
-        isAdminLoggedIn = true;
-        loggedInUser = u;
-        document.getElementById('admin-status-text').textContent = `Status: ${u}`;
-        document.getElementById('admin-panel').style.display = 'block';
-        
-        if(u === "L4lyx") {
-            document.getElementById('l4lyx-only-section').style.display = 'block';
-        } else {
-            document.getElementById('l4lyx-only-section').style.display = 'none';
-        }
-        
-        closeModal('login-modal');
-        updateAdminLists();
-        document.getElementById('login-user').value = '';
-        document.getElementById('login-pass').value = '';
-    } else {
-        alert("Falsche Login-Daten!");
-    }
-}
-
-function logoutAdmin() {
-    isAdminLoggedIn = false;
-    loggedInUser = '';
-    document.getElementById('admin-status-text').textContent = "Status: Guest";
-    document.getElementById('admin-panel').style.display = 'none';
-}
 
 function changeMainView(view) {
     currentView = view;
@@ -623,7 +591,7 @@ function changeMainView(view) {
     if(view === 'rankings') {
         document.getElementById('nav-rankings').classList.add('active');
         document.getElementById('modes-sub-nav').style.display = 'flex';
-    } else if(view === 'staff') {
+    } else {
         document.getElementById('nav-staff').classList.add('active');
         document.getElementById('modes-sub-nav').style.display = 'none';
     }
@@ -632,243 +600,270 @@ function changeMainView(view) {
 
 function switchMode(mode) {
     currentMode = mode;
-    const buttons = document.querySelectorAll('.mode-btn');
-    buttons.forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(`mode-${mode}`).classList.add('active');
     render();
 }
 
+// FIX: Funktion für die Suchleiste hinzugefügt. Öffnet bei Eingabe von "login" das Modal!
 function handleSearch() {
-    searchQuery = document.getElementById('search-input').value.toLowerCase().trim();
+    const input = document.getElementById('search-input');
+    searchQuery = input.value.trim().toLowerCase();
+    
+    if (searchQuery === 'login') {
+        openModal('login-modal');
+        input.value = '';
+        searchQuery = '';
+    }
     render();
 }
 
+function submitLogin() {
+    const u = document.getElementById('login-user').value.trim();
+    const p = document.getElementById('login-pass').value.trim();
+    
+    if((u === 'L4lyx' && p === 'loadpvptop1') || (u === 'Willi' && p === 'willi123')) {
+        isAdminLoggedIn = true;
+        loggedInUser = u;
+        closeModal('login-modal');
+        document.getElementById('admin-status-text').textContent = `Status: ${u} (Admin)`;
+        document.getElementById('admin-panel').style.display = 'block';
+        if(u === 'L4lyx') document.getElementById('l4lyx-only-section').style.display = 'block';
+        updateAdminLists();
+    } else {
+        alert('Falsche Anmeldedaten!');
+    }
+}
+
+function logoutAdmin() {
+    isAdminLoggedIn = false;
+    loggedInUser = '';
+    document.getElementById('admin-status-text').textContent = 'Status: Guest';
+    document.getElementById('admin-panel').style.display = 'none';
+    document.getElementById('l4lyx-only-section').style.display = 'none';
+}
+
 // ═══════════════════════════════════════════════════════
-//  DYNAMIC RENDER SYSTEM
+//  RENDER INTERFACE
 // ═══════════════════════════════════════════════════════
-function openProfileModal(playerName) {
-    const player = players.find(p => p.name.toLowerCase() === playerName.toLowerCase());
-    if(!player) return;
+function render() {
+    const area = document.getElementById('content-area');
+    if(!area) return;
+    area.innerHTML = '';
+
+    if(currentView === 'staff') {
+        let html = `<div class="staff-grid">`;
+        staffList.forEach(s => {
+            let bStyle = 'badge-tester';
+            let t = s.title ? s.title.toUpperCase() : 'TESTER';
+            if(t.includes('OWNER') && !t.includes('CO')) bStyle = 'badge-owner';
+            else if(t.includes('CO OWNER')) bStyle = 'badge-coowner';
+            else if(t.includes('OVERSEER')) bStyle = 'badge-overseer';
+            else if(t.includes('MANAGER')) bStyle = 'badge-manager';
+            else if(t.includes('DEVELOPER')) bStyle = 'badge-dev';
+            else if(t.includes('ADMIN')) bStyle = 'badge-admin';
+
+            html += `
+            <div class="staff-card">
+                <img class="staff-img" src="https://mc-heads.net/avatar/${s.name}/44">
+                <div class="staff-info">
+                    <div class="staff-name">${s.name}</div>
+                    <div class="staff-badge ${bStyle}">${t}</div>
+                </div>
+            </div>`;
+        });
+        html += `</div>`;
+        area.innerHTML = html;
+        return;
+    }
+
+    // Filter Spieler nach Suche
+    let filteredPlayers = players.filter(p => p.name.toLowerCase().includes(searchQuery));
+
+    if(currentMode === 'overall') {
+        filteredPlayers.sort((a,b) => calculateOverallPoints(b.ranks) - calculateOverallPoints(a.ranks));
+        
+        let html = `
+        <table class="leaderboard-table">
+            <thead>
+                <tr>
+                    <th style="width:70px;text-align:center;">Rank</th>
+                    <th>Spieler</th>
+                    <th style="width:160px;">Points</th>
+                    <th>Tier Ranks</th>
+                </tr>
+            </thead>
+            <tbody>`;
+        
+        filteredPlayers.forEach((p, idx) => {
+            let pts = calculateOverallPoints(p.ranks);
+            let rCls = idx === 0 ? 'rank-1' : idx === 1 ? 'rank-2' : idx === 2 ? 'rank-3' : '';
+            
+            let badgesHtml = '';
+            Object.keys(modeIcons).forEach(m => {
+                if(p.ranks && p.ranks[m]) {
+                    let t = p.ranks[m];
+                    let bCls = tierStyleMapping[t] || 'border-t5';
+                    badgesHtml += `
+                    <div class="tier-badge-container">
+                        <div class="icon-wrapper ${bCls}">
+                            <img class="mode-logo-img" src="${modeIcons[m]}">
+                        </div>
+                        <span class="tier-text" style="font-size:9px;">${t}</span>
+                    </div>`;
+                }
+            });
+
+            html += `
+            <tr onclick="openProfile('${p.name}')" style="cursor:pointer;">
+                <td style="text-align:center;" class="rank-number ${rCls}">#${idx+1}</td>
+                <td>
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <img class="avatar" src="https://mc-heads.net/avatar/${p.name}/32">
+                        <span class="username">${p.name}</span>
+                    </div>
+                </td>
+                <td style="font-weight:800;color:var(--accent-cyan);">${pts} PTS</td>
+                <td><div class="badge-list">${badgesHtml}</div></td>
+            </tr>`;
+        });
+        html += `</tbody></table>`;
+        area.innerHTML = html;
+    } else {
+        // FIX: Überschriften in den einzelnen Modis von HT1/LT1 zu sauberen "Tier X" Bezeichnungen abgeändert
+        let html = `
+        <div class="gamemode-headers-row">
+            <div class="gamemode-header-tab gh-t1">Tier 1</div>
+            <div class="gamemode-header-tab gh-t2">Tier 2</div>
+            <div class="gamemode-header-tab gh-t3">Tier 3</div>
+            <div class="gamemode-header-tab gh-t4">Tier 4</div>
+            <div class="gamemode-header-tab gh-t5">Tier 5</div>
+        </div>
+        <div class="tier-columns">`;
+
+        let cols = {
+            t1: [], t2: [], t3: [], t4: [], t5: []
+        };
+
+        filteredPlayers.forEach(p => {
+            if(p.ranks && p.ranks[currentMode]) {
+                let t = p.ranks[currentMode];
+                if(t.includes('1')) cols.t1.push({ name: p.name, tier: t });
+                if(t.includes('2')) cols.t2.push({ name: p.name, tier: t });
+                if(t.includes('3')) cols.t3.push({ name: p.name, tier: t });
+                if(t.includes('4')) cols.t4.push({ name: p.name, tier: t });
+                if(t.includes('5')) cols.t5.push({ name: p.name, tier: t });
+            }
+        });
+
+        const sortTierGroup = (arr) => {
+            return arr.sort((a,b) => {
+                if(a.tier.startsWith('HT') && b.tier.startsWith('LT')) return -1;
+                if(a.tier.startsWith('LT') && b.tier.startsWith('HT')) return 1;
+                return a.name.localeCompare(b.name);
+            });
+        };
+
+        Object.keys(cols).forEach(k => { cols[k] = sortTierGroup(cols[k]); });
+
+        // Spalte Tier 1
+        html += `<div class="tier-column"><div class="tier-header t1-h">Tier 1</div><div class="tier-list-content">`;
+        cols.t1.forEach(p => { html += renderMiniCard(p.name, p.tier, 'border-t1'); });
+        html += `</div></div>`;
+
+        // Spalte Tier 2
+        html += `<div class="tier-column"><div class="tier-header t2-h">Tier 2</div><div class="tier-list-content">`;
+        cols.t2.forEach(p => { html += renderMiniCard(p.name, p.tier, 'border-t2'); });
+        html += `</div></div>`;
+
+        // Spalte Tier 3
+        html += `<div class="tier-column"><div class="tier-header t3-h">Tier 3</div><div class="tier-list-content">`;
+        cols.t3.forEach(p => { html += renderMiniCard(p.name, p.tier, 'border-t3'); });
+        html += `</div></div>`;
+
+        // Spalte Tier 4
+        html += `<div class="tier-column"><div class="tier-header t4-h">Tier 4</div><div class="tier-list-content">`;
+        cols.t4.forEach(p => { html += renderMiniCard(p.name, p.tier, 'border-t4'); });
+        html += `</div></div>`;
+
+        // Spalte Tier 5
+        html += `<div class="tier-column"><div class="tier-header t5-h">Tier 5</div><div class="tier-list-content">`;
+        cols.t5.forEach(p => { html += renderMiniCard(p.name, p.tier, 'border-t5'); });
+        html += `</div></div>`;
+
+        html += `</div>`;
+        area.innerHTML = html;
+    }
+}
+
+function renderMiniCard(name, tier, borderClass) {
+    return `
+    <div class="tier-user-card" onclick="openProfile('${name}')">
+        <div style="display:flex;align-items:center;gap:8px;">
+            <img class="avatar" style="width:24px;height:24px;" src="https://mc-heads.net/avatar/${name}/24">
+            <span style="font-size:12px;font-weight:700;">${name}</span>
+        </div>
+        <span style="font-size:10px;font-weight:900;" class="${borderClass}">${tier}</span>
+    </div>`;
+}
+
+function openProfile(name) {
+    let p = players.find(x => x.name.toLowerCase() === name.toLowerCase());
+    if(!p) return;
     
-    document.getElementById('p-modal-name').textContent = player.name;
-    document.getElementById('p-modal-avatar').src = `https://minotar.net/helm/${player.name}/100.png`;
+    document.getElementById('p-modal-avatar').src = `https://mc-heads.net/body/${name}/80`;
+    document.getElementById('p-modal-name').textContent = p.name;
+    document.getElementById('p-modal-points').textContent = `${calculateOverallPoints(p.ranks)} PTS`;
     
-    const points = calculateOverallPoints(player.ranks);
-    document.getElementById('p-modal-points').textContent = `${points} PTS`;
-    
-    // Berechne Server-Ranking Platzierung
-    const sortedPlayers = [...players].sort((a,b) => calculateOverallPoints(b.ranks) - calculateOverallPoints(a.ranks));
-    const rankIndex = sortedPlayers.findIndex(p => p.name.toLowerCase() === playerName.toLowerCase()) + 1;
-    document.getElementById('p-modal-rank-num').textContent = `Server Ranking: #${rankIndex}`;
-    
-    const grid = document.getElementById('p-modal-grid');
+    let grid = document.getElementById('p-modal-grid');
     grid.innerHTML = '';
     
     Object.keys(modeIcons).forEach(m => {
-        const tier = player.ranks[m] || "None";
-        const cssStyle = tierStyleMapping[tier] || "";
-        const styleAttr = cssStyle ? '' : 'style="color:var(--text-secondary);"';
-        
-        grid.innerHTML += `
+        if(p.ranks && p.ranks[m]) {
+            let t = p.ranks[m];
+            let bCls = tierStyleMapping[t] || 'border-t5';
+            grid.innerHTML += `
             <div class="profile-mode-card">
                 <img class="profile-mode-img" src="${modeIcons[m]}">
                 <span class="profile-mode-name">${m}</span>
-                <span class="profile-mode-tier ${cssStyle}" ${styleAttr}>${tier}</span>
-            </div>
-        `;
+                <span class="profile-mode-tier ${bCls}">${t}</span>
+            </div>`;
+        }
     });
-    
+
+    let overallSorted = [...players].sort((a,b) => calculateOverallPoints(b.ranks) - calculateOverallPoints(a.ranks));
+    let rankNum = overallSorted.findIndex(x => x.name.toLowerCase() === name.toLowerCase()) + 1;
+    document.getElementById('p-modal-rank-num').textContent = `Global Network Rank: #${rankNum}`;
+
     openModal('profile-modal');
 }
 
 function updateAdminLists() {
-    const playerList = document.getElementById('admin-delete-list');
-    playerList.innerHTML = '';
-    players.forEach(p => {
-        Object.keys(p.ranks).forEach(m => {
-            playerList.innerHTML += `
+    const pList = document.getElementById('admin-delete-list');
+    if(pList) {
+        pList.innerHTML = '<div style="font-size:11px;color:var(--text-secondary);margin-bottom:6px;">Löschen per Klick:</div>';
+        players.forEach(p => {
+            Object.keys(p.ranks).forEach(m => {
+                pList.innerHTML += `
                 <div class="admin-player-row">
-                    <span>${p.name} (${m.toUpperCase()}: ${p.ranks[m]})</span>
-                    <button class="btn btn-danger" style="padding:2px 8px; font-size:10px;" onclick="deletePlayerMode('${p.name}', '${m}')">X</button>
-                </div>
-            `;
+                    <span>${p.name} - <b style="color:var(--accent-cyan); text-transform:uppercase;">${m}</b> (${p.ranks[m]})</span>
+                    <button class="btn btn-danger" style="padding:2px 6px;font-size:10px;" onclick="deletePlayerMode('${p.name}', '${m}')">X</button>
+                </div>`;
+            });
         });
-    });
-
-    const staffDelList = document.getElementById('admin-staff-delete-list');
-    staffDelList.innerHTML = '';
-    staffList.forEach(s => {
-        staffDelList.innerHTML += `
+    }
+    const sList = document.getElementById('admin-staff-delete-list');
+    if(sList) {
+        sList.innerHTML = '<div style="font-size:11px;color:var(--text-secondary);margin-bottom:6px;">Staff entfernen:</div>';
+        staffList.forEach(s => {
+            sList.innerHTML += `
             <div class="admin-player-row">
                 <span>${s.name} (${s.title})</span>
-                <button class="btn btn-danger" style="padding:2px 8px; font-size:10px;" onclick="deleteStaff('${s.id}')">X</button>
-            </div>
-        `;
-    });
-}
-
-function render() {
-    const container = document.getElementById('content-area');
-    container.innerHTML = '';
-
-    if (currentView === 'rankings') {
-        let filteredPlayers = players.filter(p => p.name.toLowerCase().includes(searchQuery));
-        
-        if (currentMode === 'overall') {
-            // Sortieren nach Gesamtpunkten
-            filteredPlayers.sort((a,b) => calculateOverallPoints(b.ranks) - calculateOverallPoints(a.ranks));
-            
-            let tableHTML = `
-                <table class="leaderboard-table">
-                    <thead>
-                        <tr>
-                            <th style="width: 70px;">Rank</th>
-                            <th>Spieler</th>
-                            <th>Points</th>
-                            <th>Tiers & Disciplines</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-            
-            filteredPlayers.forEach((p, index) => {
-                const totalPoints = calculateOverallPoints(p.ranks);
-                let rankClass = `rank-number`;
-                if(index === 0) rankClass += ' rank-1';
-                if(index === 1) rankClass += ' rank-2';
-                if(index === 2) rankClass += ' rank-3';
-                
-                let badgesHTML = '';
-                Object.keys(p.ranks).forEach(m => {
-                    const t = p.ranks[m];
-                    if(t && modeIcons[m]) {
-                        const borderClass = tierStyleMapping[t] || '';
-                        badgesHTML += `
-                            <div class="tier-badge-container">
-                                <div class="icon-wrapper ${borderClass}">
-                                    <img class="mode-logo-img" src="${modeIcons[m]}" title="${m.toUpperCase()}: ${t}">
-                                </div>
-                                <span class="tier-text ${borderClass}">${t}</span>
-                            </div>
-                        `;
-                    }
-                });
-                
-                tableHTML += `
-                    <tr style="cursor:pointer;" onclick="openProfileModal('${p.name}')">
-                        <td><span class="${rankClass}">#${index + 1}</span></td>
-                        <td>
-                            <div style="display:flex;align-items:center;gap:12px;">
-                                <img class="avatar" src="https://minotar.net/helm/${p.name}/32.png">
-                                <span class="username">${p.name}</span>
-                            </div>
-                        </td>
-                        <td style="font-weight:800;color:var(--accent-cyan);">${totalPoints} PTS</td>
-                        <td><div class="badge-list">${badgesHTML || '<span style="color:var(--text-secondary);font-size:12px;">Keine Tiers</span>'}</div></td>
-                    </tr>
-                `;
-            });
-            
-            tableHTML += `</tbody></table>`;
-            container.innerHTML = tableHTML;
-            
-        } else {
-            // Einzelner Gamemode-View (5 Tier-Spalten)
-            let modePlayers = filteredPlayers.filter(p => p.ranks[currentMode]);
-            
-            const tiers = ["HT1/LT1", "HT2/LT2", "HT3/LT3", "HT4/LT4", "HT5/LT5"];
-            const columnsData = { T1: [], T2: [], T3: [], T4: [], T5: [] };
-            
-            modePlayers.forEach(p => {
-                const t = p.ranks[currentMode];
-                if(t.includes('1')) columnsData.T1.push({name: p.name, tier: t});
-                else if(t.includes('2')) columnsData.T2.push({name: p.name, tier: t});
-                else if(t.includes('3')) columnsData.T3.push({name: p.name, tier: t});
-                else if(t.includes('4')) columnsData.T4.push({name: p.name, tier: t});
-                else if(t.includes('5')) columnsData.T5.push({name: p.name, tier: t});
-            });
-            
-            // Sortierung innerhalb der Spalten (HT vor LT)
-            Object.keys(columnsData).forEach(key => {
-                columnsData[key].sort((a,b) => b.tier.localeCompare(a.tier));
-            });
-            
-            container.innerHTML += `
-                <div class="gamemode-headers-row">
-                    <div class="gamemode-header-tab gh-t1">Tier 1</div>
-                    <div class="gamemode-header-tab gh-t2">Tier 2</div>
-                    <div class="gamemode-header-tab gh-t3">Tier 3</div>
-                    <div class="gamemode-header-tab gh-t4">Tier 4</div>
-                    <div class="gamemode-header-tab gh-t5">Tier 5</div>
-                </div>
-            `;
-            
-            let columnsHTML = `<div class="tier-columns">`;
-            const mappedKeys = ['T1', 'T2', 'T3', 'T4', 'T5'];
-            const headerClasses = ['t1-h', 't2-h', 't3-h', 't4-h', 't5-h'];
-            
-            for(let i=0; i<5; i++) {
-                let cardsHTML = '';
-                columnsData[mappedKeys[i]].forEach(item => {
-                    const badgeStyle = tierStyleMapping[item.tier] || '';
-                    cardsHTML += `
-                        <div class="tier-user-card" onclick="openProfileModal('${item.name}')">
-                            <div style="display:flex;align-items:center;gap:10px;">
-                                <img class="avatar" src="https://minotar.net/helm/${item.name}/32.png">
-                                <span class="username" style="font-size:13px;">${item.name}</span>
-                            </div>
-                            <span class="${badgeStyle}" style="font-weight:900;font-size:11px;">${item.tier}</span>
-                        </div>
-                    `;
-                });
-                
-                columnsHTML += `
-                    <div class="tier-column">
-                        <div class="tier-header ${headerClasses[i]}">${tiers[i]}</div>
-                        <div class="tier-list-content">${cardsHTML || '<span style="color:var(--text-secondary);text-transform:uppercase;font-size:10px;text-align:center;margin-top:20px;font-weight:700;">Empty</span>'}</div>
-                    </div>
-                `;
-            }
-            columnsHTML += `</div>`;
-            container.innerHTML += columnsHTML;
-        }
-        
-    } else if (currentView === 'staff') {
-        let staffGridHTML = `<div class="staff-grid">`;
-        
-        // Custom Ordnung für Ränge im Teambereich
-        const roleOrder = ["NETWORK OWNER", "CO OWNER", "NETWORK OVERSEER", "MANAGER", "DEVELOPER", "ADMINISTRATOR", "TESTER"];
-        let sortedStaff = [...staffList].sort((a,b) => roleOrder.indexOf(a.title) - roleOrder.indexOf(b.title));
-        
-        sortedStaff.forEach(s => {
-            let badgeClass = 'badge-tester';
-            const t = s.title;
-            if(t === "NETWORK OWNER") badgeClass = 'badge-owner';
-            else if(t === "CO OWNER") badgeClass = 'badge-coowner';
-            else if(t === "NETWORK OVERSEER") badgeClass = 'badge-overseer';
-            else if(t === "MANAGER") badgeClass = 'badge-manager';
-            else if(t === "DEVELOPER") badgeClass = 'badge-dev';
-            else if(t === "ADMINISTRATOR") badgeClass = 'badge-admin';
-            
-            staffGridHTML += `
-                <div class="staff-card">
-                    <img class="staff-img" src="https://minotar.net/helm/${s.name}/44.png">
-                    <div class="staff-info">
-                        <span class="staff-name">${s.name}</span>
-                        <span class="staff-badge ${badgeClass}">${s.title}</span>
-                        <span style="font-size:10px;color:var(--text-secondary);font-weight:600;margin-top:2px;">@${s.discord || 'Kein Discord'}</span>
-                    </div>
-                </div>
-            `;
+                <button class="btn btn-danger" style="padding:2px 6px;font-size:10px;" onclick="deleteStaff('${s.id}')">X</button>
+            </div>`;
         });
-        
-        staffGridHTML += `</div>`;
-        container.innerHTML = staffGridHTML || '<p style="text-align:center;color:var(--text-secondary);">Keine Staff-Mitglieder eingetragen.</p>';
     }
 }
-
-// Initialer Seiten-Aufruf
-render();
 </script>
 </body>
 </html>
